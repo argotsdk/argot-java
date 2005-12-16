@@ -1,0 +1,18 @@
+<project name="bookstore" default="compile" basedir=".">
+
+  <description>Argot build</description>
+  
+  <target name="compile" description="compile the source">
+                
+	<path id="classpath">
+		<fileset dir="../../lib">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<javac srcdir="." destdir="." 
+		classpathref="classpath" includes="**/*.java" 
+		debug="off" optimize="true" deprecation="true" />
+  </target>
+  
+</project>

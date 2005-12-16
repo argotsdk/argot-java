@@ -1,0 +1,52 @@
+
+Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+
+This software is licensed under the Argot Public License 
+which may be found in the file LICENSE distributed 
+with this software.
+
+More information about this license can be found at
+http://www.einet.com.au/License
+
+The Developer of this software is Live Media Pty Ltd,
+PO Box 4591, Melbourne 3001, Australia.  The license is subject 
+to the law of Victoria, Australia, and subject to exclusive 
+jurisdiction of the Victorian courts.
+
+---------------------------------------------------------------------
+
+
+Argot Java
+----------
+
+This is the Java version of the Argot runtime library.
+
+
+
+Requirements
+------------
+
+The Argot library itself has no dependencies on external libraries
+other than those supplied with Java itself.
+
+To build and run the test cases you require junit. Junit is available
+at http://www.junit.org/.  It is also available in the eclipse IDE.
+
+If you wish to build the runtime library from the commandline you
+will require ANT.  ANT is available at http://ant.apache.org/
+
+
+
+Building Argot Java
+-------------------
+
+To build the Java version of Argot, we have a simple ANT script.
+This will compile and create a distribution zip file which contains
+the jar file.
+
+The ANT script is still simple.  We expect to add automated Junit
+testing in the future.
+
+
+
+

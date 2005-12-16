@@ -1,0 +1,75 @@
+<!--
+ Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ 
+ This software is licensed under the Argot Public License 
+ which may be found in the file LICENSE distributed 
+ with this software.
+ 
+ More information about this license can be found at
+ http://www.einet.com.au/License
+  
+ The Developer of this software is Live Media Pty Ltd,
+ PO Box 4591, Melbourne 3001, Australia.  The license is subject 
+ to the law of Victoria, Australia, and subject to exclusive 
+ jurisdiction of the Victorian courts.
+-->
+
+<project name="argot" default="dist" basedir=".">
+
+  <description>Argot build</description>
+  
+  <!-- set global properties for this build -->
+  <property name="src" location="src"/>
+  <property name="build" location="build"/>
+  <property name="dist"  location="dist"/>
+  <property name="lib" location="lib"/>
+
+  <target name="init">
+    <tstamp/>
+    <mkdir dir="${build}"/>
+  	<mkdir dir="${lib}"/>
+  </target>
+
+  <target name="compile" depends="init"
+        description="compile the source">
+                
+	<path id="classpath">
+		<fileset dir="${lib}">
+			<include name="**/*.jar" />
+		</fileset>
+    </path>    
+    <javac srcdir="${src}" destdir="${build}" 
+    	classpathref="classpath" includes="**/*.java" 
+    	debug="off" optimize="true" deprecation="true" />    	
+  </target>
+
+  <target name="dist" depends="compile"
+        description="generate the distribution" >
+
+    <!-- Put everything in ${build} into the jar file -->
+    <copy file="LICENSE.TXT" tofile="${build}/LICENSE"/>
+    
+    <mkdir dir="${dist}/lib"/>
+    <jar jarfile="${dist}/lib/argot-1.2.0.jar" basedir="${build}"/>
+    <copy file="LICENSE.TXT" tofile="${dist}/LICENSE"/>    
+    <copy file="README.TXT" tofile="${dist}/README"/>
+    
+    <mkdir dir="${dist}/argot"/>
+    <copy file="argot/README.TXT" tofile="${dist}/argot/README"/>
+    <copy file="argot/common.argot" tofile="${dist}/argot/common.argot"/>
+    <copy file="argot/meta.argot" tofile="${dist}/argot/meta.argot"/>
+    
+  	<mkdir dir="${dist}/examples"/>
+  	<copy todir="${dist}/examples">
+  		<fileset dir="examples"/>
+  	</copy>
+  	
+    <!-- zip up the release -->
+    <zip basedir="${dist}" destfile="${lib}/argot-1.2.0.zip"/>
+  </target>
+
+  <target name="clean" description="clean up" >
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+</project>

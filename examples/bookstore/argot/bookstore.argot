@@ -1,0 +1,33 @@
+
+import u8ascii;
+import meta.array;
+import meta.reference;
+import meta.sequence;
+import u16;
+import u8;
+import meta.expression;
+import meta.name;
+
+/*
+ *  A very simple book description.
+ */
+
+book: 
+	{
+		@u8ascii["ISBN"],
+		@u8ascii["title"],
+		@u8ascii["description"],
+		@u8ascii["author"]
+	};
+	
+/*
+ *  A list of books.
+ */
+ 
+booklist: 
+	{
+		meta.array( 
+			@u8["size"],
+			@book["book"]
+		)
+	};

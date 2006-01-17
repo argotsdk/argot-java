@@ -14,19 +14,20 @@
  jurisdiction of the Victorian courts.
 -->
 
-<project name="argot" default="dist" basedir=".">
+<project name="argot" default="release" basedir=".">
 
   <description>Argot build</description>
   
   <!-- set global properties for this build -->
   <property name="src" location="src"/>
-  <property name="build" location="build"/>
+  <property name="bin" location="bin"/>
   <property name="dist"  location="dist"/>
   <property name="lib" location="lib"/>
+  <property name="release" location="release"/>
 
   <target name="init">
     <tstamp/>
-    <mkdir dir="${build}"/>
+    <mkdir dir="${bin}"/>
   	<mkdir dir="${lib}"/>
   </target>
 
@@ -38,34 +39,47 @@
 			<include name="**/*.jar" />
 		</fileset>
     </path>    
-    <javac srcdir="${src}" destdir="${build}" 
+    <javac srcdir="${src}" destdir="${bin}" 
     	classpathref="classpath" includes="**/*.java" 
-    	debug="off" optimize="true" deprecation="true" />    	
+    	debug="on" optimize="true" deprecation="true" />    	
   </target>
 
-  <target name="dist" depends="compile"
-        description="generate the distribution" >
+  <target name="release" depends="compile"
+        description="generate the distribution release" >
 
     <!-- Put everything in ${build} into the jar file -->
-    <copy file="LICENSE.TXT" tofile="${build}/LICENSE"/>
+    <copy file="LICENSE.TXT" tofile="${bin}/LICENSE"/>
     
-    <mkdir dir="${dist}/lib"/>
-    <jar jarfile="${dist}/lib/argot-1.2.0.jar" basedir="${build}"/>
-    <copy file="LICENSE.TXT" tofile="${dist}/LICENSE"/>    
-    <copy file="README.TXT" tofile="${dist}/README"/>
+    <mkdir dir="${release}/lib"/>
+    <jar jarfile="${release}/lib/argot-1.2.0.jar" basedir="${bin}"/>
+    <copy file="LICENSE.TXT" tofile="${release}/LICENSE"/>    
+    <copy file="README.TXT" tofile="${release}/README"/>
     
-    <mkdir dir="${dist}/argot"/>
-    <copy file="argot/README.TXT" tofile="${dist}/argot/README"/>
-    <copy file="argot/common.argot" tofile="${dist}/argot/common.argot"/>
-    <copy file="argot/meta.argot" tofile="${dist}/argot/meta.argot"/>
+    <mkdir dir="${release}/argot"/>
+    <copy file="argot/README.TXT" tofile="${release}/argot/README"/>
+    <copy file="argot/common.argot" tofile="${release}/argot/common.argot"/>
+    <copy file="argot/meta.argot" tofile="${release}/argot/meta.argot"/>
     
-  	<mkdir dir="${dist}/examples"/>
-  	<copy todir="${dist}/examples">
+    <mkdir dir="${release}/doc"/>  	
+    <copy file="../doc/ArgotProgrammersGuide.pdf" tofile="${release}/doc/ArgotProgrammersGuide.pdf"/>
+  	
+  	<mkdir dir="${release}/examples"/>
+  	<copy todir="${release}/examples">
   		<fileset dir="examples"/>
   	</copy>
   	
+  	<mkdir dir="${release}/src"/>
+  	<copy todir="${release}/src">
+  		<fileset dir="src"/>
+  	</copy>
+  	
+  	<mkdir dir="${release}/test"/>
+  	<copy todir="${release}/test">
+  		<fileset dir="test"/>
+  	</copy>  	
+	
     <!-- zip up the release -->
-    <zip basedir="${dist}" destfile="${lib}/argot-1.2.0.zip"/>
+    <zip basedir="${release}" destfile="${lib}/ArgotJava-1.2.0.zip"/>
   </target>
 
   <target name="clean" description="clean up" >

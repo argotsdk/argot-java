@@ -48,17 +48,19 @@
         description="generate the distribution release" >
 
     <!-- Put everything in ${build} into the jar file -->
-    <copy file="LICENSE.TXT" tofile="${bin}/LICENSE"/>
+    <copy file="LICENSE.TXT" tofile="${bin}/LICENSE.TXT"/>
     
     <mkdir dir="${release}/lib"/>
     <jar jarfile="${release}/lib/argot-1.2.0.jar" basedir="${bin}"/>
-    <copy file="LICENSE.TXT" tofile="${release}/LICENSE"/>    
-    <copy file="README.TXT" tofile="${release}/README"/>
-    
+    <copy file="LICENSE.TXT" tofile="${release}/LICENSE.TXT"/>    
+    <copy file="README.TXT" tofile="${release}/README.TXT"/>
+    <copy file="BUILD.TXT" tofile="${release}/BUILD.TXT"/>
+    <copy file="build.xml" tofile="${release}/build.xml"/>
+    	
     <mkdir dir="${release}/argot"/>
-    <copy file="argot/README.TXT" tofile="${release}/argot/README"/>
-    <copy file="argot/common.argot" tofile="${release}/argot/common.argot"/>
-    <copy file="argot/meta.argot" tofile="${release}/argot/meta.argot"/>
+  	<copy todir="${release}/argot">
+  		<fileset dir="../argot"/>
+  	</copy>    
     
     <mkdir dir="${release}/doc"/>  	
     <copy file="../doc/ArgotProgrammersGuide.pdf" tofile="${release}/doc/ArgotProgrammersGuide.pdf"/>
@@ -78,12 +80,22 @@
   		<fileset dir="test"/>
   	</copy>  	
 	
+	<!-- grab the Argot Compiler binary -->
+ 	<mkdir dir="${release}/bin"/>  	
+	<copy file="../../tools/argot_compiler/release/bin/ac.bat" tofile="release/bin/ac.bat"/>	
+	<copy todir="release/lib">
+		<fileset dir="../../tools/argot_compiler/release/lib">
+			<include name="**/*" />
+			<exclude name="argot-?.?.?.jar" />
+		</fileset>
+	</copy>
+  	
     <!-- zip up the release -->
-    <zip basedir="${release}" destfile="${lib}/ArgotJava-1.2.0.zip"/>
+    <zip basedir="${release}" destfile="../ArgotJava-1.2.0.zip"/>
   </target>
 
   <target name="clean" description="clean up" >
-    <delete dir="${build}"/>
-    <delete dir="${dist}"/>
+    <delete dir="${bin}"/>
+    <delete dir="${release}"/>
   </target>
 </project>

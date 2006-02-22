@@ -48,7 +48,7 @@ implements TypeReader, TypeWriter
 			
 			int read = in.getStream().read(bytes);
 
-			String ret = new String( bytes, "UTF-8");
+			String ret = new String( bytes, 0, read, "UTF-8");
 
 			return ret;
 		}

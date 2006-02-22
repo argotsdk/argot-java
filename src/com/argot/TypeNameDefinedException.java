@@ -19,7 +19,9 @@ public class TypeNameDefinedException
 extends TypeException
 {
 
-    public TypeNameDefinedException(String reason)
+	private static final long serialVersionUID = -9082367944489759576L;
+
+	public TypeNameDefinedException(String reason)
     {
         super(reason);
     }

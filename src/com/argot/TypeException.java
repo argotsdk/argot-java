@@ -21,6 +21,7 @@ package com.argot;
 public class TypeException
 extends Exception
 {
+	private static final long serialVersionUID = 4489198449670172634L;
 
 	public TypeException( String reason )
 	{

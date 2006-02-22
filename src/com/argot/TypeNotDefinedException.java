@@ -19,7 +19,9 @@ public class TypeNotDefinedException
 extends TypeException
 {
 
-    public TypeNotDefinedException(String reason)
+	private static final long serialVersionUID = -7455443870077090796L;
+
+	public TypeNotDefinedException(String reason)
     {
         super(reason);
     }

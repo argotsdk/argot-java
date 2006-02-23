@@ -52,14 +52,17 @@ extends TestCase
 		TypeMap mapRead = Dictionary.readDictionary( _library, bais );
 		
 		Iterator iter1 = mapRead.getIterator();
-		Iterator iter2 = map.getIterator();
-		while( iter1.hasNext() || iter2.hasNext() )
-		{
-		    Object o1 = iter1.next();
-		    Object o2 = iter2.next();
+
+		while( iter1.hasNext() )
+		{			
+		    Integer id = (Integer) iter1.next();
+		    
+		    int o1 = mapRead.getSystemId( id.intValue() );
+		    int o2 = map.getSystemId( id.intValue() );
+		    
 		    assertEquals( o1, o2 );
 		    
-		    System.out.println( "o1: " + o1.toString() + " == o2:" + o2.toString() );
+		    System.out.println( "o1: " + o1 + " == o2:" + o2 );
 		}
     }
 }

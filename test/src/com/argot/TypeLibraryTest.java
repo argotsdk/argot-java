@@ -31,6 +31,7 @@ extends TestCase
     public void testCreateTypeLibrary() throws Exception
     {
         TypeLibrary library = new TypeLibrary();
+        assertNotNull( library );
     }
     
     /**
@@ -39,7 +40,7 @@ extends TestCase
      */
     public void testReserveType() throws Exception
     {
-        int id = _library.reserve("test");
+        _library.reserve("test");
         
         assertEquals( _library.getTypeState("test"), TypeLibrary.TYPE_RESERVED );
     }
@@ -52,20 +53,20 @@ extends TestCase
     
     public void testRegisterStructure() throws Exception
     {
-        int id = _library.register( "test", new TestTypeElement() );
+        _library.register( "test", new TestTypeElement() );
         assertEquals( _library.getTypeState("test"), TypeLibrary.TYPE_REGISTERED );
     }
     
     public void testRegisterComplete() throws Exception
     {
-        int id = _library.register( "test", new TestTypeElement(), new TestReader(), new TestWriter(), null );
+        _library.register( "test", new TestTypeElement(), new TestReader(), new TestWriter(), null );
         assertEquals( _library.getTypeState("test"), TypeLibrary.TYPE_COMPLETE );
     }
     
     public void testRegisterAfterReserve() throws Exception
     {
         _library.reserve( "test" );
-        int id = _library.register( "test", new TestTypeElement(), new TestReader(), new TestWriter(), null );
+        _library.register( "test", new TestTypeElement(), new TestReader(), new TestWriter(), null );
         assertEquals( _library.getTypeState("test"), TypeLibrary.TYPE_COMPLETE );
         
         TypeElement structure = _library.getStructure( _library.getId("test"));
@@ -74,7 +75,7 @@ extends TestCase
     
     public void testBind() throws Exception
     {
-        int id = _library.register( "test", new TestTypeElement() );
+        _library.register( "test", new TestTypeElement() );
         _library.bind( "test", new TestReader(), new TestWriter(), null );
     }
     
@@ -116,7 +117,8 @@ extends TestCase
         try
         {
             TypeReader read = _library.getReader( _library.getId("test"));
-            // fail.
+            assertNotNull(read);
+            fail();
         } 
         catch ( TypeException ex )
         {
@@ -126,7 +128,8 @@ extends TestCase
         try
         {
             TypeReader read = _library.getReader( _library.getId("badtype"));
-            // fail.
+            assertNotNull( read );
+            fail();
         } 
         catch ( TypeException ex )
         {
@@ -151,7 +154,8 @@ extends TestCase
         try
         {
             TypeWriter read = _library.getWriter( _library.getId("test"));
-            // fail.
+            assertNotNull(read);
+            fail();
         } 
         catch ( TypeException ex )
         {
@@ -161,7 +165,8 @@ extends TestCase
         try
         {
             TypeWriter read = _library.getWriter( _library.getId("badtype"));
-            // fail.
+            assertNotNull(read);
+            fail();
         } 
         catch ( TypeException ex )
         {

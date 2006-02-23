@@ -35,7 +35,7 @@ import com.argot.meta.MetaDefinition;
 
 public class MetaMethod 
 extends MetaBase
-implements TypeReader, TypeWriter, MetaDefinition
+implements MetaDefinition
 {
 	private int _interfaceId;
 	private String _name;
@@ -168,75 +168,82 @@ implements TypeReader, TypeWriter, MetaDefinition
 		return _nativeMethod;
 	}
 
-	public Object read(TypeInputStream in, TypeElement element) 
-	throws TypeException, IOException 
+	public static class MetaMethodReader
+	implements TypeReader
 	{
-		TypeReader reader = new TypeReaderAuto( this.getClass() );
-		MetaMethod mm = (MetaMethod) reader.read( in, element );
-		mm._interfaceId = in.getTypeMap().getSystemId( mm._interfaceId );
-		for ( int x=0 ; x< mm._errorTypes.length ; x++ )
+		public Object read(TypeInputStream in, TypeElement element) 
+		throws TypeException, IOException 
 		{
-			mm._errorTypes[x] = in.getTypeMap().getSystemId( mm._errorTypes[x] );
-		}
-		return mm;
-	}
-
-	public void write(TypeOutputStream out, Object o, TypeElement element) 
-	throws TypeException, IOException 
-	{
-		MetaMethod mm = (MetaMethod) o;
-		int x;
-		
-		// write interface id.
-		int id = out.getTypeMap().getId( mm.getInterfaceType() );
-		out.writeObject( BigEndianUnsignedShort.TYPENAME, new Integer(id) );
-		out.writeObject( U8Ascii.TYPENAME, mm.getMethodName() );
-		
-		if ( mm.getRequestTypes() != null )
-		{
-			out.writeObject( BigEndianUnsignedByte.TYPENAME, new Integer( mm.getRequestTypes().length ));
-			for( x=0 ;x < mm.getRequestTypes().length; x++ )
+			TypeReader reader = new TypeReaderAuto( this.getClass() );
+			MetaMethod mm = (MetaMethod) reader.read( in, element );
+			mm._interfaceId = in.getTypeMap().getSystemId( mm._interfaceId );
+			for ( int x=0 ; x< mm._errorTypes.length ; x++ )
 			{
-				//id = out.getTypeMap().getId( mm.getRequestTypes()[x].getParamType() );
-				//out.writeObject( BigEndianUnsignedShort.TYPENAME, new Integer(id) );
-				out.writeObject( MetaParameter.TYPENAME, mm.getRequestTypes()[x] );
+				mm._errorTypes[x] = in.getTypeMap().getSystemId( mm._errorTypes[x] );
 			}
-		}
-		else
-		{
-			out.writeObject( BigEndianUnsignedByte.TYPENAME, new Integer(0));
-		}
-
-		if ( mm.getResponseTypes() != null )
-		{
-			out.writeObject( BigEndianUnsignedByte.TYPENAME, new Integer( mm.getResponseTypes().length ));
-			for( x=0 ;x < mm.getResponseTypes().length; x++ )
-			{
-				//id = out.getTypeMap().getId( mm.getResponseTypes()[x].getParamType() );
-				//out.writeObject( BigEndianUnsignedShort.TYPENAME, new Integer(id) );
-				out.writeObject( MetaParameter.TYPENAME, mm.getRequestTypes()[x] );
-			}
-		}
-		else
-		{
-			out.writeObject( BigEndianUnsignedByte.TYPENAME, new Integer(0));
-		}
-
-		if ( mm.getErrorTypes() != null )
-		{
-			out.writeObject( BigEndianUnsignedByte.TYPENAME, new Integer( mm.getErrorTypes().length ));
-			for( x=0 ;x < mm.getErrorTypes().length; x++ )
-			{
-				id = out.getTypeMap().getId( mm.getErrorTypes()[x]);
-				out.writeObject( BigEndianUnsignedShort.TYPENAME, new Integer(id) );
-			}
-		}
-		else
-		{
-			out.writeObject( BigEndianUnsignedByte.TYPENAME, new Integer(0));
+			return mm;
 		}
 	}
-
+	
+	public static class MetaMethodWriter
+	implements TypeWriter
+	{
+		public void write(TypeOutputStream out, Object o, TypeElement element) 
+		throws TypeException, IOException 
+		{
+			MetaMethod mm = (MetaMethod) o;
+			int x;
+			
+			// write interface id.
+			int id = out.getTypeMap().getId( mm.getInterfaceType() );
+			out.writeObject( BigEndianUnsignedShort.TYPENAME, new Integer(id) );
+			out.writeObject( U8Ascii.TYPENAME, mm.getMethodName() );
+			
+			if ( mm.getRequestTypes() != null )
+			{
+				out.writeObject( BigEndianUnsignedByte.TYPENAME, new Integer( mm.getRequestTypes().length ));
+				for( x=0 ;x < mm.getRequestTypes().length; x++ )
+				{
+					//id = out.getTypeMap().getId( mm.getRequestTypes()[x].getParamType() );
+					//out.writeObject( BigEndianUnsignedShort.TYPENAME, new Integer(id) );
+					out.writeObject( MetaParameter.TYPENAME, mm.getRequestTypes()[x] );
+				}
+			}
+			else
+			{
+				out.writeObject( BigEndianUnsignedByte.TYPENAME, new Integer(0));
+			}
+	
+			if ( mm.getResponseTypes() != null )
+			{
+				out.writeObject( BigEndianUnsignedByte.TYPENAME, new Integer( mm.getResponseTypes().length ));
+				for( x=0 ;x < mm.getResponseTypes().length; x++ )
+				{
+					//id = out.getTypeMap().getId( mm.getResponseTypes()[x].getParamType() );
+					//out.writeObject( BigEndianUnsignedShort.TYPENAME, new Integer(id) );
+					out.writeObject( MetaParameter.TYPENAME, mm.getRequestTypes()[x] );
+				}
+			}
+			else
+			{
+				out.writeObject( BigEndianUnsignedByte.TYPENAME, new Integer(0));
+			}
+	
+			if ( mm.getErrorTypes() != null )
+			{
+				out.writeObject( BigEndianUnsignedByte.TYPENAME, new Integer( mm.getErrorTypes().length ));
+				for( x=0 ;x < mm.getErrorTypes().length; x++ )
+				{
+					id = out.getTypeMap().getId( mm.getErrorTypes()[x]);
+					out.writeObject( BigEndianUnsignedShort.TYPENAME, new Integer(id) );
+				}
+			}
+			else
+			{
+				out.writeObject( BigEndianUnsignedByte.TYPENAME, new Integer(0));
+			}
+		}
+	}
 
 	
 }

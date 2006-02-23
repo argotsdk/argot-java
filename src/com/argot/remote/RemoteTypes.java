@@ -27,26 +27,22 @@ public class RemoteTypes
 	{
 		if ( library.getTypeState( MetaParameter.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
 		{
-			MetaParameter mp = new MetaParameter(0, "" );
-			library.bind( MetaParameter.TYPENAME,mp,mp,mp.getClass() );
+			library.bind( MetaParameter.TYPENAME, new MetaParameter.MetaParameterReader(), new MetaParameter.MetaParameterWriter(), MetaParameter.class );
 		}
 
 		if ( library.getTypeState( MetaMethod.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
 		{
-			MetaMethod mm = new MetaMethod( 0, null, (MetaParameter[]) null, (MetaParameter[]) null, (Integer[]) null);
-			library.bind( MetaMethod.TYPENAME,mm,mm,mm.getClass() );
+			library.bind( MetaMethod.TYPENAME, new MetaMethod.MetaMethodReader(), new MetaMethod.MetaMethodWriter(), MetaMethod.class );
 		}
 
 		if ( library.getTypeState( MetaInterface.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
-		{
-			MetaInterface mi = new MetaInterface();
-			library.bind( MetaInterface.TYPENAME,mi,mi,mi.getClass() );
+		{		
+			library.bind( MetaInterface.TYPENAME, new MetaInterface.MetaInterfaceReader(), new MetaInterface.MetaInterfaceWriter(),MetaInterface.class );
 		}
 
 		if ( library.getTypeState( MetaObject.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
 		{
-			MetaObject mo = new MetaObject( null,0 );
-			library.bind( MetaObject.TYPENAME,mo,mo,mo.getClass() );
+			library.bind( MetaObject.TYPENAME, new MetaObject.MetaObjectReader(), new MetaObject.MetaObjectWriter(), MetaObject.class );
 		}
 		
 		if ( library.getTypeState( MetaLocation.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )

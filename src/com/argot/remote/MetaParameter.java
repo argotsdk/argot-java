@@ -30,7 +30,6 @@ import com.argot.meta.MetaBase;
 
 public class MetaParameter
 extends MetaBase
-implements TypeReader, TypeWriter
 {
 	public static final String TYPENAME = "remote.parameter";
 
@@ -48,24 +47,6 @@ implements TypeReader, TypeWriter
 		return TYPENAME;
 	}
 
-	public Object read(TypeInputStream in, TypeElement element) 
-	throws TypeException, IOException 
-	{
-		TypeReader reader = new TypeReaderAuto( this.getClass() );
-		MetaParameter mp = (MetaParameter) reader.read( in, element );
-		mp._typeId = in.getTypeMap().getSystemId( mp._typeId );
-		return mp;
-	}
-
-	public void write(TypeOutputStream out, Object o, TypeElement element) 
-	throws TypeException, IOException 
-	{
-		MetaParameter mp = (MetaParameter) o;
-		int id = out.getTypeMap().getId( mp._typeId );
-		out.writeObject( BigEndianUnsignedShort.TYPENAME, new Integer(id));
-		out.writeObject( U8Ascii.TYPENAME, mp._name );
-	}
-
 	public int getParamType() 
 	{
 		return _typeId;
@@ -76,4 +57,29 @@ implements TypeReader, TypeWriter
 		return _name;
 	}
 
+	public static class MetaParameterReader
+	implements TypeReader
+	{
+		public Object read(TypeInputStream in, TypeElement element) 
+		throws TypeException, IOException 
+		{
+			TypeReader reader = new TypeReaderAuto( this.getClass() );
+			MetaParameter mp = (MetaParameter) reader.read( in, element );
+			mp._typeId = in.getTypeMap().getSystemId( mp._typeId );
+			return mp;
+		}
+	}
+	
+	public static class MetaParameterWriter
+	implements TypeWriter
+	{
+		public void write(TypeOutputStream out, Object o, TypeElement element) 
+		throws TypeException, IOException 
+		{
+			MetaParameter mp = (MetaParameter) o;
+			int id = out.getTypeMap().getId( mp._typeId );
+			out.writeObject( BigEndianUnsignedShort.TYPENAME, new Integer(id));
+			out.writeObject( U8Ascii.TYPENAME, mp._name );
+		}
+	}
 }

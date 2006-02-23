@@ -47,7 +47,10 @@ extends TestCase
     {
     	DynamicTypeMap serverMap = new DynamicTypeMap( _library );
     	TypeServer typeServer = new TypeServer( _library, serverMap );
-    	TypeClient typeClient = new TypeClient( _library, typeServer );
+    	// client will write to server and expect a response.
+    	// server will need to operate on different thread.
+    	TestTypeTransport transport = new TestTypeTransport( typeServer );
+    	TypeClient typeClient = new TypeClient( _library, transport );
     	DynamicClientTypeMap clientMap = new DynamicClientTypeMap( _library, typeClient );
     	
     	int cid = clientMap.getId( "u8" );
@@ -59,7 +62,8 @@ extends TestCase
     {
     	DynamicTypeMap serverMap = new DynamicTypeMap( _library );
     	TypeServer typeServer = new TypeServer( _library, serverMap );
-    	TypeClient typeClient = new TypeClient( _library, typeServer );
+    	TestTypeTransport transport = new TestTypeTransport( typeServer );
+    	TypeClient typeClient = new TypeClient( _library, transport );
     	DynamicClientTypeMap clientMap = new DynamicClientTypeMap( _library, typeClient );
     	
     	serverMap.map( 54, _library.getId( "s32" ));
@@ -72,7 +76,8 @@ extends TestCase
     {
     	DynamicTypeMap serverMap = new DynamicTypeMap( _library );
     	TypeServer typeServer = new TypeServer( _library, serverMap );
-    	TypeClient typeClient = new TypeClient( _library, typeServer );
+    	TestTypeTransport transport = new TestTypeTransport( typeServer );
+    	TypeClient typeClient = new TypeClient( _library, transport );
     	DynamicClientTypeMap clientMap = new DynamicClientTypeMap( _library, typeClient );
     	
     	int cid = clientMap.getId( _library.getId( "u32"));
@@ -84,7 +89,8 @@ extends TestCase
     {
     	DynamicTypeMap serverMap = new DynamicTypeMap( _library );
     	TypeServer typeServer = new TypeServer( _library, serverMap );
-    	TypeClient typeClient = new TypeClient( _library, typeServer );
+    	TestTypeTransport transport = new TestTypeTransport( typeServer );
+    	TypeClient typeClient = new TypeClient( _library, transport );
     	DynamicClientTypeMap clientMap = new DynamicClientTypeMap( _library, typeClient );
     	
     	TypeReader cReader = clientMap.getReader( clientMap.getId( "u8" ) );
@@ -96,7 +102,8 @@ extends TestCase
     {
     	DynamicTypeMap serverMap = new DynamicTypeMap( _library );
     	TypeServer typeServer = new TypeServer( _library, serverMap );
-    	TypeClient typeClient = new TypeClient( _library, typeServer );
+    	TestTypeTransport transport = new TestTypeTransport( typeServer );
+    	TypeClient typeClient = new TypeClient( _library, transport );
     	DynamicClientTypeMap clientMap = new DynamicClientTypeMap( _library, typeClient );
     	
     	TypeWriter cWriter = clientMap.getWriter( clientMap.getId( "u8" ) );
@@ -104,5 +111,21 @@ extends TestCase
     	assertEquals( cWriter, sWriter );    	    	
     }
     
-    
+    public void testProcessServiceMessage() throws Exception
+    {
+    	DynamicTypeMap serverMap = new DynamicTypeMap( _library );
+    	TestService service = new TestService();
+    	TypeServer typeServer = new TypeServer( _library, serverMap, service );
+    	TestTypeTransport transport = new TestTypeTransport( typeServer );
+    	TypeClient typeClient = new TypeClient( _library, transport );
+
+    	String msgSent = "Hello";
+    	byte receive[] = new byte[100];
+    	TypeEndPoint connection = typeClient.openLink();
+    	connection.getOutputStream().write( msgSent.getBytes() );
+    	int read = connection.getInputStream().read( receive );
+    	
+    	String msgReceived = new String( receive, 0, read, "UTF8" );
+    	assertEquals( msgSent, msgReceived );    	    	
+    }    
 }

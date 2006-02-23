@@ -15,10 +15,13 @@
  */
 package com.argot.network;
 
-import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
-public interface TypeLink 
+public interface TypeEndPoint
 {
-	public void processMessage( TypeEndPoint connection ) 
-	throws IOException;
+	public InputStream getInputStream();
+
+	public OutputStream getOutputStream();
+
 }

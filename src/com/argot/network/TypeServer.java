@@ -15,9 +15,8 @@
  */
 package com.argot.network;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import com.argot.DynamicTypeMap;
 import com.argot.TypeElement;
@@ -32,6 +31,7 @@ import com.argot.common.BigEndianUnsignedByte;
 import com.argot.common.U8Boolean;
 
 import com.argot.remote.MetaObject;
+import com.argot.util.ChunkByteBuffer;
 
 public class TypeServer
 implements TypeLink
@@ -40,56 +40,72 @@ implements TypeLink
 	private DynamicTypeMap _refMap;
 	private TypeLibrary _library;
 	private MetaObject _object;
+	private TypeLink _service;
 	
 
-	public TypeServer( TypeLibrary library, DynamicTypeMap refMap )
+	public TypeServer( TypeLibrary library, DynamicTypeMap refMap, TypeLink service )
 	throws TypeException
 	{
 		_typeMap = new ProtocolTypeMap( library );
 		_refMap = refMap;
 		_library = library;
+		_service = service;
 	}
 
+	public TypeServer( TypeLibrary library, DynamicTypeMap refMap )
+	throws TypeException
+	{
+		this( library, refMap, null );
+	}
+	
 	public void setBaseObject( MetaObject object )
 	{
 		_object = object;
 	}
 
-	public byte[] processMessage( byte[] request )
+	public void processMessage( TypeEndPoint connection )
 	throws IOException
 	{
 		
 		try
 		{
-			ByteArrayInputStream bais = new ByteArrayInputStream( request );
-			TypeInputStream in = new TypeInputStream( bais, _typeMap );
+			OutputStream out = connection.getOutputStream();
+			TypeInputStream in = new TypeInputStream( connection.getInputStream(), _typeMap );
 			Object o = in.readObject( BigEndianUnsignedByte.TYPENAME );
 			int action = ((Short) o).intValue();
 					
 			if ( action == ProtocolTypeMap.MAP )
 			{
-				return processMap( in );
+				processMap( in, out );
+				return;
 			}
 			else if ( action == ProtocolTypeMap.MAPRES )
 			{
-				return processMapReserve( in );
+				processMapReserve( in, out );
+				return;
 			}
 			else if ( action == ProtocolTypeMap.MAPREV )
 			{
-				return processMapReverse( in );
+				processMapReverse( in, out );
+				return;
 			}
 			else if ( action == ProtocolTypeMap.BASE )
 			{
-				return processGetBaseObject( in );
+				processGetBaseObject( in, out );
+				return;
+			}
+			else if ( action == ProtocolTypeMap.MSG )
+			{
+				processUserMessage( in, out );
+				return;
 			}
 			
 			// return an error array.
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			TypeOutputStream sout = new TypeOutputStream( baos, _typeMap );
+			TypeOutputStream sout = new TypeOutputStream( connection.getOutputStream(), _typeMap );
 			sout.writeObject( "u8", new Short( ProtocolTypeMap.ERROR ) );
-			baos.flush();
-			baos.close();			
-			return baos.toByteArray();
+			sout.getStream().flush();
+			sout.getStream().close();
+
 		}	
 		catch (TypeException e)
 		{
@@ -104,13 +120,12 @@ implements TypeLink
 	 * know about it.  The client sends the id and recieves
 	 * the type name and type definition.
 	 */
-	private byte[] processMapReverse( TypeInputStream in )
+	private void processMapReverse( TypeInputStream in, OutputStream out )
 	throws TypeException, IOException
 	{
 		Integer id = (Integer) in.readObject( BigEndianSignedInteger.TYPENAME );
 
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		TypeOutputStream sout = new TypeOutputStream( baos, _typeMap );
+		TypeOutputStream sout = new TypeOutputStream( out, _typeMap );
 
 		String name = _refMap.getName( id.intValue() );
 		TypeElement struct = _refMap.getStructure( id.intValue() );
@@ -121,10 +136,8 @@ implements TypeLink
 		sout.writeObject( "u8ascii", name );
 		sout.writeObject( "u16binary", definition );
 
-		baos.flush();
-		baos.close();
-		
-		return baos.toByteArray();
+		out.flush();
+		out.close();
 	}
 	
 	/*
@@ -134,13 +147,12 @@ implements TypeLink
 	 * sending the name and receiving an ID.  The server may not
 	 * have the type and return -1.
 	 */
-	private byte[] processMapReserve( TypeInputStream in )
+	private void processMapReserve( TypeInputStream in, OutputStream out )
 	throws TypeException, IOException
 	{	
 		String name = (String) in.readObject( "u8ascii" );
 
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		TypeOutputStream sout = new TypeOutputStream( baos, _typeMap );
+		TypeOutputStream sout = new TypeOutputStream( out, _typeMap );
 
 		sout.writeObject( "u8", new Short( ProtocolTypeMap.MAPRES ) );			
 		
@@ -162,38 +174,11 @@ implements TypeLink
 			
 		}		
 		
-		baos.flush();
-		baos.close();
-		
-		return baos.toByteArray();
+		out.flush();
+		out.close();
 	}
 
-	private byte[] processGetBaseObject( TypeInputStream request )
-	throws TypeException, IOException
-	{		
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		TypeOutputStream sout = new TypeOutputStream( baos, _refMap );
-
-		sout.writeObject( "u8", new Short( ProtocolTypeMap.BASE ) );			
-		
-		// Check base name.
-		if ( _object == null )
-		{
-			sout.writeObject( U8Boolean.TYPENAME, new Boolean(false));
-		}
-		else
-		{					
-			sout.writeObject( U8Boolean.TYPENAME, new Boolean(true));
-			sout.writeObject( MetaObject.TYPENAME, _object );
-		}		
-		
-		baos.flush();
-		baos.close();
-
-		return baos.toByteArray();
-	}
-	
-	private byte[] processMap( TypeInputStream in )
+	private void processMap( TypeInputStream in, OutputStream out )
 	throws TypeException, IOException
 	{
 		String name = (String) in.readObject( "u8ascii" );
@@ -204,8 +189,7 @@ implements TypeLink
 		// they don't match then we can't agree on the type definition
 		// and will return an invalid id.
 		
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		TypeOutputStream sout = new TypeOutputStream( baos, _typeMap );
+		TypeOutputStream sout = new TypeOutputStream( out, _typeMap );
 		sout.writeObject( "u8", new Short( ProtocolTypeMap.MAP ) );			
 		
 		// First see if we have a type of the same name.
@@ -235,10 +219,52 @@ implements TypeLink
 			}
 		}
 
-		baos.flush();
-		baos.close();
-		
-		return baos.toByteArray();
+		out.flush();
+		out.close();
 	}
 
+	private void processGetBaseObject( TypeInputStream request, OutputStream out )
+	throws TypeException, IOException
+	{		
+		TypeOutputStream sout = new TypeOutputStream( out, _refMap );
+		sout.writeObject( "u8", new Short( ProtocolTypeMap.BASE ) );			
+		
+		// Check base name.
+		if ( _object == null )
+		{
+			sout.writeObject( U8Boolean.TYPENAME, new Boolean(false));
+		}
+		else
+		{					
+			sout.writeObject( U8Boolean.TYPENAME, new Boolean(true));
+			sout.writeObject( MetaObject.TYPENAME, _object );
+		}
+		
+		out.flush();
+		out.close();
+	}
+
+	/*
+	 * A user message gets passed to the available service running on top of
+	 * the TypeServer.  This grabs the data from the client and stores it in a
+	 * ChunkByteBuffer and then passes the buffer input stream to the service.
+	 * The response is buffered until the service returns and the response
+	 * sent.
+	 */
+	private void processUserMessage( TypeInputStream request, OutputStream out )
+	throws TypeException, IOException
+	{
+		ChunkByteBuffer buffer = (ChunkByteBuffer) request.readObject( "u32binary" );		
+		ChunkByteBuffer bufferOut = new ChunkByteBuffer();		
+		TypeEndPoint ep = new TypeEndPointBasic( buffer.getInputStream(), bufferOut.getOutputStream() );
+		_service.processMessage( ep );
+		bufferOut.close();
+		
+		TypeOutputStream sout = new TypeOutputStream( out, _typeMap );
+		sout.writeObject( "u8", new Short( ProtocolTypeMap.MSG ) );
+		sout.writeObject( "u32binary", bufferOut );
+		
+		out.flush();
+		out.close();
+	}
 }

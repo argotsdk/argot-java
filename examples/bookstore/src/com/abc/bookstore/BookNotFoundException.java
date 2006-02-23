@@ -3,8 +3,11 @@ package com.abc.bookstore;
 public class BookNotFoundException 
 extends Exception
 {
-  
-    public BookNotFoundException(String reason)
+
+	private static final long serialVersionUID = -7441845573853619657L;
+
+
+	public BookNotFoundException(String reason)
     {
         super(reason);
     }

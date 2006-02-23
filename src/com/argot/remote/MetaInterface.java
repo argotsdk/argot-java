@@ -38,7 +38,7 @@ import com.argot.meta.MetaDefinition;
 
 public class MetaInterface 
 extends MetaBase
-implements TypeReader, TypeWriter, MetaDefinition
+implements MetaDefinition
 {
 	public static final String TYPENAME = "remote.interface";
 	
@@ -146,51 +146,6 @@ implements TypeReader, TypeWriter, MetaDefinition
 		return _parentInterfaceTypes;
 	}
 
-	public Object read(TypeInputStream in, TypeElement element) 
-	throws TypeException, IOException 
-	{
-	    // was instanceof MetaDefintion.  maybe wrong.
-		/*
-		if ( element instanceof MetaExpression )
-		{
-			TypeReader reader = new TypeReaderAuto( this.getClass() );
-			return reader.read( in, element );
-		}
-		throw new TypeException( "shouldn't get here.");
-		*/
-		
-		Short size = (Short) in.readObject( BigEndianUnsignedByte.TYPENAME );
-		int interfaces[] = new int[size.intValue()];
-		for ( int x=0; x<size.intValue(); x++ )
-		{
-			Integer id = (Integer) in.readObject( BigEndianUnsignedShort.TYPENAME );
-			interfaces[x] = in.getTypeMap().getSystemId( id.intValue() );
-		}
-		
-		return new MetaInterface( interfaces );
-	}
-
-	public void write(TypeOutputStream out, Object o, TypeElement element) 
-	throws TypeException, IOException 
-	{
-		MetaInterface mc = (MetaInterface) o;
-		
-		if ( mc.getInterfaces() != null )
-		{
-			out.writeObject( BigEndianUnsignedByte.TYPENAME, new Integer( mc.getInterfaces().length ));
-			for( int x=0 ;x < mc.getInterfaces().length; x++ )
-			{
-				int id = out.getTypeMap().getId( mc.getInterfaces()[x]);
-				out.writeObject( BigEndianUnsignedShort.TYPENAME, new Integer(id) );
-			}
-		}
-		else
-		{
-			out.writeObject( BigEndianUnsignedByte.TYPENAME, new Integer(0));
-		}
-	}
-	
-	
 	private void bindMethods( TypeLibrary library, Class clss ) 
 	throws TypeException
 	{
@@ -307,4 +262,55 @@ implements TypeReader, TypeWriter, MetaDefinition
 		return method;
 	}
 	
+	public static class MetaInterfaceReader
+	implements TypeReader
+	{
+		public Object read(TypeInputStream in, TypeElement element) 
+		throws TypeException, IOException 
+		{
+		    // was instanceof MetaDefintion.  maybe wrong.
+			/*
+			if ( element instanceof MetaExpression )
+			{
+				TypeReader reader = new TypeReaderAuto( this.getClass() );
+				return reader.read( in, element );
+			}
+			throw new TypeException( "shouldn't get here.");
+			*/
+			
+			Short size = (Short) in.readObject( BigEndianUnsignedByte.TYPENAME );
+			int interfaces[] = new int[size.intValue()];
+			for ( int x=0; x<size.intValue(); x++ )
+			{
+				Integer id = (Integer) in.readObject( BigEndianUnsignedShort.TYPENAME );
+				interfaces[x] = in.getTypeMap().getSystemId( id.intValue() );
+			}
+			
+			return new MetaInterface( interfaces );
+		}
+	}
+	
+	public static class MetaInterfaceWriter
+	implements TypeWriter
+	{
+		public void write(TypeOutputStream out, Object o, TypeElement element) 
+		throws TypeException, IOException 
+		{
+			MetaInterface mc = (MetaInterface) o;
+			
+			if ( mc.getInterfaces() != null )
+			{
+				out.writeObject( BigEndianUnsignedByte.TYPENAME, new Integer( mc.getInterfaces().length ));
+				for( int x=0 ;x < mc.getInterfaces().length; x++ )
+				{
+					int id = out.getTypeMap().getId( mc.getInterfaces()[x]);
+					out.writeObject( BigEndianUnsignedShort.TYPENAME, new Integer(id) );
+				}
+			}
+			else
+			{
+				out.writeObject( BigEndianUnsignedByte.TYPENAME, new Integer(0));
+			}
+		}
+	}
 }

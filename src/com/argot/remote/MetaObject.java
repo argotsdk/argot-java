@@ -33,7 +33,6 @@ import com.argot.common.BigEndianUnsignedShort;
  */
 
 public class MetaObject 
-implements TypeReader, TypeWriter
 {
 	public static final String TYPENAME = "remote.object";
 
@@ -56,23 +55,30 @@ implements TypeReader, TypeWriter
 		return _type;
 	}
 	
-	public Object read(TypeInputStream in, TypeElement element) 
-	throws TypeException, IOException 
+	public static class MetaObjectReader
+	implements TypeReader
 	{
-		MetaLocation location = (MetaLocation) in.readObject(MetaLocation.TYPENAME);
-		Integer id = (Integer) in.readObject(BigEndianUnsignedShort.TYPENAME );
-		int sysId = in.getTypeMap().getSystemId( id.intValue() );
-		return new MetaObject( location, sysId );
+		public Object read(TypeInputStream in, TypeElement element) 
+		throws TypeException, IOException 
+		{
+			MetaLocation location = (MetaLocation) in.readObject(MetaLocation.TYPENAME);
+			Integer id = (Integer) in.readObject(BigEndianUnsignedShort.TYPENAME );
+			int sysId = in.getTypeMap().getSystemId( id.intValue() );
+			return new MetaObject( location, sysId );
+		}
 	}
 
-	public void write(TypeOutputStream out, Object o, TypeElement element) 
-	throws TypeException, IOException 
+	public static class MetaObjectWriter
+	implements TypeWriter
 	{
-		MetaObject obj = (MetaObject) o;
-		
-		out.writeObject( MetaLocation.TYPENAME, obj.getLocation() );
-		int mapId = out.getTypeMap().getId( obj.getType() );
-		out.writeObject(  BigEndianUnsignedShort.TYPENAME, new Integer( mapId ) );
+		public void write(TypeOutputStream out, Object o, TypeElement element) 
+		throws TypeException, IOException 
+		{
+			MetaObject obj = (MetaObject) o;
+			
+			out.writeObject( MetaLocation.TYPENAME, obj.getLocation() );
+			int mapId = out.getTypeMap().getId( obj.getType() );
+			out.writeObject(  BigEndianUnsignedShort.TYPENAME, new Integer( mapId ) );
+		}
 	}
-
 }

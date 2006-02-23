@@ -17,8 +17,8 @@ package com.argot.network;
 
 import java.io.IOException;
 
-public interface TypeLink 
+public interface TypeTransport
 {
-	public void processMessage( TypeEndPoint connection ) 
-	throws IOException;
+	TypeEndPoint openLink() throws IOException;
+	void closeLink( TypeEndPoint endPoint );
 }

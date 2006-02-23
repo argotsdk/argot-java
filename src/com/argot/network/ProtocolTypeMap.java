@@ -18,6 +18,7 @@ package com.argot.network;
 import com.argot.TypeException;
 import com.argot.TypeMap;
 import com.argot.TypeLibrary;
+import com.argot.util.ChunkByteBuffer;
 
 public class ProtocolTypeMap
 extends TypeMap
@@ -27,6 +28,7 @@ extends TypeMap
 	public static final byte MAPREV = 3;
 	public static final byte BASE = 4;
 	public static final byte ERROR = 5;
+	public static final byte MSG = 6;
 
 	public ProtocolTypeMap( TypeLibrary library )
 	throws TypeException
@@ -38,5 +40,9 @@ extends TypeMap
 		map( 3, library.getId( "s32" ));
 		map( 4, library.getId( "u16binary" ));
 		map( 5, library.getId( "u16" ));
+		map( 6, library.getId( "u32" ));
+		map( 7, library.getId( "u32binary" ));
+		this.setReader( 7, new ChunkByteBuffer.ChunkByteBufferReader() );
+		this.setWriter( 7, new ChunkByteBuffer.ChunkByteBufferWriter() );
 	}
 }

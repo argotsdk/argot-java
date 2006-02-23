@@ -227,13 +227,11 @@ public class Dictionary
         
 		ReferenceTypeMap messageMap = readMessageMap( tmis, coreMap );
 		// read the final dictionary. register types if needed.
-		Iterator iter = messageMap.getIterator();
-		 while ( iter.hasNext() )
-		 {
-			 Integer i = (Integer)iter.next();
-		 }
-        
+
 		Integer ident = (Integer) tmis.readObject( "u16" );
+		if ( ident.intValue() != 1 )
+			throw new TypeException( "Wrong dictionary index value" );
+
 		tmis.setTypeMap( messageMap );
         
 		TypeMap finalMap = new TypeMap( coreMap.getLibrary() );
@@ -385,7 +383,7 @@ public class Dictionary
 	private static byte[] writeCore( TypeMapCore map ) throws TypeException, IOException
 	{
 		// write out the core elements.
-		List coreIds = map.getCoreIdentifiers();
+		List coreIds = TypeMapCore.getCoreIdentifiers();
 		ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
 		TypeOutputStream out1 = new TypeOutputStream( baos1, map );
 		

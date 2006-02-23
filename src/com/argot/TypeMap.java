@@ -17,7 +17,6 @@ package com.argot;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.argot.common.DateS64;
@@ -35,6 +34,7 @@ import com.argot.common.U8Boolean;
 import com.argot.common.U8Ascii;
 import com.argot.common.U32UTF8;
 import com.argot.meta.MetaDefinition;
+import com.argot.util.TwoWayHashMap;
 
 /**
  * A TypeMap is used to map an external systems type identifiers to
@@ -45,75 +45,22 @@ public class TypeMap
     public static int NOTYPE = -1;
     
 	TypeLibrary _library;
-	ArrayList _mapForward;
-	ArrayList _mapBack;
-	ArrayList _readers;
-	
-	public class TypeMapIterator
-	implements Iterator
-	{
-		private int _id;
-		
-		public TypeMapIterator()
-		{
-			_id = -1;
-		}
-		
-		public boolean hasNext() 
-		{
-			int i = _id+1;
-			
-			while ( _mapForward.size() > i )
-			{
-				Integer x = (Integer) _mapForward.get( i );
-				if ( x.intValue() != -1 )
-					return true;
-				i++;
-			}	
-			return false;
-		}
+	TwoWayHashMap _map;
 
-		public Object next() 
-		{
-			while ( _mapForward.size() > _id )
-			{
-				_id++;
-				Integer i = (Integer) _mapForward.get( _id );
-				if ( i.intValue() != -1 )
-					return new Integer( _id );
-			}
-
-			return null;
-		}
-
-		public void remove() 
-		{
-			// DO NOTHING.
-		}
-	}
-	
 	public int size()
 	{
-		int i = 0;
-		for ( int x=0; x< _mapForward.size();x++ )
-		{
-			if ( ((Integer)_mapForward.get(x)).intValue() != -1 )
-				i++;	
-		}
-		return i;
+		return _map.size();
 	}
 	
 	public Iterator getIterator()
 	{
-		return new TypeMapIterator();
+		return _map.iterator();
 	}
 	
 	public TypeMap( TypeLibrary library )
 	{
 		_library = library;
-		_mapForward = new ArrayList();
-		_mapBack = new ArrayList();
-		_readers = new ArrayList();
+		_map = new TwoWayHashMap();
 	}
 	
 	public int mapCommon( int base )
@@ -169,29 +116,25 @@ public class TypeMap
 	public void map( int id, int systemId )
 	throws TypeException
 	{
+		int i;
+		
 		if ( systemId == NOTYPE  )
 			throw new TypeException( "typeid not valid" + systemId );
 
-		if ( _mapForward.size() > id )
+		// check if it hasn't already been mapped.
+		if ( (i = _map.findValue( id )) != -1 )
 		{
-			Integer intId = (Integer) _mapForward.get( id );
-			if ( intId != null && intId.intValue() != NOTYPE )
-			{
-				if ( intId.intValue() != systemId )
-					throw new TypeException( "id already mapped to different type" );
-			}
+			if ( i != systemId )
+				throw new TypeException("id alreadymappe to different type");
+
+			// already mapped to the same value.
+			return;
 		}
-				
-		_readers.ensureCapacity( id+1 );
-		while (id >= _readers.size() ) _readers.add( null );
-				
-		_mapForward.ensureCapacity( id+1 );
-		while( id >= _mapForward.size() ) _mapForward.add( new Integer(-1) );
-		_mapForward.set( id, new Integer( systemId ) );
-		
-		_mapBack.ensureCapacity( systemId+1 );
-		while ( systemId >= _mapBack.size() ) _mapBack.add( new Integer(-1) );
-		_mapBack.set( systemId,  new Integer( id ) );		
+	
+		TypeMapItem item = new TypeMapItem();
+		//item.reader = _library.getReader( systemId );
+		//item.writer = _library.getWriter( systemId );
+		_map.add( id, systemId, item );
 	}
 	
 	/**
@@ -246,8 +189,6 @@ public class TypeMap
 			// Any errors, must not match.
 			return false;
 		}
-
-		//return true;
 	}
 
 	public TypeElement readStructure( ReferenceTypeMap core, byte[] structure )
@@ -271,19 +212,13 @@ public class TypeMap
 	public int getId(String name)
 	throws TypeException
 	{
-		int i = _library.getId( name );
+		int i = _library.getId(name);
 		
-		if ( i >= _mapBack.size() )
-			throw new TypeException( "not mapped: " + name );
+		i = _map.findKey(i);
+		if (i == -1)
+			throw new TypeException("not mapped");
 		
-		Integer intId = (Integer) _mapBack.get( i );
-		if ( intId == null )
-			throw new TypeException( "not mapped" );
-		
-		if ( intId.intValue() == NOTYPE )
-			throw new TypeException( "not mapped " + name );
-			
-		return intId.intValue();
+		return i;
 	}
 
 
@@ -294,33 +229,36 @@ public class TypeMap
 
 	public void setReader( int id, TypeReader reader ) throws TypeException
 	{
-	    _readers.add( id, reader );
+		TypeMapItem item = (TypeMapItem) _map.getObjectFromKey( id );
+		item.reader = reader;
 	}
+	
+	public void setWriter( int id, TypeWriter writer ) throws TypeException
+	{
+		TypeMapItem item = (TypeMapItem) _map.getObjectFromKey( id );		
+		item.writer = writer;
+	}	
 	
 	public TypeReader getReader(int id) throws TypeException
 	{
-	    if (id >= _readers.size())
-	    {
-	        throw new TypeException("not mapped");
-	    }
-	    
-	    TypeReader reader = (TypeReader) _readers.get( id );
-	    if (reader != null )
-	    {
-	        return reader;
-	    }
-	    
-		return _library.getReader( getSystemId(id) );
-	}
-
-	public TypeElement getStructure(int id) throws TypeException
-	{
-		return _library.getStructure( getSystemId(id) );
+		TypeMapItem item = (TypeMapItem) _map.getObjectFromKey( id );
+		if ( item.reader == null )
+			item.reader = _library.getReader( getSystemId( id ));
+		
+		return item.reader;
 	}
 
 	public TypeWriter getWriter(int id) throws TypeException
-	{		
-		return _library.getWriter( getSystemId( id ) );
+	{	
+		TypeMapItem item = (TypeMapItem) _map.getObjectFromKey( id );
+		if ( item.writer == null )
+			item.writer = _library.getWriter( getSystemId( id ));		
+		return item.writer;
+	}
+	
+	public TypeElement getStructure(int id) throws TypeException
+	{
+		return _library.getStructure( getSystemId(id) );
 	}
 
 	public Class getClass( int id )
@@ -332,59 +270,33 @@ public class TypeMap
 	public int getId( Class clss) 
 	throws TypeException
 	{
-		int id = _library.getId( clss ); 
-		if ( id == -1 )
-			throw new TypeException( "not found-" + clss.getName() );
+		int id = _library.getId(clss);
+
+		id = _map.findKey(id);
+		if (id == -1)
+			throw new TypeException("not mapped");
 		
-		if ( id >= _mapBack.size() )
-			throw new TypeException( "not mapped" );
-			
-		Integer i = (Integer) _mapBack.get( id );
-		if ( i == null )
-			throw new TypeException( "not mapped");
-		
-		if ( i.intValue() == NOTYPE )
-			throw new TypeException( "mapped to invalid type. " + id + " " + clss.getName() );
-			
-		return i.intValue(); 		
+		return id;	
 	}
 
 	public int getSystemId( int id )
 	throws TypeException
 	{
-		if ( id == NOTYPE )
-			throw new TypeException( "invalid type id" + id );
-		
-		if ( id >= _mapForward.size() )
-			throw new TypeException( "not mapped:" + id );
-			
-		Integer i = (Integer) _mapForward.get( id );
-		if ( i == null )
-			throw new TypeException( "not found");
+		int i = _map.findValue(id);
+		if (i == -1)
+			throw new TypeException("not found");
 
-		if ( i.intValue() == -1 )
-			throw new TypeException( "not mapped " + id );
-
-		return i.intValue();		
+		return i;	
 	}
 
 	public int getId( int systemid )
 	throws TypeException
 	{
-		if ( systemid == NOTYPE )
-			throw new TypeException( "invalid type id " + systemid );
-
-		if ( systemid >= _mapBack.size() )
-			throw new TypeException( "not mapped " + getLibrary().getName(systemid) );
+		int id = _map.findKey(systemid);
+		if (id == -1)
+			throw new TypeException("not found");
 		
-		Integer i = (Integer) _mapBack.get( systemid );
-		if ( i == null )
-			throw new TypeException( "not found" );
-			
-		if ( i.intValue() == NOTYPE )
-			throw new TypeException( "not mapped " + getLibrary().getName(systemid) );
-		
-		return i.intValue();
+		return id;
 	}
 
 	public TypeLibrary getLibrary()
@@ -394,16 +306,10 @@ public class TypeMap
 	
 	public boolean isValid( int id )
 	{
-		if ( id >= _mapForward.size() )
+		int i = _map.findValue(id);
+		if (i == -1)
 			return false;
-			
-		Integer i = (Integer) _mapForward.get( id );
-		if ( i == null )
-			return false;
-			
-		if ( i.intValue() == -1 )
-			return false;
-			
+		
 		return true;
 	}
 	
@@ -411,25 +317,25 @@ public class TypeMap
 	{
 		int i;
 		
-		try 
+		try
 		{
 			i = _library.getId(name);
-		} 
-		catch (TypeException e)
+		}
+		catch (TypeException ex )
 		{
 			return false;
 		}
 		
-		if ( i >= _mapBack.size() )
+		i = _map.findKey(i);
+		if (i == -1)
 			return false;
 		
-		Integer intId = (Integer) _mapBack.get( i );
-		if ( intId == null )
-			return false;
-			
-		if ( intId.intValue() == NOTYPE )
-			return false;
-			
-		return true;		
+		return true;	
+	}
+	
+	public class TypeMapItem
+	{
+		public TypeReader reader;
+		public TypeWriter writer;
 	}
 }

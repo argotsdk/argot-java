@@ -19,11 +19,9 @@ package com.argot.message;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
-import java.util.Iterator;
 
 import com.argot.TypeBindCommon;
 import com.argot.TypeLibrary;
-import com.argot.TypeMap;
 import com.argot.TypeMapCore;
 import com.argot.data.MixedData;
 import com.argot.dictionary.Dictionary;

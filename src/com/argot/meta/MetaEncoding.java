@@ -28,7 +28,7 @@ import com.argot.TypeWriter;
 
 public class MetaEncoding
 extends MetaBase
-implements TypeReader, TypeWriter, MetaExpression
+implements MetaExpression
 {
     public static final String TYPENAME = "meta.encoding";
     
@@ -52,23 +52,31 @@ implements TypeReader, TypeWriter, MetaExpression
         _expression.bind( library, definition, typeName, typeId );
     }	
     
-    public Object read(TypeInputStream in, TypeElement element) throws TypeException, IOException
+    public static class MetaEncodingTypeReader
+    implements TypeReader
     {
-		if ( element instanceof MetaExpression )
-		{
-			TypeReader reader = new TypeReaderAuto( this.getClass() );
-			return reader.read( in, element );
-		}
-		throw new TypeException( "shouldn't get here.");		
+	    public Object read(TypeInputStream in, TypeElement element) throws TypeException, IOException
+	    {
+			if ( element instanceof MetaExpression )
+			{
+				TypeReader reader = new TypeReaderAuto( this.getClass() );
+				return reader.read( in, element );
+			}
+			throw new TypeException( "shouldn't get here.");		
+	    }
     }
-
-    public void write(TypeOutputStream out, Object o, TypeElement element) throws TypeException, IOException
+    
+    public static class MetaEncodingTypeWriter
+    implements TypeWriter
     {
-    	MetaEncoding enc = (MetaEncoding) o;
-
- 		out.writeObject( "meta.expression", enc._expression );
-		out.writeObject( "meta.name", enc._encoding );
-
+	    public void write(TypeOutputStream out, Object o, TypeElement element) throws TypeException, IOException
+	    {
+	    	MetaEncoding enc = (MetaEncoding) o;
+	
+	 		out.writeObject( "meta.expression", enc._expression );
+			out.writeObject( "meta.name", enc._encoding );
+	
+	    }
     }
     
     public void doWrite(TypeOutputStream out, Object o) throws TypeException, IOException

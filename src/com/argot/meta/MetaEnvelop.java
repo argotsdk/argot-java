@@ -35,7 +35,7 @@ import com.argot.TypeWriter;
  */
 public class MetaEnvelop
 extends MetaBase
-implements TypeReader, TypeWriter, MetaExpression, MetaDefinition
+implements MetaExpression, MetaDefinition
 {
 	public static final String TYPENAME = "meta.envelop";
 	
@@ -53,26 +53,34 @@ implements TypeReader, TypeWriter, MetaExpression, MetaDefinition
         return TYPENAME;
     }
     
-	public Object read(TypeInputStream in, TypeElement element)
-	throws TypeException, IOException
-	{
-		if ( element instanceof MetaExpression )
+    public static class MetaEnvelopTypeReader
+    implements TypeReader
+    {
+		public Object read(TypeInputStream in, TypeElement element)
+		throws TypeException, IOException
 		{
-			TypeReader reader = new TypeReaderAuto( this.getClass() );
-			return reader.read( in, element );
+			if ( element instanceof MetaExpression )
+			{
+				TypeReader reader = new TypeReaderAuto( this.getClass() );
+				return reader.read( in, element );
+			}
+			throw new TypeException( "shouldn't get here.");		
 		}
-		throw new TypeException( "shouldn't get here.");		
-	}
+    }
 
-	public void write(TypeOutputStream out, Object o, TypeElement element )
-	throws TypeException, IOException
-	{
-		MetaEnvelop ma = (MetaEnvelop) o;
-
-		out.writeObject( "meta.expression", ma._size );
-		out.writeObject( "meta.expression", ma._type );
-				
-	}
+    public static class MetaEnvelopTypeWriter
+    implements TypeWriter
+    {
+		public void write(TypeOutputStream out, Object o, TypeElement element )
+		throws TypeException, IOException
+		{
+			MetaEnvelop ma = (MetaEnvelop) o;
+	
+			out.writeObject( "meta.expression", ma._size );
+			out.writeObject( "meta.expression", ma._type );
+					
+		}
+    }
 
 	public Object doRead(TypeInputStream in)
 	throws TypeException, IOException 

@@ -28,7 +28,7 @@ import com.argot.TypeWriter;
 
 public class MetaAbstract
 extends MetaBase
-implements TypeReader, TypeWriter, MetaExpression, MetaDefinition
+implements MetaExpression, MetaDefinition
 {
     public static final String TYPENAME = "meta.abstract";
     
@@ -52,14 +52,22 @@ implements TypeReader, TypeWriter, MetaExpression, MetaDefinition
 		_mapToConcrete.put( new Integer( mapType ), new Integer(concreteType));
 	}
 	
-    public Object read(TypeInputStream in, TypeElement element) throws TypeException, IOException
-    {
-		return new MetaAbstract();
-    }
+	public static class MetaAbstractTypeReader
+	implements TypeReader
+	{
+	    public Object read(TypeInputStream in, TypeElement element) throws TypeException, IOException
+	    {
+			return new MetaAbstract();
+	    }
+	}
 
-    public void write(TypeOutputStream out, Object o, TypeElement element) throws TypeException, IOException
-    {
-    }
+	public static class MetaAbstractTypeWriter
+	implements TypeWriter
+	{
+	    public void write(TypeOutputStream out, Object o, TypeElement element) throws TypeException, IOException
+	    {
+	    }
+	}
 
     public void doWrite(TypeOutputStream out, Object o) throws TypeException, IOException
     {

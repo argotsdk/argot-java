@@ -119,7 +119,6 @@ extends ReferenceTypeMap
 	    library.reserve("meta.sequence");
 	    library.reserve("meta.reference");
 	    
-		MetaBasic tb = new MetaBasic( (byte)0,(byte)0 );
 		MetaDefinition basicDef = new MetaSequence(
 			new MetaExpression[] {
 				new MetaReference( library.getId( "u8" ),"size"),
@@ -127,7 +126,7 @@ extends ReferenceTypeMap
 			}
 		);	
 
-		library.register( MetaBasic.TYPENAME, basicDef, tb,tb, tb.getClass() );
+		library.register( MetaBasic.TYPENAME, basicDef, new MetaBasic.MetaBasicTypeReader(), new MetaBasic.MetaBasicTypeWriter(), MetaBasic.class );
 			
 	    library.reserve( "meta.encoding");
 	    library.reserve( "meta.array");
@@ -148,18 +147,14 @@ extends ReferenceTypeMap
 			
 		library.register( "meta.name", nameDef, u8Ascii,u8Ascii, null );
 			
-		MetaAbstract metaAbstract = new MetaAbstract();
-		
 		MetaDefinition abstractDef = new MetaSequence(
 			new MetaExpression[] {
 				new MetaReference( library.getId("empty"), "abstract")
 			}
 		);
 		
-		library.register( "meta.abstract", abstractDef, metaAbstract,metaAbstract, metaAbstract.getClass() );
+		library.register( "meta.abstract", abstractDef, new MetaAbstract.MetaAbstractTypeReader(), new MetaAbstract.MetaAbstractTypeWriter(), MetaAbstract.class );
 
-		MetaMap metaMap = new MetaMap(0,0);
-			
 		MetaDefinition metaMapDef = new MetaSequence(
 			new MetaExpression[] {
 				new MetaReference( library.getId( "u16" ),"abstract" ),
@@ -167,14 +162,12 @@ extends ReferenceTypeMap
 			}
 		);
 
-		library.register( "meta.map", metaMapDef, metaMap,metaMap, metaMap.getClass() );
+		library.register( "meta.map", metaMapDef, new MetaMap.MetaMapTypeReader(), new MetaMap.MetaMapTypeWriter(), MetaMap.class );
 						
 		MetaDefinition exprDef = new MetaAbstract();
 		
 		library.register( "meta.expression", exprDef, new MetaMarshaller(),new MetaMarshaller(), null );
 			
-		MetaEncoding metaEncoding = new MetaEncoding( null, null );
-		
 		MetaDefinition encodingDef = new MetaSequence(
 			new MetaExpression[] {
 				new MetaReference( library.getId("meta.expression"),"data"),
@@ -182,10 +175,8 @@ extends ReferenceTypeMap
 			}
 		);
 		
-		library.register( "meta.encoding", encodingDef, metaEncoding,metaEncoding, metaEncoding.getClass() );
+		library.register( "meta.encoding", encodingDef, new MetaEncoding.MetaEncodingTypeReader(), new MetaEncoding.MetaEncodingTypeWriter(), MetaEncoding.class );
 			
-		MetaReference tr = new MetaReference( -1, "" );
-		
 		MetaDefinition refDef = new MetaSequence(
 			new MetaExpression[] {
 				new MetaReference( library.getId( "u16" ),"type" ),
@@ -193,10 +184,8 @@ extends ReferenceTypeMap
 			}
 		);
 		
-		library.register( "meta.reference", refDef, tr,tr, tr.getClass() );
-			
-		MetaSequence ts = new MetaSequence( (MetaExpression[]) null );
-		
+		library.register( "meta.reference", refDef, new MetaReference.MetaReferenceTypeReader(), new MetaReference.MetaReferenceTypeWriter(), MetaReference.class );
+					
 		MetaDefinition seqDef = new MetaSequence(
 			new MetaExpression[] {
 				new MetaArray(
@@ -206,10 +195,8 @@ extends ReferenceTypeMap
 			}
 		);
 		
-		library.register( "meta.sequence", seqDef, ts,ts, ts.getClass() );
+		library.register( "meta.sequence", seqDef, new MetaSequence.MetaSequenceTypeReader(), new MetaSequence.MetaSequenceTypeWriter(), MetaSequence.class );
 			
-		MetaArray ta = new MetaArray( null, null );
-					
 		MetaDefinition arrayDef = new MetaSequence(
 			new MetaExpression[] {
 				new MetaReference(library.getId("meta.expression"),"size"),
@@ -217,7 +204,7 @@ extends ReferenceTypeMap
 			}
 		);
 
-		library.register( "meta.array", arrayDef, ta,ta, ta.getClass() );
+		library.register( "meta.array", arrayDef, new MetaArray.MetaArrayTypeReader(), new MetaArray.MetaArrayTypeWriter(), MetaArray.class );
 						
 		MetaMap exprRefDef = new MetaMap( library.getId("meta.expression"), library.getId("meta.reference"));
 		library.register( "meta.expression#reference", exprRefDef, new MetaMarshaller(),new MetaMarshaller(), null );

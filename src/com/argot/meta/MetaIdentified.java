@@ -32,7 +32,7 @@ import com.argot.TypeWriter;
  */
 public class MetaIdentified
 extends MetaBase
-implements TypeReader, TypeWriter, MetaExpression
+implements MetaExpression
 {
 	public static String TYPENAME = "meta.identified";
 
@@ -48,21 +48,29 @@ implements TypeReader, TypeWriter, MetaExpression
         return TYPENAME;
     }
     
-	public Object read(TypeInputStream in, TypeElement element)
-	throws TypeException, IOException
-	{
-		TypeReader reader = new TypeReaderAuto( this.getClass() );
-		return reader.read( in, element );
-	}
-
-	public void write(TypeOutputStream out, Object o, TypeElement element )
+    public static class MetaIdentifiedTypeReader
+    implements TypeReader
+    {
+		public Object read(TypeInputStream in, TypeElement element)
 		throws TypeException, IOException
-	{
-		MetaIdentified ti = (MetaIdentified) o;
-		
-		out.writeObject( "meta.name", ti._description );
-	}
+		{
+			TypeReader reader = new TypeReaderAuto( this.getClass() );
+			return reader.read( in, element );
+		}
+    }
 
+    public static class MetaIdentifiedTypeWriter
+    implements TypeWriter
+    {
+		public void write(TypeOutputStream out, Object o, TypeElement element )
+			throws TypeException, IOException
+		{
+			MetaIdentified ti = (MetaIdentified) o;
+			
+			out.writeObject( "meta.name", ti._description );
+		}
+    }
+    
 	public Object doRead(TypeInputStream in )
 	throws TypeException, IOException 
 	{

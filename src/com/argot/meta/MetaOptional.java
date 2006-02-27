@@ -27,7 +27,7 @@ import com.argot.TypeWriter;
 
 public class MetaOptional
 extends MetaBase
-implements TypeReader, TypeWriter, MetaExpression
+implements MetaExpression
 {
 	public static String TYPENAME = "meta.optional";
 
@@ -48,21 +48,29 @@ implements TypeReader, TypeWriter, MetaExpression
         return _option;
     }
 
-	public Object read(TypeInputStream in, TypeElement element)
-	throws TypeException, IOException
-	{
-		TypeReader reader = new TypeReaderAuto( this.getClass() );
-		return reader.read( in, element );
-	}
-
-	public void write(TypeOutputStream out, Object o, TypeElement element )
+    public static class MetaOptionalTypeReader
+    implements TypeReader
+    {
+		public Object read(TypeInputStream in, TypeElement element)
 		throws TypeException, IOException
-	{
-		MetaOptional to = (MetaOptional) o;
-		
-		out.writeObject( "meta.name", to._option );
-	}
-
+		{
+			TypeReader reader = new TypeReaderAuto( this.getClass() );
+			return reader.read( in, element );
+		}
+    }
+    
+    public static class MetaOptionalTypeWriter
+    implements TypeWriter
+    {
+		public void write(TypeOutputStream out, Object o, TypeElement element )
+			throws TypeException, IOException
+		{
+			MetaOptional to = (MetaOptional) o;
+			
+			out.writeObject( "meta.name", to._option );
+		}
+    }
+    
 	public Object doRead(TypeInputStream in )
 	throws TypeException, IOException 
 	{

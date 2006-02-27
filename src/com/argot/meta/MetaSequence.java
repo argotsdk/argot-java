@@ -28,7 +28,7 @@ import com.argot.TypeWriter;
 
 public class MetaSequence
 extends MetaBase
-implements TypeReader, TypeWriter, MetaExpression, MetaDefinition
+implements MetaExpression, MetaDefinition
 {
 	
 	public static String TYPENAME  = "meta.sequence";
@@ -80,31 +80,39 @@ implements TypeReader, TypeWriter, MetaExpression, MetaDefinition
 	 * 
 	 * @see com.argot.TypeFunction#read(com.argot.TypeMimeInputStream, com.argot.TypeElement)
 	 */
-	public Object read(TypeInputStream in, TypeElement element)
-	throws TypeException, IOException
+	public static class MetaSequenceTypeReader
+	implements TypeReader
 	{
-		if ( element instanceof MetaExpression )
+		public Object read(TypeInputStream in, TypeElement element)
+		throws TypeException, IOException
 		{
-			TypeReader reader = new TypeReaderAuto( this.getClass() );
-			return reader.read( in, element );
+			if ( element instanceof MetaExpression )
+			{
+				TypeReader reader = new TypeReaderAuto( this.getClass() );
+				return reader.read( in, element );
+			}
+			throw new TypeException( "shouldn't get here.");
 		}
-		throw new TypeException( "shouldn't get here.");
 	}
 		
-	public void write(TypeOutputStream out, Object obj, TypeElement element ) 
-	throws TypeException, IOException
+	public static class MetaSequenceTypeWriter
+	implements TypeWriter
 	{
-		MetaSequence ts = (MetaSequence) obj;
-
-		out.writeObject(  "u8", new Integer( ts._objects.length ));
-
-		for ( int x=0 ; x < ts._objects.length ; x++ )
+		public void write(TypeOutputStream out, Object obj, TypeElement element ) 
+		throws TypeException, IOException
 		{
-			Object o  = ts._objects[x];
-			out.writeObject( "meta.expression", o );
+			MetaSequence ts = (MetaSequence) obj;
+	
+			out.writeObject(  "u8", new Integer( ts._objects.length ));
+	
+			for ( int x=0 ; x < ts._objects.length ; x++ )
+			{
+				Object o  = ts._objects[x];
+				out.writeObject( "meta.expression", o );
+			}
 		}
 	}
-
+	
 	public Object doRead(TypeInputStream in)
 	throws TypeException, IOException 
 	{

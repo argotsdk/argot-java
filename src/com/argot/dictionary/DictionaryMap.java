@@ -31,7 +31,6 @@ public class DictionaryMap
 
     public static void loadDictionaryMap(TypeLibrary library) throws TypeException
     {
-		MetaEnvelop me = new MetaEnvelop(null,null);	
 		MetaDefinition meDef = new MetaSequence(
 			new MetaExpression[] {
 				new MetaReference(library.getId("meta.expression"),"size"),
@@ -39,7 +38,7 @@ public class DictionaryMap
 			}
 		);
 
-		library.register( "meta.envelop", meDef, me, me, me.getClass() );
+		library.register( "meta.envelop", meDef, new MetaEnvelop.MetaEnvelopTypeReader(), new MetaEnvelop.MetaEnvelopTypeWriter(), MetaEnvelop.class );
 		
 	
 		MetaMap exprRefDef = new MetaMap( library.getId("meta.definition"), library.getId("meta.envelop"));		

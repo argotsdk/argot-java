@@ -29,7 +29,7 @@ import com.argot.TypeWriter;
 
 public class MetaMap
 extends MetaBase
-implements TypeReader, TypeWriter, MetaExpression, MetaDefinition
+implements MetaExpression, MetaDefinition
 {
     public static final String TYPENAME = "meta.map";
     
@@ -110,52 +110,60 @@ implements TypeReader, TypeWriter, MetaExpression, MetaDefinition
 		_abstractType = i;
 	}
 	
-    public Object read(TypeInputStream in, TypeElement element) throws TypeException, IOException
-    {
-        // was instanceof MetaDefinition.  maybe wrong.
-		if ( element instanceof MetaExpression )
-		{
-			TypeReader reader = new TypeReaderAuto( this.getClass() );
-			MetaMap map = (MetaMap) reader.read( in, element );
-			// before we return this we need to change the
-			// values from the mapped to the internal values.
-			
-			ReferenceTypeMap mapCore = (ReferenceTypeMap) in.getTypeMap();
-					
-			if (  mapCore.referenceMap().isValid( map.getAbstractType() ) )
+	public static class MetaMapTypeReader
+	implements TypeReader
+	{
+	    public Object read(TypeInputStream in, TypeElement element) throws TypeException, IOException
+	    {
+	        // was instanceof MetaDefinition.  maybe wrong.
+			if ( element instanceof MetaExpression )
 			{
-				map.setAbstractType( mapCore.referenceMap().getSystemId( map.getAbstractType () ));
+				TypeReader reader = new TypeReaderAuto( this.getClass() );
+				MetaMap map = (MetaMap) reader.read( in, element );
+				// before we return this we need to change the
+				// values from the mapped to the internal values.
+				
+				ReferenceTypeMap mapCore = (ReferenceTypeMap) in.getTypeMap();
+						
+				if (  mapCore.referenceMap().isValid( map.getAbstractType() ) )
+				{
+					map.setAbstractType( mapCore.referenceMap().getSystemId( map.getAbstractType () ));
+				}
+				else
+				{
+					throw new TypeException( "TypeReference: invalid id " );
+				}
+				
+				if (  mapCore.referenceMap().isValid( map.getConcreteType() ) )
+				{
+					map.setConcreteType( mapCore.referenceMap().getSystemId( map.getConcreteType () ));
+				}
+				else
+				{
+					throw new TypeException( "TypeReference: invalid id " );
+				}
+				return map;
+				
+				
 			}
-			else
-			{
-				throw new TypeException( "TypeReference: invalid id " );
-			}
-			
-			if (  mapCore.referenceMap().isValid( map.getConcreteType() ) )
-			{
-				map.setConcreteType( mapCore.referenceMap().getSystemId( map.getConcreteType () ));
-			}
-			else
-			{
-				throw new TypeException( "TypeReference: invalid id " );
-			}
-			return map;
-			
-			
-		}
-		throw new TypeException( "shouldn't get here.");
-    }
-
-    public void write(TypeOutputStream out, Object o, TypeElement element) throws TypeException, IOException
-    {
-		MetaMap tr = (MetaMap) o;
-		ReferenceTypeMap mapCore = (ReferenceTypeMap) out.getTypeMap();
-		int abstractId = mapCore.referenceMap().getId( tr._abstractType );
-		out.writeObject( "u16", new Integer( abstractId ));
-		int concreteId = mapCore.referenceMap().getId( tr._concreteType );
-		out.writeObject( "u16", new Integer( concreteId ) );
-    }
-
+			throw new TypeException( "shouldn't get here.");
+	    }
+	}
+	
+	public static class MetaMapTypeWriter
+	implements TypeWriter
+	{
+	    public void write(TypeOutputStream out, Object o, TypeElement element) throws TypeException, IOException
+	    {
+			MetaMap tr = (MetaMap) o;
+			ReferenceTypeMap mapCore = (ReferenceTypeMap) out.getTypeMap();
+			int abstractId = mapCore.referenceMap().getId( tr._abstractType );
+			out.writeObject( "u16", new Integer( abstractId ));
+			int concreteId = mapCore.referenceMap().getId( tr._concreteType );
+			out.writeObject( "u16", new Integer( concreteId ) );
+	    }
+	}
+	
     public void doWrite(TypeOutputStream out, Object o) throws TypeException, IOException
     {
         out.writeObject( "u16", new Integer( 1 ));

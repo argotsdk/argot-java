@@ -28,7 +28,7 @@ import com.argot.common.BigEndianUnsignedByte;
 
 public class MetaBasic
 extends MetaBase
-implements TypeReader, TypeWriter, MetaDefinition
+implements MetaDefinition
 {
 	public static String TYPENAME = "meta.basic";
 		
@@ -52,26 +52,33 @@ implements TypeReader, TypeWriter, MetaDefinition
         return TYPENAME;
     }
     
-	public Object read(TypeInputStream in, TypeElement element ) 
-	throws TypeException, IOException
-	{		
-		if ( element instanceof MetaExpression )
-		{
-			TypeReader reader = new TypeReaderAuto( this.getClass() );
-			return reader.read( in, element );
+    public static class MetaBasicTypeReader
+    implements TypeReader
+    {
+		public Object read(TypeInputStream in, TypeElement element ) 
+		throws TypeException, IOException
+		{		
+			if ( element instanceof MetaExpression )
+			{
+				TypeReader reader = new TypeReaderAuto( this.getClass() );
+				return reader.read( in, element );
+			}
+			throw new TypeException( "shouldn't get here.");		
 		}
-		throw new TypeException( "shouldn't get here.");		
-	}
-
-	public void write(TypeOutputStream out, Object o, TypeElement element ) 
-	throws TypeException, IOException
-	{
-		MetaBasic tb = (MetaBasic) o;
-		
-		out.writeObject( BigEndianUnsignedByte.TYPENAME, new Short( tb._width ));
-		out.writeObject( BigEndianUnsignedByte.TYPENAME, new Short( tb._flags ));
-	}
-
+    }
+    
+    public static class MetaBasicTypeWriter
+    implements TypeWriter
+    {
+		public void write(TypeOutputStream out, Object o, TypeElement element ) 
+		throws TypeException, IOException
+		{
+			MetaBasic tb = (MetaBasic) o;
+			
+			out.writeObject( BigEndianUnsignedByte.TYPENAME, new Short( tb._width ));
+			out.writeObject( BigEndianUnsignedByte.TYPENAME, new Short( tb._flags ));
+		}
+    }
 
     public void doWrite(TypeOutputStream out, Object o) throws TypeException, IOException
     {

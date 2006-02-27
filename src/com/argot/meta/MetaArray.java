@@ -28,7 +28,7 @@ import com.argot.TypeWriter;
 
 public class MetaArray
 extends MetaBase
-implements TypeReader, TypeWriter, MetaExpression
+implements MetaExpression
 {
 	public static final String TYPENAME = "meta.array";
 	
@@ -68,22 +68,30 @@ implements TypeReader, TypeWriter, MetaExpression
 	    return library.getId( TYPENAME );
 	}
 	
-	public Object read(TypeInputStream in, TypeElement element)
-	throws TypeException, IOException
+	public static class MetaArrayTypeReader
+	implements TypeReader
 	{
-		TypeReaderAuto r = new TypeReaderAuto( this.getClass() );
-		return r.read( in, element );
+		public Object read(TypeInputStream in, TypeElement element)
+		throws TypeException, IOException
+		{
+			TypeReaderAuto r = new TypeReaderAuto( this.getClass() );
+			return r.read( in, element );
+		}
 	}
 
-	public void write(TypeOutputStream out, Object o, TypeElement element )
-	throws TypeException, IOException
+	public static class MetaArrayTypeWriter
+	implements TypeWriter
 	{
-		MetaArray ma = (MetaArray) o;
-		out.writeObject( "meta.expression", ma._size );
-		out.writeObject( "meta.expression", ma._type );
-				
+		public void write(TypeOutputStream out, Object o, TypeElement element )
+		throws TypeException, IOException
+		{
+			MetaArray ma = (MetaArray) o;
+			out.writeObject( "meta.expression", ma._size );
+			out.writeObject( "meta.expression", ma._type );
+					
+		}
 	}
-
+	
 	public Object doRead(TypeInputStream in)
 	throws TypeException, IOException 
 	{

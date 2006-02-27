@@ -128,8 +128,7 @@ public class TypeBindCommon
 		
 		if ( library.getTypeState( "meta.identified" ) == TypeLibrary.TYPE_REGISTERED )
 		{
-			MetaIdentified mi = new MetaIdentified("");
-			library.bind( MetaIdentified.TYPENAME, mi, mi, MetaIdentified.class );
+			library.bind( MetaIdentified.TYPENAME, new MetaIdentified.MetaIdentifiedTypeReader(), new MetaIdentified.MetaIdentifiedTypeWriter(), MetaIdentified.class );
 		}
 		
 		if ( library.getTypeState( "date" ) == TypeLibrary.TYPE_REGISTERED )

@@ -74,7 +74,7 @@ implements MetaExpression
 		public Object read(TypeInputStream in, TypeElement element)
 		throws TypeException, IOException
 		{
-			TypeReaderAuto r = new TypeReaderAuto( this.getClass() );
+			TypeReaderAuto r = new TypeReaderAuto( MetaArray.class );
 			return r.read( in, element );
 		}
 	}

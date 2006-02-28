@@ -54,7 +54,7 @@ implements MetaExpression
 		public Object read(TypeInputStream in, TypeElement element)
 		throws TypeException, IOException
 		{
-			TypeReader reader = new TypeReaderAuto( this.getClass() );
+			TypeReader reader = new TypeReaderAuto( MetaIdentified.class );
 			return reader.read( in, element );
 		}
     }

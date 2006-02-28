@@ -118,7 +118,7 @@ implements MetaExpression, MetaDefinition
 	        // was instanceof MetaDefinition.  maybe wrong.
 			if ( element instanceof MetaExpression )
 			{
-				TypeReader reader = new TypeReaderAuto( this.getClass() );
+				TypeReader reader = new TypeReaderAuto( MetaMap.class );
 				MetaMap map = (MetaMap) reader.read( in, element );
 				// before we return this we need to change the
 				// values from the mapped to the internal values.

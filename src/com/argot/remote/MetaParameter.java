@@ -63,7 +63,7 @@ extends MetaBase
 		public Object read(TypeInputStream in, TypeElement element) 
 		throws TypeException, IOException 
 		{
-			TypeReader reader = new TypeReaderAuto( this.getClass() );
+			TypeReader reader = new TypeReaderAuto( MetaParameter.class );
 			MetaParameter mp = (MetaParameter) reader.read( in, element );
 			mp._typeId = in.getTypeMap().getSystemId( mp._typeId );
 			return mp;

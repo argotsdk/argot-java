@@ -88,7 +88,7 @@ implements MetaExpression, MetaDefinition
 		{
 			if ( element instanceof MetaExpression )
 			{
-				TypeReader reader = new TypeReaderAuto( this.getClass() );
+				TypeReader reader = new TypeReaderAuto( MetaSequence.class );
 				return reader.read( in, element );
 			}
 			throw new TypeException( "shouldn't get here.");

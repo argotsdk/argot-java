@@ -71,7 +71,7 @@ implements MetaExpression
 			if ( element instanceof MetaExpression )
 			{
 				// Use the Automatic reader to read and create this object.
-				TypeReader reader = new TypeReaderAuto( this.getClass() );
+				TypeReader reader = new TypeReaderAuto( MetaReference.class );
 				MetaReference ref = (MetaReference) reader.read( in, element );
 				
 				// Check that what its referencing exists and convert from

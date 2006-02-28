@@ -174,7 +174,7 @@ implements MetaDefinition
 		public Object read(TypeInputStream in, TypeElement element) 
 		throws TypeException, IOException 
 		{
-			TypeReader reader = new TypeReaderAuto( this.getClass() );
+			TypeReader reader = new TypeReaderAuto( MetaMethod.class );
 			MetaMethod mm = (MetaMethod) reader.read( in, element );
 			mm._interfaceId = in.getTypeMap().getSystemId( mm._interfaceId );
 			for ( int x=0 ; x< mm._errorTypes.length ; x++ )

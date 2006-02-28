@@ -58,6 +58,17 @@ implements TypeTransport
 			}
 			catch (IOException e)
 			{
+				try
+				{
+					_connection.getInputStream().close();
+				}
+				catch (IOException e1) {}
+				
+				try
+				{
+					_connection.getOutputStream().close();
+				}
+				catch (IOException e1) {}
 				e.printStackTrace();
 			}			
 		}

@@ -29,6 +29,7 @@ extends TypeMap
 	public static final byte BASE = 4;
 	public static final byte ERROR = 5;
 	public static final byte MSG = 6;
+	public static final byte CHECK_CORE = 7;
 
 	public ProtocolTypeMap( TypeLibrary library )
 	throws TypeException
@@ -44,5 +45,6 @@ extends TypeMap
 		map( 7, library.getId( "u32binary" ));
 		this.setReader( 7, new ChunkByteBuffer.ChunkByteBufferReader() );
 		this.setWriter( 7, new ChunkByteBuffer.ChunkByteBufferWriter() );
+		map( 8, library.getId( "bool" ));
 	}
 }

@@ -125,7 +125,7 @@ public class TypeMap
 		if ( (i = _map.findValue( id )) != -1 )
 		{
 			if ( i != systemId )
-				throw new TypeException("id alreadymappe to different type");
+				throw new TypeException("id already mapped to different type");
 
 			// already mapped to the same value.
 			return;

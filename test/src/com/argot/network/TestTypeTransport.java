@@ -7,16 +7,25 @@ import java.io.PipedOutputStream;
 public class TestTypeTransport
 implements TypeTransport
 {
-	TypeServer _server;
+	private TypeServer _server;
+	private int _connectionCount;
 	
 	public TestTypeTransport( TypeServer server )
 	{
 		_server = server;
+		_connectionCount = 0;
+	}
+	
+	public int getConnectionCount()
+	{
+		return _connectionCount;
 	}
 
 	public TypeEndPoint openLink()
 	throws IOException
 	{	
+		_connectionCount++;
+		
 		PipedInputStream _inStream = new PipedInputStream();
 		PipedOutputStream _outStream = new PipedOutputStream( _inStream );
 		

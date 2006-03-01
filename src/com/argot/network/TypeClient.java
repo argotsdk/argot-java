@@ -151,6 +151,34 @@ implements TypeTransport
 		
 	}
 
+	public boolean checkMetaDictionary( byte[] metaDictionary )
+	throws IOException, TypeException
+	{
+		TypeEndPoint endPoint = _link.openLink();
+		
+		try
+		{
+			// Write the name and definition to the request body.	
+			OutputStream out = endPoint.getOutputStream();
+			TypeOutputStream tmos = new TypeOutputStream( out, _typeMap );
+			tmos.writeObject( "u8", new Short(ProtocolTypeMap.CHECK_CORE ) );
+			tmos.writeObject( "u16binary", metaDictionary );		
+			
+			InputStream in = endPoint.getInputStream();
+			TypeInputStream tmis = new TypeInputStream( in, _typeMap );
+			Short type = (Short) tmis.readObject( BigEndianUnsignedByte.TYPENAME );
+			if ( type.intValue() != ProtocolTypeMap.CHECK_CORE )throw new TypeException("Bad Protocol Error"); 
+			Boolean value = (Boolean) tmis.readObject( U8Boolean.TYPENAME );
+
+			return value.booleanValue();
+		}
+		finally
+		{
+			_link.closeLink( endPoint );
+		}
+		
+	}
+	
 	public int resolveType( String name, byte[] definition )
 	throws IOException, TypeException
 	{

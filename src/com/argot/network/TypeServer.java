@@ -17,18 +17,21 @@ package com.argot.network;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
 
 import com.argot.DynamicTypeMap;
 import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeHelper;
 import com.argot.TypeInputStream;
+import com.argot.TypeMapCore;
 import com.argot.TypeOutputStream;
 import com.argot.TypeLibrary;
 
 import com.argot.common.BigEndianSignedInteger;
 import com.argot.common.BigEndianUnsignedByte;
 import com.argot.common.U8Boolean;
+import com.argot.dictionary.Dictionary;
 
 import com.argot.remote.MetaObject;
 import com.argot.util.ChunkByteBuffer;
@@ -50,6 +53,14 @@ implements TypeLink
 		_refMap = refMap;
 		_library = library;
 		_service = service;
+		
+		TypeMapCore.mapMeta( refMap, library );
+		refMap.map( 22, library.getId("dictionary.map"));
+		refMap.map( 23, library.getId("dictionary.words"));
+		refMap.map( 24, library.getId("dictionary.definition"));
+		refMap.map( 25, library.getId("dictionary.entry"));	
+		refMap.map( 26, library.getId("meta.envelop"));
+		refMap.map( 27, library.getId("meta.definition#envelop"));		
 	}
 
 	public TypeServer( TypeLibrary library, DynamicTypeMap refMap )
@@ -97,6 +108,11 @@ implements TypeLink
 			else if ( action == ProtocolTypeMap.MSG )
 			{
 				processUserMessage( in, out );
+				return;
+			}
+			else if ( action == ProtocolTypeMap.CHECK_CORE )
+			{
+				processCheckCore( in, out );
 				return;
 			}
 			
@@ -267,4 +283,21 @@ implements TypeLink
 		out.flush();
 		out.close();
 	}
+	
+	private void processCheckCore( TypeInputStream in, OutputStream out )
+	throws TypeException, IOException
+	{
+		byte[] clientMetaDictionary = (byte[]) in.readObject( "u16binary" );
+		
+		byte[] serverMetaDictionary = Dictionary.writeCore( _refMap );
+		boolean metaEqual = Arrays.equals( clientMetaDictionary, serverMetaDictionary );
+		
+		TypeOutputStream sout = new TypeOutputStream( out, _typeMap );
+		sout.writeObject( BigEndianUnsignedByte.TYPENAME, new Short( ProtocolTypeMap.CHECK_CORE ) );			
+		sout.writeObject( U8Boolean.TYPENAME, new Boolean( metaEqual ) );
+
+		out.flush();
+		out.close();
+	}
+	
 }

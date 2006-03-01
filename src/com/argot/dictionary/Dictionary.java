@@ -380,7 +380,7 @@ public class Dictionary
 		return mapSpec;
 	}
 
-	private static byte[] writeCore( TypeMapCore map ) throws TypeException, IOException
+	public static byte[] writeCore( TypeMap map ) throws TypeException, IOException
 	{
 		// write out the core elements.
 		List coreIds = TypeMapCore.getCoreIdentifiers();

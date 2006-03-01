@@ -23,6 +23,8 @@ import com.argot.ReferenceTypeMap;
 import com.argot.TypeException;
 import com.argot.TypeHelper;
 import com.argot.TypeLibrary;
+import com.argot.TypeMapCore;
+import com.argot.dictionary.Dictionary;
 
 
 public class DynamicClientTypeMap 
@@ -35,20 +37,64 @@ extends ReferenceTypeMap
 	// or looping type definitions.
 	
 	private Stack _resolveStack;
+	
+	private boolean _metaDictionaryChecked;
+	private boolean _metaDictionaryOk;
 
-	public DynamicClientTypeMap( TypeLibrary library, TypeClient client )
+	public DynamicClientTypeMap( TypeLibrary library, TypeClient client ) 
+	throws TypeException, IOException
 	{
 		super( library, null );
 		setReferenceMap( this );
 
 		_typeClient = client;
-		_resolveStack = new Stack();
+		_resolveStack = new Stack();		
+
+		_metaDictionaryChecked = false;
+		_metaDictionaryOk = false;
+	}
+	
+	private void checkMetaDictionary() 
+	throws TypeException
+	{
+		if ( !_metaDictionaryChecked )
+		{
+			try
+			{
+				TypeLibrary library = getLibrary();
+				
+				// The base types must be the same as the MetaDictionary core.
+				// Wait until first request before mapping.  Stops ghosting.
+				TypeMapCore.mapMeta( this, library );
+				map( 22, library.getId("dictionary.map"));
+				map( 23, library.getId("dictionary.words"));
+				map( 24, library.getId("dictionary.definition"));
+				map( 25, library.getId("dictionary.entry"));	
+				map( 26, library.getId("meta.envelop"));
+				map( 27, library.getId("meta.definition#envelop"));		
+
+				byte[] localMetaDictionary = Dictionary.writeCore( this );
+				_metaDictionaryOk = _typeClient.checkMetaDictionary( localMetaDictionary );
+				_metaDictionaryChecked = true;				
+			}
+			catch (IOException e)
+			{
+				throw new TypeException( "Failed to check Meta Dictionary", e );
+			}		
+			
+		}
+		
+		if ( !_metaDictionaryOk )
+		{
+			throw new TypeException( "Client and Server Meta Dictionaries do not match");
+		}
 	}
 
 	private int resolveType( int systemId )
 	throws TypeException
 	{
-
+		checkMetaDictionary();
+		
 		// See if the type has already been mapped.
 		int x;
 		
@@ -124,6 +170,8 @@ extends ReferenceTypeMap
 	private void resolveReverse( int id )
 	throws TypeException
 	{
+		checkMetaDictionary();
+		
 		TypeTriple typeInfo;
 
 		try {

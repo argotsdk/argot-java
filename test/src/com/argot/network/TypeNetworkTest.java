@@ -42,6 +42,25 @@ extends TestCase
         Dictionary.readDictionary( _library, new FileInputStream("test/data/common.dictionary"));
         TypeBindCommon.bindCommon( _library );        
     }
+
+    public void testClientMetaDictionaryUsage() throws Exception
+    {
+    	DynamicTypeMap serverMap = new DynamicTypeMap( _library );
+    	TypeServer typeServer = new TypeServer( _library, serverMap );
+    	// client will write to server and expect a response.
+    	// server will need to operate on different thread.
+    	TestTypeTransport transport = new TestTypeTransport( typeServer );
+    	TypeClient typeClient = new TypeClient( _library, transport );
+    	DynamicClientTypeMap clientMap = new DynamicClientTypeMap( _library, typeClient );
+    	
+    	int cid = clientMap.getId( "u8" );
+    	int sid = serverMap.getId( "u8" );
+    	assertEquals( sid, cid );
+    	
+    	// If we used the meta dictionary.  We should only
+    	// need a single request/response pair.
+    	assertEquals( 1, transport.getConnectionCount() );
+    }
     
     public void testClientResolutionGetIdName() throws Exception
     {

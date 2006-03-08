@@ -242,6 +242,9 @@ public class TypeMap
 	public TypeReader getReader(int id) throws TypeException
 	{
 		TypeMapItem item = (TypeMapItem) _map.getObjectFromKey( id );
+		if ( item == null )
+			return _library.getReader( getSystemId( id ) );
+		
 		if ( item.reader == null )
 			item.reader = _library.getReader( getSystemId( id ));
 		
@@ -251,6 +254,9 @@ public class TypeMap
 	public TypeWriter getWriter(int id) throws TypeException
 	{	
 		TypeMapItem item = (TypeMapItem) _map.getObjectFromKey( id );
+		if ( item == null )
+			return _library.getWriter( getSystemId( id ) );
+		
 		if ( item.writer == null )
 			item.writer = _library.getWriter( getSystemId( id ));		
 		return item.writer;
@@ -294,8 +300,19 @@ public class TypeMap
 	{
 		int id = _map.findKey(systemid);
 		if (id == -1)
-			throw new TypeException("not found");
-		
+		{
+			String name = "invalid type";
+			try
+			{
+				name = _library.getName(systemid);				
+			}
+			catch (TypeException e)
+			{	
+				// ignore.
+			}
+
+			throw new TypeException("not mapped: " + name );			
+		}
 		return id;
 	}
 

@@ -77,24 +77,31 @@ public class Dictionary
 		tmos.getStream().close();
 		baos.close();
 		
+		core.setReferenceMap( dtm );
+		
+		
 		// problem is that in writing the dtm, new types might
 		// need to be dynamically added.  Simple solution is to 
-		// write it twice.
-		core.setReferenceMap( dtm );
+		// write it out until the size stablises.
 		ByteArrayOutputStream baos2 = new ByteArrayOutputStream(); 
 		TypeOutputStream tmos2 = new TypeOutputStream( baos2 , core );
-		tmos2.writeObject( "u8", new Integer( 1 ));
-		tmos2.writeObject( "dictionary.words", dtm );
-		tmos2.getStream().close();
-		baos2.close();
+		int count = dtm.size();
+		int lastCount = 0;
 		
-		baos2 = new ByteArrayOutputStream(); 
-		tmos2 = new TypeOutputStream( baos2 , core );
-		tmos2.writeObject( "u8", new Integer( 1 ));
-		tmos2.writeObject( "dictionary.words", dtm );
-		tmos2.getStream().close();
-		baos2.close();
-		
+		while( count != lastCount )
+		{
+			lastCount = count;
+			
+			baos2 = new ByteArrayOutputStream(); 
+			tmos2 = new TypeOutputStream( baos2 , core );
+			tmos2.writeObject( "u8", new Integer( 1 ));
+			tmos2.writeObject( "dictionary.words", dtm );
+			tmos2.getStream().close();
+			baos2.close();
+			
+			count = dtm.size();		
+		}
+
 		// write out the core used to write the message dictionary.
 		core.setReferenceMap( core );
 		ByteArrayOutputStream baos3 = new ByteArrayOutputStream(); 

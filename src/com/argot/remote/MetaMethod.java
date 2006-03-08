@@ -72,7 +72,7 @@ implements MetaDefinition
 			_responseTypes = new MetaParameter[ responseTypes.length ];
 			for ( int x = 0 ; x< responseTypes.length; x++ )
 			{				
-				_responseTypes[x] = (MetaParameter) requestTypes[x];			
+				_responseTypes[x] = (MetaParameter) responseTypes[x];			
 			}
 		}
 		else
@@ -221,7 +221,7 @@ implements MetaDefinition
 				{
 					//id = out.getTypeMap().getId( mm.getResponseTypes()[x].getParamType() );
 					//out.writeObject( BigEndianUnsignedShort.TYPENAME, new Integer(id) );
-					out.writeObject( MetaParameter.TYPENAME, mm.getRequestTypes()[x] );
+					out.writeObject( MetaParameter.TYPENAME, mm.getResponseTypes()[x] );
 				}
 			}
 			else

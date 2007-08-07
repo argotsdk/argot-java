@@ -4,7 +4,7 @@ import com.argot.meta.MetaSequence;
 
 import junit.framework.TestCase;
 
-public class TestDynamicTypeMap
+public class DynamicTypeMapTest
 extends TestCase
 {
 	TypeLibrary _library;
@@ -59,12 +59,12 @@ extends TestCase
 		TypeWriter writer = _typeMap.getWriter( _typeMap.getId("u8"));
 		assertNotNull(writer);
 	}
-	
+/*
 	public void testIsValidName()
 	throws Exception
 	{
 		boolean valid = _typeMap.isValid( "u8" );
 		assertTrue( valid );
 	}
-
+*/
 }

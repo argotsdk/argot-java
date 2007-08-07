@@ -15,6 +15,8 @@
  */
 package com.argot;
 
+import java.util.Set;
+
 import junit.framework.TestCase;
 
 public class TypeLibraryTest
@@ -45,6 +47,21 @@ extends TestCase
         assertEquals( _library.getTypeState("test"), TypeLibrary.TYPE_RESERVED );
     }
     
+    public void testReserveAlreadyDefinedType() throws Exception
+    {
+    	_library.reserve("test");
+    	
+    	try
+		{
+			_library.reserve("test");
+			fail("shouldn't get here");
+		}
+		catch (TypeException e)
+		{
+			// ignore.
+		}
+    }
+    
     public void testNotDefinedTypeState() throws Exception
     {
         int id = _library.getTypeState("blah");
@@ -62,6 +79,58 @@ extends TestCase
         _library.register( "test", new TestTypeElement(), new TestReader(), new TestWriter(), null );
         assertEquals( _library.getTypeState("test"), TypeLibrary.TYPE_COMPLETE );
     }
+    
+    public void testRegisterInvalidName() throws Exception
+    {
+        try
+		{
+			_library.register( "", new TestTypeElement(), new TestReader(), new TestWriter(), null );
+			fail();
+		}
+		catch (TypeException e)
+		{
+			// ignore
+		}
+    }
+    
+    public void testRegisterInvalidTypeElement() throws Exception
+    {
+        try
+		{
+			_library.register( "test", null, new TestReader(), new TestWriter(), null );
+			fail();
+		}
+		catch (TypeException e)
+		{
+			// ignore
+		}
+    }
+    
+    public void testRegisterInvalidReader() throws Exception
+    {
+        try
+		{
+			_library.register( "test", new TestTypeElement(), null, new TestWriter(), null );
+			fail();
+		}
+		catch (TypeException e)
+		{
+			// ignore
+		}
+    }
+    
+    public void testRegisterInvalidWriter() throws Exception
+    {
+        try
+		{
+			_library.register( "test", new TestTypeElement(), new TestReader(), null, null );
+			fail();
+		}
+		catch (TypeException e)
+		{
+			// ignore
+		}
+    }    
     
     public void testRegisterAfterReserve() throws Exception
     {
@@ -91,6 +160,43 @@ extends TestCase
             // ignore.
         }
     }
+
+    public void testGetTypeStateNull() throws Exception
+    {
+    	int state = _library.getTypeState(null);
+    	assertEquals( state, TypeLibrary.TYPE_NOT_DEFINED );
+    }
+    
+    public void testGetTypeStateReserved() throws Exception
+    {
+    	_library.reserve("test");
+    	
+    	int state = _library.getTypeState("test");
+    	assertEquals( state, TypeLibrary.TYPE_RESERVED );
+    }
+    
+    public void testGetTypeStateNotDefined() throws Exception
+    {
+    	int state = _library.getTypeState("test");
+    	assertEquals( state, TypeLibrary.TYPE_NOT_DEFINED );
+    }
+
+    public void testGetTypeStateRegistered() throws Exception
+    {
+        int id = _library.register( "test", new TestTypeElement() );
+
+    	int state = _library.getTypeState("test");
+    	assertEquals( state, TypeLibrary.TYPE_REGISTERED );    	
+    }
+
+    public void testGetTypeStateComplete() throws Exception
+    {
+        TestWriter writer = new TestWriter();
+        int id = _library.register( "test", new TestTypeElement(), new TestReader(), writer, writer.getClass() );
+
+    	int state = _library.getTypeState("test");
+    	assertEquals( state, TypeLibrary.TYPE_COMPLETE );    	
+    }
     
     public void testGetStructure() throws Exception
     {
@@ -99,6 +205,35 @@ extends TestCase
         
         TypeElement elem = _library.getStructure( _library.getId("test"));
         assertEquals( element, elem );
+    }
+    
+    public void testGetStructureBadState() throws Exception
+    {
+    	_library.reserve( "test");
+    	
+    	try
+		{
+			_library.getStructure( _library.getId("test"));
+			fail("shouldn't get here");
+		}
+		catch (TypeException e)
+		{
+			// ignore
+		}
+    }
+    
+    public void testGetStructureUndefined() throws Exception
+    {
+        try
+		{
+			TypeElement elem = _library.getStructure( 10 );
+			fail("shouldn't get here");
+		}
+		catch (TypeException e)
+		{
+			// ignore
+		}
+    	
     }
      
     public void testGetReader() throws Exception
@@ -175,6 +310,44 @@ extends TestCase
                 
     }
     
+    public void testGetClass() throws Exception
+    {
+        TestWriter writer = new TestWriter();
+        int id = _library.register( "test", new TestTypeElement(), new TestReader(), writer, writer.getClass() );
+        
+        Class clss = _library.getClass( id );
+        assertEquals( clss, writer.getClass() );      
+    }
+
+    public void testGetClassInvalidId() throws Exception
+    {
+        try
+		{
+			Class clss = _library.getClass( 10 );
+			fail("shouldn't get here");
+		}
+		catch (TypeException e)
+		{
+			// ignore
+		}      
+    }    
+
+    public void testGetClassNoClass() throws Exception
+    {
+        TestWriter writer = new TestWriter();
+        int id = _library.register( "test", new TestTypeElement(), new TestReader(), writer, null );
+
+        try
+		{
+			Class clss = _library.getClass( id );
+			fail("shouldn't get here");
+		}
+		catch (TypeException e)
+		{
+			// ignore
+		}      
+    }    
+    
     public void testGetClassId() throws Exception
     {
         TestWriter writer = new TestWriter();
@@ -192,7 +365,32 @@ extends TestCase
         
         int cid = _library.getId( writer.getClass() );
         assertEquals( id, cid );      
-    }  
+    }
+    
+    public void testGetName() throws Exception
+    {
+        TestWriter writer = new TestWriter();
+        _library.reserve("test");
+        int id = _library.register( "test", new TestTypeElement(), new TestReader(), writer, writer.getClass() );
+
+        String name = _library.getName(id);
+        assertEquals(name,"test");
+    }
+
+    public void testGetNameInvalid() throws Exception
+    {
+        try
+		{
+			String name = _library.getName(40);
+			fail("shouldn't get here");
+		}
+		catch (TypeException e)
+		{
+			// ignore
+		}
+        
+    }
+    
     
     public void testRegisterAfterReserveCheckId() throws Exception
     {
@@ -228,5 +426,38 @@ extends TestCase
         {
             // ignore.  correct.
         }
+    }
+    
+    public void testAddClassAlias() throws Exception
+    {
+        TestWriter writer = new TestWriter();
+        int id = _library.register( "test", new TestTypeElement(), new TestReader(), writer, writer.getClass() );
+    	
+        _library.addClassAlias(id, Boolean.class);
+    }
+    
+    public void testAddClassAliasOverloaded() throws Exception
+    {
+        TestWriter writer = new TestWriter();
+        int id = _library.register( "test", new TestTypeElement(), new TestReader(), writer, writer.getClass() );
+    	
+        try
+		{
+			_library.addClassAlias(id, writer.getClass());
+			fail("shouldn't get here");
+		}
+		catch (TypeException e)
+		{
+			// ignore
+		}
+    }
+    
+    public void testGetNames() throws Exception
+    {
+        TestWriter writer = new TestWriter();
+        int id = _library.register( "test", new TestTypeElement(), new TestReader(), writer, writer.getClass() );
+
+        Set set = _library.getNames();
+        assertEquals( set.size(), 1 );
     }
 }

@@ -17,6 +17,7 @@ package com.argot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 public class TypeLibrary
 {
@@ -84,6 +85,14 @@ public class TypeLibrary
 	    
 	    return name.toLowerCase();
 	}
+	
+	private boolean isTypeIdInRange( int id )
+	{
+		if ( id < 0 || id > _types.size() )
+			return false;
+		
+		return true;
+	}
 	/**
 	 * Returns the current state of the specific type.
 	 * 
@@ -109,6 +118,9 @@ public class TypeLibrary
 
     public int getTypeState(int id)
     {
+    	if ( !isTypeIdInRange(id) ) 
+    		return TYPE_NOT_DEFINED;
+    	
         TypeDefinition definition = (TypeDefinition) _types.get( id );
         if ( definition == null )
             return TYPE_NOT_DEFINED;
@@ -277,7 +289,7 @@ public class TypeLibrary
 		
 	    int state = getTypeState( name );
 	    if ( state != TYPE_REGISTERED )
-	        throw new TypeException("type in wrong state");
+	        throw new TypeException("type in wrong state:" + state);
 	    
 	    TypeDefinition def = (TypeDefinition) _names.get( name );
 	    def.reader = reader;
@@ -312,6 +324,9 @@ public class TypeLibrary
 	public String getName( int id )
 	throws TypeException
 	{
+		if ( !isTypeIdInRange(id) )
+			throw new TypeNotDefinedException( "type id not in range");
+		
 		TypeDefinition def = (TypeDefinition) _types.get( id );
 		if ( def == null )
 			throw new TypeNotDefinedException( "type not found" );
@@ -322,6 +337,9 @@ public class TypeLibrary
 	public TypeElement getStructure( int id )
 	throws TypeException
 	{
+		if ( !isTypeIdInRange(id) )
+			throw new TypeNotDefinedException( "type id not in range");
+
 		TypeDefinition def = (TypeDefinition) _types.get( id );
 		if ( def == null )
 			throw new TypeNotDefinedException( "type id" );
@@ -336,6 +354,9 @@ public class TypeLibrary
 	public TypeReader getReader( int id )
 	throws TypeException
 	{
+		if ( !isTypeIdInRange(id) )
+			throw new TypeNotDefinedException( "type id not in range");
+
 		TypeDefinition def =  (TypeDefinition) _types.get( id );
 		if ( def == null )
 			throw new TypeNotDefinedException( "type id" );
@@ -349,6 +370,9 @@ public class TypeLibrary
 	public TypeWriter getWriter( int id )
 	throws TypeException
 	{
+		if ( !isTypeIdInRange(id) )
+			throw new TypeNotDefinedException( "type id not in range");
+
 		TypeDefinition def = (TypeDefinition) _types.get( id );
 		if ( def == null )
 			throw new TypeException( "type not found" );
@@ -362,15 +386,18 @@ public class TypeLibrary
 	public Class getClass( int id )
 	throws TypeException
 	{
+		if ( !isTypeIdInRange(id) )
+			throw new TypeNotDefinedException( "type id not in range");
+
 		TypeDefinition def = (TypeDefinition) _types.get( id );
 		if ( def == null )
 			throw new TypeException( "type not found" );
 
 		if ( def.clss == null )
-			throw new TypeException( "no class bound for type");
+			throw new TypeException( "no class bound for type: " + def.name );
 			
 		return def.clss;
-	}
+	} 	
 
 	public int getId( Class clss )
 	throws TypeException
@@ -403,13 +430,25 @@ public class TypeLibrary
 		return w.id;
 	}
 
-    public Class getTypeClass( int id ) throws TypeException
-    {
+	public void addClassAlias( int id, Class clss ) throws TypeException
+	{
+		if ( !isTypeIdInRange(id) )
+			throw new TypeNotDefinedException( "type id not in range");
+
 		TypeDefinition def =  (TypeDefinition) _types.get( id );
 		if ( def == null )
 			throw new TypeException( "type not found" );
-			
-		return def.clss;
+		
+		TypeDefinition w = (TypeDefinition) _classes.get( clss );
+		if ( w != null )
+			throw new TypeException( "class overloaded: " + clss.getName() );
+
+		_classes.put( clss, def );
+	}
+	
+
+    public Set getNames()
+    {
+    	return _names.keySet();
     }
- 
 }

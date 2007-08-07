@@ -247,7 +247,7 @@ implements TypeTransport
 			
 			TypeInputStream tmis = new TypeInputStream( endPoint.getInputStream(), _typeMap );
 			Short type = (Short) tmis.readObject( BigEndianUnsignedByte.TYPENAME );
-			if ( type.intValue() != ProtocolTypeMap.MAPREV )throw new TypeException("Bad Protocol Error");		
+			if ( type.intValue() != ProtocolTypeMap.MAPREV )throw new TypeException("Unable to resolve reverse id: " + id);		
 			String name = (String) tmis.readObject( "u8ascii" );
 			byte[] definition = (byte[]) tmis.readObject( "u16binary" );
 			

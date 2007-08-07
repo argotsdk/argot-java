@@ -53,7 +53,20 @@ public class TypeInputStream
 	{		
 		TypeReader reader = _map.getReader( id );
 		TypeElement element = _map.getStructure( id );
-		return reader.read( this, element );
+		
+		try
+		{
+			return reader.read( this, element );
+		}
+		catch (TypeStreamException readEx)
+		{
+			readEx.addTypeName( _map.getName( id ));
+			throw readEx;
+		}
+		catch (IOException ioEx )
+		{
+			throw new TypeStreamException( _map.getName(id), ioEx );
+		}
 	}
 	
 	public Object readObject( String name )
@@ -65,6 +78,19 @@ public class TypeInputStream
 			
 		TypeReader reader = _map.getReader( id );
 		TypeElement element = _map.getStructure( id );
-		return reader.read( this, element );
+		
+		try
+		{
+			return reader.read( this, element );
+		}
+		catch (TypeStreamException readEx)
+		{
+			readEx.addTypeName( _map.getName( id ));
+			throw readEx;
+		}
+		catch (IOException ioEx)
+		{
+			throw new TypeStreamException( _map.getName(id), ioEx );			
+		}
 	}
 }

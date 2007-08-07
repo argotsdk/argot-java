@@ -143,7 +143,18 @@ implements TypeLink
 
 		TypeOutputStream sout = new TypeOutputStream( out, _typeMap );
 
-		String name = _refMap.getName( id.intValue() );
+		String name;
+		try
+		{
+			name = _refMap.getName( id.intValue() );
+		}
+		catch (TypeException e)
+		{
+			sout.writeObject( "u8", new Short( ProtocolTypeMap.ERROR ) );
+			sout.getStream().flush();
+			sout.getStream().close();			
+			return;
+		}
 		TypeElement struct = _refMap.getStructure( id.intValue() );
 
 		byte[] definition = TypeHelper.toByteArray( _refMap, struct );

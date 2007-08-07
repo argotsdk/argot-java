@@ -102,7 +102,22 @@ implements TypeConstructor
 
 		}
 		
-		throw new TypeException( "TypeReaderAuto: No valid constructors found." + _clss.getName() );
+		StringBuffer error = new StringBuffer();
+		error.append(_clss.getName());
+		error.append("(");
+		for ( int x=0; x < objects.length; x++ )
+		{
+			if ( objects[x] != null)
+				error.append( objects[x].getClass().getName() );
+			else
+				error.append( "null");
+			
+			if ( x < objects.length-1 )
+				error.append( "," );
+		}
+		error.append(")");
+		
+		throw new TypeStreamException( "TypeReaderAuto: No valid constructor: " + error.toString() );
     }
 
 }

@@ -47,7 +47,7 @@ public class RemoteTypes
 		
 		if ( library.getTypeState( MetaLocation.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
 		{
-			library.bind( MetaLocation.TYPENAME,new MetaMarshaller(),new MetaMarshaller(), null );
+			library.bind( MetaLocation.TYPENAME,new MetaMarshaller(),new MetaMarshaller(), MetaLocation.class );
 		}			
 	}
 }

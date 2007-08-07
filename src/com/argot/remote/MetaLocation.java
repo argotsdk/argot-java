@@ -27,4 +27,6 @@ public interface MetaLocation
 {
 	public static final String TYPENAME = "remote.location";
 
+	public void setHost( String host );
+	public String getHost();
 }

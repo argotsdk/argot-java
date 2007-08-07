@@ -19,7 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
-public class TypeHelper
+public final class TypeHelper
 {
 	public static byte[] toByteArray( ReferenceTypeMap core , TypeElement definition )
 	throws TypeException

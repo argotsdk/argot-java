@@ -19,7 +19,7 @@ import com.argot.meta.MetaBasic;
 
 import junit.framework.TestCase;
 
-public class TestTypeMapCore
+public class TypeMapCoreTest
 extends TestCase
 {
     private TypeLibrary _library;

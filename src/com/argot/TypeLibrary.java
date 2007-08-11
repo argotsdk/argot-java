@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2007 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -45,16 +45,32 @@ public class TypeLibrary
 	
 	public TypeLibrary()
 	{
-		System.out.println("");
-		System.out.println("Argot Version 1.2.0");
-		System.out.println("Copyright 2003-2005 (C) Live Media Pty Ltd.");
-		System.out.println("www.einet.com.au");
+		System.out.println("\nArgot Version 1.2.1");
+		System.out.println("Copyright 2003-2007 (C) Live Media Pty Ltd.");
+		System.out.println("www.einet.com.au\n");
 		
 		_types = new ArrayList();
 		_names = new HashMap();
 		_classes = new HashMap();
 	}
 
+	public TypeLibrary( TypeLibraryLoader[] loaders )
+	throws TypeException
+	{
+		this();
+		
+		for(int x=0;x<loaders.length;x++)
+		{
+			loadLibrary(loaders[x]);
+		}
+	}
+
+	public void loadLibrary( TypeLibraryLoader loader ) 
+	throws TypeException
+	{
+		loader.load(this);
+	}
+	
 	/**
 	 * Add a new definition to the library. This must be a fresh entry.
 	 * Either a reserved or register call.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2007 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -13,16 +13,30 @@
  * to the law of Victoria, Australia, and subject to exclusive 
  * jurisdiction of the Victorian courts.
  */
+
 package com.argot.remote;
 
+import com.argot.ResourceDictionaryLoader;
 import com.argot.TypeException;
 import com.argot.TypeLibrary;
 import com.argot.meta.MetaMarshaller;
 
-public class RemoteTypes 
+public class RemoteLoader
+extends ResourceDictionaryLoader
 {
-
-	public static void bindTypes( TypeLibrary library ) 
+	public static final String DICTIONARY = "remote.dictionary";
+	
+	public RemoteLoader()
+	{
+		super( DICTIONARY );
+	}
+	
+	public String getName()
+	{
+		return DICTIONARY;
+	}
+	
+	public void bind( TypeLibrary library ) 
 	throws TypeException
 	{
 		if ( library.getTypeState( MetaParameter.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
@@ -50,4 +64,6 @@ public class RemoteTypes
 			library.bind( MetaLocation.TYPENAME,new MetaMarshaller(),new MetaMarshaller(), MetaLocation.class );
 		}			
 	}
+
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2007 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -16,6 +16,7 @@
 package com.argot;
 
 import com.argot.meta.MetaBasic;
+import com.argot.meta.MetaLoader;
 
 import junit.framework.TestCase;
 
@@ -28,7 +29,7 @@ extends TestCase
     {
         super.setUp();
         _library = new TypeLibrary();
-        TypeMapCore.loadLibrary( _library );
+        _library.loadLibrary( new MetaLoader() );
     }
     
     public void testTypeMapCore() throws Exception

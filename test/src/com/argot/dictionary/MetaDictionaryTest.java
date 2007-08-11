@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2007 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -21,22 +21,27 @@ import java.util.Iterator;
 
 import junit.framework.TestCase;
 
+import com.argot.TypeLibraryLoader;
 import com.argot.TypeMap;
 import com.argot.TypeMapCore;
 import com.argot.TypeLibrary;
 import com.argot.dictionary.Dictionary;
+import com.argot.meta.MetaLoader;
 
 public class MetaDictionaryTest
 extends TestCase
 {
 	private TypeLibrary _library;
+
+	TypeLibraryLoader libraryLoaders[] = {
+		new MetaLoader(),
+		new DictionaryLoader()
+	};
 	
     protected void setUp() throws Exception
     {
         super.setUp();
-        _library = new TypeLibrary();
-        TypeMapCore.loadLibrary( _library );
-        DictionaryMap.loadDictionaryMap( _library );
+        _library = new TypeLibrary( libraryLoaders );
     }
     
     public void testTypeMapCore() throws Exception

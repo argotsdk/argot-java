@@ -5,18 +5,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import com.abc.bookstore.Book;
 import com.abc.bookstore.IBookstore;
 import com.abc.bookstore.Bookstore;
-import com.abc.bookstore.argot.BookArgot;
-import com.abc.bookstore.argot.BookArrayArgot;
-import com.abc.bookstore.dictionary.DictionaryLoader;
-import com.argot.TypeBindCommon;
+import com.abc.bookstore.dictionary.BookstoreLoader;
 import com.argot.TypeException;
-import com.argot.TypeLibrarySingleton;
+import com.argot.TypeLibraryLoader;
 import com.argot.TypeLibrary;
-import com.argot.TypeReaderAuto;
-import com.argot.dictionary.Dictionary;
+import com.argot.common.CommonLoader;
+import com.argot.dictionary.DictionaryLoader;
+import com.argot.meta.MetaLoader;
 
 public class LocalBookstore
 {
@@ -35,14 +32,14 @@ public class LocalBookstore
 	 */
 	private static void setupArgot() throws TypeException, IOException
 	{
-		TypeLibrary library = TypeLibrarySingleton.getDefault();
-
-		Dictionary.readDictionary( library, DictionaryLoader.getDictionaryStream("common.dictionary"));
-		Dictionary.readDictionary( library, DictionaryLoader.getDictionaryStream("bookstore.dictionary"));
+		TypeLibraryLoader libraryLoaders[] = {
+				new MetaLoader(),
+				new DictionaryLoader(),
+				new CommonLoader(),
+				new BookstoreLoader()
+			};
 		
-		TypeBindCommon.bindCommon( library );
-		library.bind( BookArgot.TYPENAME, new TypeReaderAuto( Book.class ), new BookArgot(), Book.class );
-		library.bind( BookArrayArgot.TYPENAME, new BookArrayArgot(), new BookArrayArgot(), Book[].class );
+		TypeLibrary library = new TypeLibrary( libraryLoaders );
 	}
 	
 	

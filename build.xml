@@ -17,7 +17,8 @@
 <project name="argot" default="package" basedir=".">
 
 	<description>Argot build</description>
-
+    <property name="version" value="1.2.1"/>
+	
 	<!-- set global properties for this build -->
 	<property name="src" location="src" />
 	<property name="test" location="test\src" />
@@ -35,12 +36,10 @@
 	<property name="argot-compiler" location="${base}\tools\argot_compiler" />
 	
 	<property name="emma.dir" value="C:\java\emma-2.0.5312" />
-
 	<path id="emma.lib">
 		<pathelement location="${emma.dir}/lib/emma.jar" />
 		<pathelement location="${emma.dir}/lib/emma_ant.jar" />
 	</path>
-
 	<taskdef resource="emma_ant.properties" classpathref="emma.lib" />
 
 	<path id="compile.classpath">
@@ -136,48 +135,92 @@
 			</report>
 		</emma>
 
-		<fail if="junit.failure" message="JUnit tests failed" />
+		<!--fail if="junit.failure" message="JUnit tests failed" /-->
 	</target>
 
+	<!-- The source files for argot are normally kept in a base directory
+	     If it exists we copy the files into a project local directory.
+	     This directory should be present in the released version -->
+	<available file="../argot" type="dir" property="argot.base.present"/>
+	<target name="argot-copy" if="argot.base.present" description="copy argot files from base directory if needed">
+		<mkdir dir="argot" />
+		<copy todir="argot">
+			<fileset dir="../argot">
+				<include name="*.argot"/>
+			</fileset>
+		</copy>		
+	</target>
+	
+	<target name="argot-compiler-config" description="setup argot compiler task definition">
+		<path id="argotc.lib">
+			<pathelement location="${build.bin}"/>
+			<pathelement location="lib/argot-compiler-1.2.1.jar"/>
+		</path>
+		<taskdef name="argotc" classname="com.argot.compiler.ant.AntArgotCompiler" classpathref="argotc.lib"/>		
+	</target>
+	
 	<!--
-		If building a system from scratch you can't use the argot
+		If building a system from scratch you can't build and use the argot
 		compiler until Argot is built.  The argot compiler only 
 		requires meta.dictionary and common.dictionary which can
 		be built by Argot.
 	-->
-	<target name="argot-compile" depends="compile" description="compiles dictionary files from argot">
-		<path id="argotc.lib">
-			<pathelement location="${build.bin}"/>
-			<pathelement location="${argot-compiler}/release/lib/argot-compiler-1.2.0.jar"/>
-		</path>
-		<taskdef name="argotc" classname="com.argot.compiler.ant.AntArgotCompiler" classpathref="argotc.lib"/>
-		
-		<!--
-		Build and copy files to build.bin to make them visiable to next argot file. 
-		-->
-		<argotc input="../argot/meta.argot"/>
-		<copy file="../argot/meta.dictionary" todir="${build.bin}/argot" />
-		<argotc input="../argot/common.argot"/>
-		<copy file="../argot/common.dictionary" todir="${build.bin}/argot" />
-		<argotc input="../argot/remote.argot"/>
-		<copy file="../argot/remote.dictionary" todir="${build.bin}/argot" />
-		<argotc input="../argot/dictionary.argot"/>		
-		<argotc input="../argot/netargot.argot"/>		
+	<target name="argot-compile" depends="compile,argot-copy,argot-compiler-config" description="compiles dictionary files from argot">
+		<argotc input="argot/meta.argot" output="${build.bin}/meta.dictionary"/>
+		<argotc input="argot/common.argot" output="${build.bin}/common.dictionary"/>
+		<argotc input="argot/remote.argot" output="${build.bin}/remote.dictionary"/>
+		<argotc input="argot/dictionary.argot" output="${build.bin}/dictionary.dictionary"/>		
+		<argotc input="argot/netargot.argot" output="${build.bin}/netargot.dictionary"/>
 	</target>
 	
-	<target name="package" depends="emma,compile,junit-tests,argot-compile" description="generate the distribution release">
-
+	<!-- For eclipse. Builder to compile argot files. -->
+	<target name="argot-builder" depends="argot-copy,argot-compiler-config" description="compiles dictionary files from argot">
+		<mkdir dir="bin/argot" />		
+		<argotc input="argot/meta.argot" />
+		<argotc input="argot/common.argot" />
+		<argotc input="argot/remote.argot" />
+		<argotc input="argot/dictionary.argot" />
+		<argotc input="argot/netargot.argot" />
+	</target>
+	
+	<target name="buildjar" depends="compile,argot-copy">
 		<!-- Put everything in ${build.bin} into the jar file -->
 		<copy file="LICENSE.TXT" tofile="${build.bin}/LICENSE.TXT" />
 		<mkdir dir="${build.bin}/argot" />
 		<copy todir="${build.bin}/argot">
-			<fileset dir="../argot">
+			<fileset dir="argot">
 				<include name="*.dictionary"/>
 			</fileset>
 		</copy>
 
 		<mkdir dir="${release}/lib" />
-		<jar jarfile="${release}/lib/argot-1.2.1.jar" basedir="${build.bin}" />
+		<jar jarfile="${release}/lib/argot-${version}.jar" basedir="${build.bin}" />			
+	</target>
+	
+	<available file="../../tools/argot_compiler" type="dir" property="argot.compiler.present"/>	
+	<target name="get-argot-compiler" if="argot.compiler.present" depends="buildjar" description="build and copy argot compiler">
+		<ant antfile="../../tools/argot_compiler/build.xml" target="build-jar" inheritAll="false">
+			<property name="argot.jar" value="${release}/lib/argot-${version}.jar"/>
+		</ant>
+		<mkdir dir="bin"/>
+		<copy file="../../tools/argot_compiler/build/release/bin/ac.bat" tofile="bin/ac.bat" />
+		<mkdir dir="lib"/>
+		<copy todir="lib">
+			<fileset dir="../../tools/argot_compiler/build/release/lib">
+				<include name="**/*" />
+				<exclude name="argot-?.?.?.jar" />
+			</fileset>
+		</copy>		
+	</target>
+
+	<available file="../doc" type="dir" property="argot.doc.present"/>	
+	<target name="get-argot-doc" if="argot.doc.present" description="copy doc to local project">
+		<mkdir dir="doc" />
+		<copy file="../doc/ArgotProgrammersGuide.pdf" tofile="doc/ArgotProgrammersGuide.pdf" />
+	</target>	
+	
+	<target name="package" depends="clean,emma,compile,buildjar,get-argot-compiler,get-argot-doc,argot-compile,junit-tests" description="generate the distribution release">
+
 		<copy file="LICENSE.TXT" tofile="${release}/LICENSE.TXT" />
 		<copy file="README.TXT" tofile="${release}/README.TXT" />
 		<copy file="BUILD.TXT" tofile="${release}/BUILD.TXT" />
@@ -185,11 +228,11 @@
 
 		<mkdir dir="${release}/argot" />
 		<copy todir="${release}/argot">
-			<fileset dir="../argot" />
+			<fileset dir="argot" />
 		</copy>
 
 		<mkdir dir="${release}/doc" />
-		<copy file="../doc/ArgotProgrammersGuide.pdf" tofile="${release}/doc/ArgotProgrammersGuide.pdf" />
+		<copy file="doc/ArgotProgrammersGuide.pdf" tofile="${release}/doc/ArgotProgrammersGuide.pdf" />
 
 		<mkdir dir="${release}/examples" />
 		<copy todir="${release}/examples">
@@ -208,20 +251,19 @@
 
 		<!-- grab the Argot Compiler binary -->
 		<mkdir dir="${release}/bin" />
-		<copy file="../../tools/argot_compiler/release/bin/ac.bat" tofile="${release}/bin/ac.bat" />
+		<copy file="bin/ac.bat" tofile="${release}/bin/ac.bat" />
 		<copy todir="${release}/lib">
-			<fileset dir="../../tools/argot_compiler/release/lib">
+			<fileset dir="lib">
 				<include name="**/*" />
 				<exclude name="argot-?.?.?.jar" />
 			</fileset>
 		</copy>
 		
 		<!-- zip up the release -->
-		<zip basedir="${release}" destfile="../ArgotJava-1.2.0.zip" />
+		<zip basedir="${release}" destfile="${build}/ArgotJava-${version}.zip" />
 	</target>
 
 	<target name="clean" description="clean up">
-		<delete dir="${bin}" />
 		<delete dir="${build}" />
 	</target>
 </project>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2007 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -20,11 +20,13 @@ import java.io.ByteArrayOutputStream;
 
 import junit.framework.TestCase;
 
-import com.argot.TypeLibrarySingleton;
+import com.argot.TypeLibraryLoader;
 import com.argot.TypeMap;
 import com.argot.TypeInputStream;
 import com.argot.TypeOutputStream;
 import com.argot.TypeLibrary;
+import com.argot.dictionary.DictionaryLoader;
+import com.argot.meta.MetaLoader;
 
 public class CommonTest
 extends TestCase
@@ -34,12 +36,18 @@ extends TestCase
     private TypeMap map;
     private ByteArrayOutputStream baos;
 
+	TypeLibraryLoader libraryLoaders[] = {
+		new MetaLoader(),
+		new DictionaryLoader(),
+		new CommonLoader()
+	};
+
     protected void setUp() throws Exception
     {
         super.setUp();
         
 		baos = new ByteArrayOutputStream();
-        TypeLibrary library = TypeLibrarySingleton.getDefault();
+        TypeLibrary library = new TypeLibrary( libraryLoaders );
 		map = new TypeMap( library );
         out = new TypeOutputStream( baos, map );        
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2007 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -13,10 +13,12 @@
  * to the law of Victoria, Australia, and subject to exclusive 
  * jurisdiction of the Victorian courts.
  */
+
 package com.argot.dictionary;
 
 import com.argot.TypeException;
 import com.argot.TypeLibrary;
+import com.argot.TypeLibraryLoader;
 import com.argot.meta.MetaArray;
 import com.argot.meta.MetaDefinition;
 import com.argot.meta.MetaEnvelop;
@@ -26,11 +28,18 @@ import com.argot.meta.MetaMarshaller;
 import com.argot.meta.MetaReference;
 import com.argot.meta.MetaSequence;
 
-public class DictionaryMap
+public class DictionaryLoader
+implements TypeLibraryLoader
 {
+	public static final String DICTIONARY = "dictionary.dictionary";
+	
+	public String getName()
+	{
+		return DICTIONARY;
+	}
 
-    public static void loadDictionaryMap(TypeLibrary library) throws TypeException
-    {
+	public void load( TypeLibrary library ) throws TypeException
+	{
 		MetaDefinition meDef = new MetaSequence(
 			new MetaExpression[] {
 				new MetaReference(library.getId("meta.expression"),"size"),

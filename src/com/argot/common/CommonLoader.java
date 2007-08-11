@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2007 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -13,32 +13,34 @@
  * to the law of Victoria, Australia, and subject to exclusive 
  * jurisdiction of the Victorian courts.
  */
-package com.argot;
+ 
+package com.argot.common;
 
 import java.util.Date;
 
-import com.argot.common.BigEndianSignedByte;
-import com.argot.common.BigEndianSignedInteger;
-import com.argot.common.BigEndianSignedLong;
-import com.argot.common.BigEndianSignedShort;
-import com.argot.common.BigEndianUnsignedByte;
-import com.argot.common.BigEndianUnsignedInteger;
-import com.argot.common.BigEndianUnsignedLong;
-import com.argot.common.BigEndianUnsignedShort;
-import com.argot.common.DateS64;
-import com.argot.common.Empty;
-import com.argot.common.U16ArrayByte;
-import com.argot.common.U32ArrayByte;
-import com.argot.common.U32UTF8;
-import com.argot.common.U8Ascii;
-import com.argot.common.U8Boolean;
+import com.argot.ResourceDictionaryLoader;
+import com.argot.TypeException;
+import com.argot.TypeLibrary;
+import com.argot.TypeReaderAuto;
 import com.argot.meta.MetaIdentified;
 import com.argot.meta.MetaMarshaller;
 
-public class TypeBindCommon
+public class CommonLoader
+extends ResourceDictionaryLoader
 {
-	public static void bindCommon( TypeLibrary library )
-	throws TypeException
+	public static String DICTIONARY = "common.dictionary";
+	
+	public CommonLoader()
+	{
+		super(DICTIONARY);
+	}
+	
+	public String getName()
+	{
+		return DICTIONARY;
+	}
+	
+	public void bind( TypeLibrary library ) throws TypeException
 	{
 		if ( library.getTypeState( Empty.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
 		{
@@ -141,6 +143,5 @@ public class TypeBindCommon
 		}
 			
 	}
-	
 
 }

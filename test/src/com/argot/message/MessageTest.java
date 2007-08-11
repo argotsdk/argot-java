@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2007 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -18,14 +18,13 @@ package com.argot.message;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 
-import com.argot.TypeBindCommon;
 import com.argot.TypeLibrary;
-import com.argot.TypeMapCore;
+import com.argot.TypeLibraryLoader;
+import com.argot.common.CommonLoader;
 import com.argot.data.MixedData;
-import com.argot.dictionary.Dictionary;
-import com.argot.dictionary.DictionaryMap;
+import com.argot.dictionary.DictionaryLoader;
+import com.argot.meta.MetaLoader;
 
 import junit.framework.TestCase;
 
@@ -34,14 +33,16 @@ extends TestCase
 {
 	private TypeLibrary _library;
 	
+	TypeLibraryLoader libraryLoaders[] = {
+		new MetaLoader(),
+		new DictionaryLoader(),
+		new CommonLoader()
+	};
+	
     protected void setUp() throws Exception
     {
         super.setUp();
-        _library = new TypeLibrary();
-        TypeMapCore.loadLibrary( _library );
-        DictionaryMap.loadDictionaryMap( _library );
-        Dictionary.readDictionary( _library, new FileInputStream("test/data/common.dictionary"));
-        TypeBindCommon.bindCommon( _library );
+        _library = new TypeLibrary( libraryLoaders );
         MixedData.register( _library );
     }
     

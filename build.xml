@@ -172,22 +172,11 @@
 		<argotc input="argot/dictionary.argot" output="${build.bin}/dictionary.dictionary"/>		
 		<argotc input="argot/netargot.argot" output="${build.bin}/netargot.dictionary"/>
 	</target>
-	
-	<!-- For eclipse. Builder to compile argot files. -->
-	<target name="argot-builder" depends="argot-copy,argot-compiler-config" description="compiles dictionary files from argot">
-		<mkdir dir="bin/argot" />		
-		<argotc input="argot/meta.argot" />
-		<argotc input="argot/common.argot" />
-		<argotc input="argot/remote.argot" />
-		<argotc input="argot/dictionary.argot" />
-		<argotc input="argot/netargot.argot" />
-	</target>
-	
+
 	<target name="buildjar" depends="compile,argot-copy">
 		<!-- Put everything in ${build.bin} into the jar file -->
 		<copy file="LICENSE.TXT" tofile="${build.bin}/LICENSE.TXT" />
-		<mkdir dir="${build.bin}/argot" />
-		<copy todir="${build.bin}/argot">
+		<copy todir="${build.bin}">
 			<fileset dir="argot">
 				<include name="*.dictionary"/>
 			</fileset>
@@ -203,7 +192,7 @@
 			<property name="argot.jar" value="${release}/lib/argot-${version}.jar"/>
 		</ant>
 		<mkdir dir="bin"/>
-		<copy file="../../tools/argot_compiler/build/release/bin/ac.bat" tofile="bin/ac.bat" />
+		<copy file="../../tools/argot_compiler/bin/ac.bat" tofile="bin/ac.bat" />
 		<mkdir dir="lib"/>
 		<copy todir="lib">
 			<fileset dir="../../tools/argot_compiler/build/release/lib">

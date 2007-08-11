@@ -264,7 +264,14 @@ public class TypeLibrary
 	        throw new TypeException("invalid state");
 	    }
 	    
-	    structure.bind( this, structure, name, definition.id );
+	    try
+	    {
+	    	structure.bind( this, structure, name, definition.id );
+	    }
+	    catch (TypeException e)
+	    {
+	    	throw new TypeException("Failed to bind: " + name, e);
+	    }
 	    
 	    return definition.id;
 	}

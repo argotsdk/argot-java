@@ -257,8 +257,26 @@ implements MetaDefinition
 		}
 
 		if ( method == null )
-			throw new TypeException( "NoSuchMethod '" + name + "'" );
-			
+		{
+			StringBuffer error = new StringBuffer();
+			error.append(proxyClass.getName());
+			error.append(".");
+			error.append(name);
+			error.append("(");
+			for ( int x=0; x < args.length; x++ )
+			{
+				if ( args[x] != null)
+					error.append( args[x].getName() );
+				else
+					error.append( "null");
+				
+				if ( x < args.length-1 )
+					error.append( "," );
+			}
+			error.append(")");
+						
+			throw new TypeException( "NoSuchMethod '" + error + "'" );
+		}	
 		return method;
 	}
 	

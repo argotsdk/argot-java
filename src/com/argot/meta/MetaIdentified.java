@@ -81,7 +81,9 @@ implements MetaExpression
 	public void doWrite(TypeOutputStream out, Object o)
 	throws TypeException, IOException 
 	{
-		throw new TypeException( "not implemented");
+		int id = out.getTypeMap().getId(o.getClass());
+		out.writeObject( "u16", new Integer(id));
+		out.writeObject( id, o );
 	}
 
 }

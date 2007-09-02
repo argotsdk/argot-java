@@ -80,14 +80,5 @@ implements MetaDefinition
 		}
     }
 
-    public void doWrite(TypeOutputStream out, Object o) throws TypeException, IOException
-    {
-    }
-
-
-    public Object doRead(TypeInputStream in) throws TypeException, IOException
-    {
-        return null;
-    }
 
 }

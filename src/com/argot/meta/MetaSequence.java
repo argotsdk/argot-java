@@ -131,5 +131,6 @@ implements MetaExpression, MetaDefinition
 	public void doWrite(TypeOutputStream out, Object o)
 	throws TypeException, IOException 
 	{
+		throw new TypeException("not implemented");
 	}
 }

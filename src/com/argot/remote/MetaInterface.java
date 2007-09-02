@@ -123,7 +123,17 @@ implements MetaDefinition
 
 	public MetaMethod getMetaMethod(Method method) 
 	{
-		return (MetaMethod) _methodToMetaMethod.get(method);
+		MetaMethod metaMethod = (MetaMethod) _methodToMetaMethod.get(method);
+		if (metaMethod == null)
+		{
+			for (int x=0; x<_parentInterfaces.length;x++)
+			{
+				metaMethod = _parentInterfaces[x].getMetaMethod(method);
+				if (method!=null) return metaMethod;
+			}
+			return null;
+		} 
+		return metaMethod;
 	}
 	
 	public Method getMethod( MetaMethod metaMethod )

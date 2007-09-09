@@ -23,11 +23,16 @@ import com.argot.meta.MetaSequence;
 public class TypeReaderAuto
 implements TypeReader
 {
-	private TypeConstructorAuto _constructor;
+	private TypeConstructor _constructor;
 	
 	public TypeReaderAuto( Class clss )
 	{
 		_constructor = new TypeConstructorAuto( clss );
+	}
+	
+	public TypeReaderAuto( TypeConstructor constructor )
+	{
+		_constructor = constructor;
 	}
 	
 	public Object read(TypeInputStream in, TypeElement element)

@@ -28,6 +28,8 @@ public class TypeLibrary
     public static int TYPE_REGISTERED = 2;
     public static int TYPE_COMPLETE = 3;
     
+    public static final String[] typeStates = {"Type not defined","type reserved","type registered","type complete"};
+    
 	private ArrayList _types;
 	private HashMap _names;
 	private HashMap _classes;
@@ -312,7 +314,7 @@ public class TypeLibrary
 		
 	    int state = getTypeState( name );
 	    if ( state != TYPE_REGISTERED )
-	        throw new TypeException("type in wrong state:" + state);
+	        throw new TypeException("type in wrong state:" + typeStates[state]);
 	    
 	    TypeDefinition def = (TypeDefinition) _names.get( name );
 	    def.reader = reader;

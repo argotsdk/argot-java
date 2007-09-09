@@ -166,8 +166,11 @@ implements MetaExpression, MetaDefinition
 	
     public void doWrite(TypeOutputStream out, Object o) throws TypeException, IOException
     {
-        out.writeObject( "u16", new Integer( 1 ));
-        out.writeObject( _concreteType, o );
+    	out.writeObject("u16", new Integer(out.getTypeMap().getId(this.getMemberTypeId()) ));
+		
+		// This will force the mapId to be mapped in dynamic type maps.
+		out.getTypeMap().getId( this.getMemberTypeId() );
+		out.writeObject( out.getTypeMap().getId( _concreteType ), o );    	
     }
 
     public Object doRead(TypeInputStream in) throws TypeException, IOException

@@ -39,7 +39,6 @@ extends TypeException
 			if ( x > 0 )
 				buffer.append( ">" );
 		}
-		System.out.println(buffer);
 		return buffer.toString();
 	}
 }

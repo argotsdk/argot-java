@@ -30,6 +30,7 @@ import com.argot.TypeWriter;
 import com.argot.common.BigEndianUnsignedByte;
 import com.argot.common.BigEndianUnsignedShort;
 import com.argot.common.U8Ascii;
+import com.argot.meta.MetaAbstract;
 import com.argot.meta.MetaBase;
 import com.argot.meta.MetaDefinition;
 
@@ -161,7 +162,39 @@ implements MetaDefinition
 	public int[] getErrorTypes()
 	{
 		return _errorTypes;
-	}	
+	}
+
+	public int getMatchingErrorType(Throwable exception)
+	{
+		try 
+		{
+			int id = getLibrary().getId(exception.getClass());
+			
+			// see if the exception is directly related.
+			for (int x=0;x<_errorTypes.length;x++)
+			{
+				if (id == _errorTypes[x])
+					return id;
+			}
+			
+			// look through abstract types.
+			for (int x=0;x<_errorTypes.length;x++)
+			{
+				TypeElement element = getLibrary().getStructure(_errorTypes[x]);
+				if (element instanceof MetaAbstract)
+				{
+					MetaAbstract metaAbstract = (MetaAbstract) element;
+					if (metaAbstract.isMapped(id))
+					{
+						return _errorTypes[x];
+					}
+				}
+			}
+		} catch (TypeException e) {
+			return TypeLibrary.NOTYPE;
+		}
+		return TypeLibrary.NOTYPE;
+	}
 	
 	public Method getNativeMethod()
 	{

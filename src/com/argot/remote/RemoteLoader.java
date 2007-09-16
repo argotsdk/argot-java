@@ -19,6 +19,9 @@ package com.argot.remote;
 import com.argot.ResourceDictionaryLoader;
 import com.argot.TypeException;
 import com.argot.TypeLibrary;
+import com.argot.TypeReaderAuto;
+import com.argot.TypeReaderInvalid;
+import com.argot.TypeWriterInvalid;
 import com.argot.meta.MetaMarshaller;
 
 public class RemoteLoader
@@ -62,7 +65,14 @@ extends ResourceDictionaryLoader
 		if ( library.getTypeState( MetaLocation.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
 		{
 			library.bind( MetaLocation.TYPENAME,new MetaMarshaller(),new MetaMarshaller(), MetaLocation.class );
-		}			
+		}
+
+		library.bind( "remote.exception", new MetaMarshaller(), new MetaMarshaller(), null );
+		library.bind( "remote.exception#empty", new MetaMarshaller(),new MetaMarshaller(), null );
+		library.bind( "remote.exception.basic", new MetaMarshaller(),new MetaMarshaller(), null );
+		library.bind( "remote.stack_trace_element", new TypeReaderAuto( MetaRemoteStackTraceElement.class ),new MetaRemoteStackTraceElement("","","",0), MetaRemoteStackTraceElement.class );
+		library.bind( "remote.exception.wrapped", new MetaRemoteException.Reader(WrappedRemoteException.class), new MetaRemoteException.Writer(), WrappedRemoteException.class );
+		library.bind( "remote.exception#wrapped", new MetaMarshaller(),new MetaMarshaller(), null );
 	}
 
 

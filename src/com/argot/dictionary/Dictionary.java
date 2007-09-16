@@ -273,14 +273,16 @@ public class Dictionary
 
 		if ( !Arrays.equals( readcore, localCore ) )
 		{
+			StringBuffer errorMsg = new StringBuffer();
+			errorMsg.append("core dictionaries did not match");
 			for ( int x =0; x< readcore.length; x++ )
 			{
 				if ( readcore[x] != localCore[x] )
 				{
-					System.out.println("no match at pos: " + x + "," + readcore[x] + "," + localCore[x] );
+					errorMsg.append("no match at: " + x + "," + readcore[x] + "," + localCore[x]+"\n" );
 				}
 			}
-			throw new TypeException( "core dictionaries did not match");
+			throw new TypeException(errorMsg.toString());
 		}
 		
 		// now the core is confirmed we can add in the extensions.

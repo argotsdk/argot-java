@@ -166,14 +166,14 @@
 		be built by Argot.
 	-->
 	<target name="argot-compile" depends="compile,argot-copy,argot-compiler-config" description="compiles dictionary files from argot">
-		<argotc input="argot/meta.argot" output="${build.bin}/meta.dictionary"/>
-		<argotc input="argot/common.argot" output="${build.bin}/common.dictionary"/>
-		<argotc input="argot/remote.argot" output="${build.bin}/remote.dictionary"/>
-		<argotc input="argot/dictionary.argot" output="${build.bin}/dictionary.dictionary"/>		
-		<argotc input="argot/netargot.argot" output="${build.bin}/netargot.dictionary"/>
+		<argotc input="argot/meta.argot" output="${build.bin}/meta.dictionary" loadCommon="false"/>
+		<argotc input="argot/common.argot" output="${build.bin}/common.dictionary" loadCommon="false"/>
+		<argotc input="argot/remote.argot" output="${build.bin}/remote.dictionary" loadRemote="false"/>
+		<argotc input="argot/dictionary.argot" output="${build.bin}/dictionary.dictionary" loadRemote="false"/>		
+		<argotc input="argot/netargot.argot" output="${build.bin}/netargot.dictionary" loadRemote="false"/>
 	</target>
 
-	<target name="buildjar" depends="compile,argot-copy">
+	<target name="buildjar" depends="compile,argot-copy,argot-compile">
 		<!-- Put everything in ${build.bin} into the jar file -->
 		<copy file="LICENSE.TXT" tofile="${build.bin}/LICENSE.TXT" />
 		<copy todir="${build.bin}">

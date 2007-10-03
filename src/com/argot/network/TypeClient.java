@@ -138,7 +138,7 @@ implements TypeTransport
 			catch (TypeException e)
 			{
 				_error = true;
-				throw new IOException( e.toString() );
+				throw new IOException( e.toString(), e );
 			}
 			catch (IOException e)
 			{

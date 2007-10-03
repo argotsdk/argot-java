@@ -98,6 +98,16 @@ extends ResourceDictionaryLoader
 			library.bind( BigEndianSignedLong.TYPENAME, bbe,bbe,Long.class );			
 		}
 
+		if ( library.getTypeState(IEEEFloat.TYPENAME) == TypeLibrary.TYPE_REGISTERED )
+		{
+			library.bind( IEEEFloat.TYPENAME, new IEEEFloat.Reader(), new IEEEFloat.Writer(), Float.class);
+		}
+
+		if ( library.getTypeState(IEEEDouble.TYPENAME) == TypeLibrary.TYPE_REGISTERED )
+		{
+			library.bind( IEEEDouble.TYPENAME, new IEEEDouble.Reader(), new IEEEDouble.Writer(), Double.class);
+		}
+		
 		if ( library.getTypeState( U8Ascii.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
 		{	
 			U8Ascii sbu = new U8Ascii();

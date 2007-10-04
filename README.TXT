@@ -1,5 +1,5 @@
 
-Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+Copyright 2003-2007 (c) Live Media Pty Ltd. <argot@einet.com.au> 
 
 This software is licensed under the Argot Public License 
 which may be found in the file LICENSE distributed 
@@ -50,6 +50,24 @@ Please view the example .argot files to see how argot is specified.
 
 Version History
 ---------------
+
+1.2.1 - 4 October 2007
+
+- Added exception types to remote package.
+- Added ieee.float and ieee.double to common types.
+- Added string names to TypeLibrary type states.
+- Added additional information to TypeInputStream exceptions
+  to help with debugging.
+- Added new TypeLibraryLoader to make it easier to load
+  dictionary files.  ResourceDictionaryLoader allows dictionaries
+  to be loaded from file or from within jar files.
+- Added TypeLibrary.addClassAlias to create aliases to types.
+- Added meta dictionary agreement to Type agreement protocol.
+  This reduces initial network traffic substantially.
+- TypeMap now uses the TwoWayHashMap to implement mapping.
+- Fixed up the ant build scripts.  Uses JUnit for unit testing
+  and emma for coverage reports.
+- Various other bug fixes.
 
 1.2.0 - 20 December 2005
 

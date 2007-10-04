@@ -5,12 +5,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import com.abc.bookstore.CommandBookstore;
 import com.abc.bookstore.IBookstore;
 import com.abc.bookstore.Bookstore;
-import com.abc.bookstore.dictionary.BookstoreLoader;
+import com.abc.bookstore.argot.BookLoader;
+
 import com.argot.TypeException;
-import com.argot.TypeLibraryLoader;
 import com.argot.TypeLibrary;
+import com.argot.TypeLibraryLoader;
 import com.argot.common.CommonLoader;
 import com.argot.dictionary.DictionaryLoader;
 import com.argot.meta.MetaLoader;
@@ -30,32 +32,28 @@ public class LocalBookstore
 	 * handled automatically by the TypeReaderAuto marshaller.
 	 * 
 	 */
-	private static void setupArgot() throws TypeException, IOException
+	private static TypeLibrary configTypeLibrary() throws TypeException, IOException
 	{
 		TypeLibraryLoader libraryLoaders[] = {
 				new MetaLoader(),
 				new DictionaryLoader(),
 				new CommonLoader(),
-				new BookstoreLoader()
-			};
-		
-		TypeLibrary library = new TypeLibrary( libraryLoaders );
+				new BookLoader()
+		};
+		return new TypeLibrary(libraryLoaders);
 	}
 	
 	
 	public static void main( String[] args )
 	{
         try
-        {
-			setupArgot();
-		
-			IBookstore bookstore = new Bookstore();
-		
+        {	
+			System.out.println("Bookstore example application - Local");
+			IBookstore bookstore = new Bookstore( configTypeLibrary() );
+			
 			CommandBookstore command = new CommandBookstore( bookstore );
-		
 			InputStreamReader isr = new InputStreamReader( System.in );
 			BufferedReader reader = new BufferedReader( isr );
-		
 			command.getCommand( System.out, reader );
         }
         catch (Exception e)

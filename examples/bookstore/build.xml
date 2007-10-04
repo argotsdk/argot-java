@@ -2,17 +2,26 @@
 
   <description>Argot build</description>
   
-  <target name="compile" description="compile the source">
-                
-	<path id="classpath">
-		<fileset dir="../../lib">
-			<include name="**/*.jar" />
-		</fileset>
+	<path id="compile.classpath">
+			<fileset dir="../../lib">
+				<include name="**/*.jar" />
+			</fileset>
 	</path>
+	
+	<target name="argot-compile" description="compile argot dictionary files">
+		<taskdef name="argotc" classname="com.argot.compiler.ant.AntArgotCompiler" classpathref="compile.classpath" />
 
-	<javac srcdir="." destdir="." 
-		classpathref="classpath" includes="**/*.java" 
-		debug="off" optimize="true" deprecation="true" />
-  </target>
-  
+		<argotc input="argot/bookstore.argot" output="./bookstore.dictionary" path="../../lib/colony-1.2.1.jar"/>
+	</target>
+
+	<target name="compile" depends="argot-compile" description="compile the source">
+		<javac 	srcdir="src" 
+				destdir="." 
+				classpathref="compile.classpath" 
+				includes="**/*.java" 
+				debug="on" 
+				optimize="true" 
+				deprecation="true" />
+	</target>
+		  
 </project>

@@ -14,14 +14,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.argot.TypeException;
-import com.argot.TypeLibraryLoader;
 import com.argot.TypeMap;
 import com.argot.TypeInputStream;
 import com.argot.TypeOutputStream;
 import com.argot.TypeLibrary;
-import com.argot.common.CommonLoader;
-import com.argot.dictionary.DictionaryLoader;
-import com.argot.meta.MetaLoader;
 
 
 public class Bookstore 
@@ -29,11 +25,13 @@ implements IBookstore
 {
 	private List books;
 	private Map isbnMap;
+	private TypeLibrary library;
 		
-	public Bookstore(  )
+	public Bookstore( TypeLibrary library )
 	{
 		books = new ArrayList();
 		isbnMap = new HashMap();
+		this.library = library;
 	}
 	
 	
@@ -85,13 +83,6 @@ implements IBookstore
 	private TypeMap getDataFileTypeMap() 
 	throws TypeException
 	{
-		TypeLibraryLoader libraryLoaders[] = {
-				new MetaLoader(),
-				new DictionaryLoader(),
-				new CommonLoader()
-			};
-		
-		TypeLibrary library = new TypeLibrary( libraryLoaders );
 		TypeMap map = new TypeMap( library );
 		map.map( 1, library.getId( "book" ) );
 		map.map( 2, library.getId( "booklist" ));

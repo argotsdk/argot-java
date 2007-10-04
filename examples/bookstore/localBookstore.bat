@@ -5,4 +5,4 @@ if exist "com\abc\bookstore\application\LocalBookstore.class" goto bookstoreBuil
 call ant
 :bookstoreBuilt
 
-java -cp "..\..\lib\Argot-EA1.0.1.jar;." com.abc.bookstore.application.LocalBookstore
+java -cp "..\..\lib\argot-1.2.1.jar;." com.abc.bookstore.application.LocalBookstore

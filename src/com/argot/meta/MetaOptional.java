@@ -54,7 +54,7 @@ implements MetaExpression
 		public Object read(TypeInputStream in, TypeElement element)
 		throws TypeException, IOException
 		{
-			TypeReader reader = new TypeReaderAuto( this.getClass() );
+			TypeReader reader = new TypeReaderAuto( MetaOptional.class );
 			return reader.read( in, element );
 		}
     }
@@ -67,7 +67,7 @@ implements MetaExpression
 		{
 			MetaOptional to = (MetaOptional) o;
 			
-			out.writeObject( "meta.name", to._option );
+			out.writeObject("meta.expression", to._option );
 		}
     }
     

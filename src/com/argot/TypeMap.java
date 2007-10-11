@@ -153,41 +153,28 @@ public class TypeMap
 	 * @return
 	 * @throws TypeException
 	 */
-	public boolean isSame( int id, String name, byte[] structure, ReferenceTypeMap coreMap )
+	public void isSame( int id, String name, byte[] structure, ReferenceTypeMap coreMap )
+	throws TypeException
 	{
 		// First check if we can find the same identifier.
-		int i;
-		
-		try 
-		{
-			i = _library.getId(name);
-		}
-		catch (TypeException e1) 
-		{
-			return false;
-		}
+		int i = _library.getId(name);
 			
 		// Are the identifiers the same.
 		if ( id != i )
 		{
-			return false;
+			throw new TypeException("Type Mismatch: Type identifiers different");
 		}
 
 		// Are the definitions the same.
-		try
+		// read the definition.
+		coreMap.setReferenceMap(this);
+		TypeElement definition = readStructure( coreMap, structure );
+		
+		// check what we've read with the local version.
+		TypeElement localStruct = _library.getStructure( i );
+		if (!TypeHelper.structureMatches( coreMap, definition, localStruct ))
 		{
-			// read the definition.
-			coreMap.setReferenceMap(this);
-			TypeElement definition = readStructure( coreMap, structure );
-			
-			// check what we've read with the local version.
-			TypeElement localStruct = _library.getStructure( i );
-			return TypeHelper.structureMatches( coreMap, definition, localStruct );
-		}
-		catch (TypeException e)
-		{
-			// Any errors, must not match.
-			return false;
+			throw new TypeException("Type mismatch: structures do not match");
 		}
 	}
 

@@ -184,10 +184,13 @@ public class MessageReader
 		{
 			if ( !newTypes[x].reserved )
 			{
-				if ( !mapSpec.isSame( mapSpec.getSystemId( newTypes[x].id ), newTypes[x].name, newTypes[x].structure, coreMap ) )
+				try 
 				{
-					throw new TypeException( "type mismatch:" + newTypes[x].name );
-					
+					mapSpec.isSame( mapSpec.getSystemId( newTypes[x].id ), newTypes[x].name, newTypes[x].structure, coreMap );					
+				} 
+				catch ( TypeException ex )
+				{
+					throw new TypeException( "type mismatch:" + newTypes[x].name, ex );
 				}
 			}
 		}

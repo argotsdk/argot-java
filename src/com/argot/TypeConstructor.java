@@ -15,7 +15,9 @@
  */
 package com.argot;
 
+import com.argot.meta.MetaSequence;
+
 public interface TypeConstructor
 {
-	Object construct( Object[] parameters ) throws TypeException;
+	Object construct( MetaSequence sequence, Object[] parameters ) throws TypeException;
 }

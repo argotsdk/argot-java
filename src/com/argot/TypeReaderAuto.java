@@ -48,7 +48,7 @@ implements TypeReader
 		{
 			MetaSequence sequence = (MetaSequence) metaDefinition;
 			Object[] objects = (Object[]) sequence.doRead( in );
-			return _constructor.construct( objects );						
+			return _constructor.construct( sequence, objects );						
 		}
 		else
 		{

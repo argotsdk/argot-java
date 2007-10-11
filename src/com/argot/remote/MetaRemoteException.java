@@ -31,6 +31,7 @@ import com.argot.TypeWriter;
 import com.argot.common.BigEndianUnsignedShort;
 import com.argot.common.U8Ascii;
 import com.argot.meta.MetaAbstract;
+import com.argot.meta.MetaSequence;
 
 /**
  * This is a remote exception with stack trace.  It allows an exception and full stack
@@ -52,7 +53,7 @@ public class MetaRemoteException
 			_autoConstructor = new TypeConstructorAuto(clazz);
 		}
 		
-		public Object construct(Object[] parameters) 
+		public Object construct(MetaSequence sequence, Object[] parameters) 
 		throws TypeException 
 		{
 			// the elements are wrapped in a sequence array.
@@ -62,7 +63,7 @@ public class MetaRemoteException
 			exceptionParams[0] = stackTrace[0];
 			exceptionParams[1] = stackTrace[1];
 			
-			Throwable ex = (Throwable) _autoConstructor.construct(exceptionParams);
+			Throwable ex = (Throwable) _autoConstructor.construct(sequence, exceptionParams);
 			ex.setStackTrace(convertStackTrace((Object[]) stackTrace[2]));
 			return ex;
 		}

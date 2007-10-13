@@ -212,6 +212,16 @@ public class TypeLibrary
 	    
 	    structure.bind( this, structure, name, definition.id );
 
+	    if ( reader instanceof TypeBound )
+	    {
+	    	((TypeBound)reader).bind(this, structure, name, definition.id);
+	    }
+	    
+	    if ( writer instanceof TypeBound )
+	    {
+	    	((TypeBound)writer).bind(this, structure, name, definition.id );
+	    }
+	    
 	    return definition.id;
 	}
 
@@ -331,6 +341,16 @@ public class TypeLibrary
 	    }
 	    
 	    def.structure.bind( this, def.structure, name, def.id );
+	    
+	    if ( reader instanceof TypeBound )
+	    {
+	    	((TypeBound)reader).bind(this, def.structure, name, def.id);
+	    }
+	    
+	    if ( writer instanceof TypeBound )
+	    {
+	    	((TypeBound)writer).bind(this, def.structure, name, def.id );
+	    }
 	    
 	    return def.id;
 	}

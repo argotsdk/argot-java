@@ -20,8 +20,6 @@ import com.argot.ResourceDictionaryLoader;
 import com.argot.TypeException;
 import com.argot.TypeLibrary;
 import com.argot.TypeReaderAuto;
-import com.argot.TypeReaderInvalid;
-import com.argot.TypeWriterInvalid;
 import com.argot.meta.MetaMarshaller;
 
 public class RemoteLoader

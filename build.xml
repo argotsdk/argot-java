@@ -17,7 +17,7 @@
 <project name="argot" default="package" basedir=".">
 
 	<description>Argot build</description>
-    <property name="version" value="1.2.1"/>
+    <property name="version" value="1.2.1a"/>
 	
 	<!-- set global properties for this build -->
 	<property name="src" location="src" />

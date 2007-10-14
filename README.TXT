@@ -51,6 +51,21 @@ Please view the example .argot files to see how argot is specified.
 Version History
 ---------------
 
+1.2.1a - 14 October 2007
+
+- Added TypeBeanMarshaller.
+- Added TypeArrayMarshaller.
+- Added TypeBound interface and made the TypeLibrary check
+  TypeReaders and TypeWriters to see if they implemented
+  the interface. Used for Bean and Array marshaller.
+- Modify TypeConstructorAuto to interface to pass in the
+  structure of the type.
+- Update TypeConstructorAuto to cache the correct 
+  class constructor.
+- Change TypeMap.isSame to throw an exception if types
+  differ.  Previously, the underlying cause was masked. 
+- Add and fix up meta.optional type to common dictionary.
+
 1.2.1 - 4 October 2007
 
 - Added exception types to remote package.

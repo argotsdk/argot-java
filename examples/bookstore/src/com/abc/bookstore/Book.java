@@ -9,6 +9,8 @@ public class Book
 	private String description; 
 	private String author; 
 	
+	public Book() {}
+	
 	public Book( String ISBN, String title, String author, String description )
 	{
 		this.ISBN = ISBN;

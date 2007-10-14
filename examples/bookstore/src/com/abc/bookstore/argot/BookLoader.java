@@ -9,6 +9,8 @@ import com.argot.ResourceDictionaryLoader;
 import com.argot.TypeException;
 import com.argot.TypeLibrary;
 import com.argot.TypeReaderAuto;
+import com.argot.auto.TypeArrayMarshaller;
+import com.argot.auto.TypeBeanMarshaller;
 import com.argot.remote.MetaInterface;
 import com.argot.remote.MetaRemoteException;
 
@@ -31,7 +33,7 @@ extends ResourceDictionaryLoader
 	public void bind( TypeLibrary library ) 
 	throws TypeException
 	{
-		library.bind( BookArgot.TYPENAME, new TypeReaderAuto( Book.class ), new BookArgot(), Book.class );
-		library.bind( BookArrayArgot.TYPENAME, new BookArrayArgot(), new BookArrayArgot(), Book[].class );
+		library.bind( "book", new TypeBeanMarshaller(), new TypeBeanMarshaller(), Book.class );
+		library.bind( "booklist", new TypeArrayMarshaller(), new TypeArrayMarshaller(), Book[].class );
 	}
 }

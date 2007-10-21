@@ -56,7 +56,7 @@ implements TypeReader, TypeWriter
 		
 		byte[] bytes = (byte[]) o;
 
-		out.writeObject( "U16", new Integer( bytes.length) );
+		out.writeObject( "u16", new Integer( bytes.length) );
 		out.getStream().write( bytes );
 
 	}

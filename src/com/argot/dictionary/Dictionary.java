@@ -325,14 +325,14 @@ public class Dictionary
 	{
 	
 			
-		int size = ((Integer)dictDataIn.readObject("U16" )).intValue();
+		int size = ((Integer)dictDataIn.readObject("u16" )).intValue();
 		Triple newTypes[] = new Triple[size];
 		
 		// Step 1.  Read all the types in.
 		for ( int x = 0; x<size; x++ )
 		{
 			Triple newType = new Triple();
-			newType.id = ((Integer)dictDataIn.readObject( "U16")).intValue();
+			newType.id = ((Integer)dictDataIn.readObject( "u16")).intValue();
 			newType.name = (String) dictDataIn.readObject( "meta.name" );
 			newType.structure = (byte[]) dictDataIn.readObject( "dictionary.definition" );
 			newTypes[x] = newType;
@@ -400,7 +400,7 @@ public class Dictionary
 		TypeOutputStream out1 = new TypeOutputStream( baos1, map );
 		
 		// write the number of entries.
-		out1.writeObject( "U16", new Integer( coreIds.size() ));
+		out1.writeObject( "u16", new Integer( coreIds.size() ));
 		
 			
 		Iterator i = coreIds.iterator();	
@@ -410,7 +410,7 @@ public class Dictionary
 			String name = map.getName( id );
 			MetaDefinition definition = (MetaDefinition) map.getStructure(id);
 						
-			out1.writeObject( "U16", new Integer(id));
+			out1.writeObject( "u16", new Integer(id));
 			out1.writeObject( "meta.name", name );
 			out1.writeObject( "dictionary.definition", definition );
 			

@@ -17,7 +17,6 @@ package com.argot.common;
 
 import java.io.IOException;
 
-import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
 import com.argot.TypeOutputStream;
@@ -32,26 +31,25 @@ import com.argot.TypeWriter;
 public class U8Ascii
 implements TypeReader, TypeWriter
 {
-
 	public static final String TYPENAME = "u8ascii";
 
-	public Object read(TypeInputStream in, TypeElement element)
-		throws TypeException, IOException
+	public Object read(TypeInputStream in)
+	throws TypeException, IOException
 	{
-		int id = in.getStream().read();
-		if ( id == -1 ) throw new IOException( "disconnected");
+		int id = in.read();
+
 		if ( id > 0 )
 		{
 			byte[] bytes = new byte[ id ];
-			in.getStream().read(bytes);
+			in.read(bytes,0,bytes.length);
 			return new String( bytes, "US-ASCII");
 		}
 		
 		return new String("");
 	}
 
-	public void write(TypeOutputStream out, Object o, TypeElement element )
-		throws TypeException, IOException
+	public void write(TypeOutputStream out, Object o )
+	throws TypeException, IOException
 	{
 		if ( !(o instanceof String) )
 		{
@@ -71,5 +69,4 @@ implements TypeReader, TypeWriter
 		out.getStream().write( size );
 		out.getStream().write( bytes, 0, size );
 	}
-
 }

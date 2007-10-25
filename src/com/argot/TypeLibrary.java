@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
+import com.argot.auto.TypeSimpleReader;
+import com.argot.auto.TypeSimpleWriter;
+
 public class TypeLibrary
 {
     public static int NOTYPE = -1;
@@ -39,8 +42,8 @@ public class TypeLibrary
 	    public int state;
 	    public int id;
 		public String name;
-		public TypeReader reader;
-		public TypeWriter writer;
+		public TypeLibraryReader reader;
+		public TypeLibraryWriter writer;
 		public Class clss;
 		public TypeElement structure;
 	}
@@ -145,6 +148,17 @@ public class TypeLibrary
         return definition.state;
     }
 
+	public int register( String uncheckedName, TypeElement structure, TypeReader reader, TypeWriter writer, Class clss )
+	throws TypeException
+	{
+	    if ( reader == null )
+	        throw new TypeException("invalid parameter: reader is null");
+	    if ( writer == null )
+	        throw new TypeException("invalid parameter: writer is null");
+		
+		return register(uncheckedName, structure, new TypeSimpleReader(reader), new TypeSimpleWriter(writer),clss);
+	}
+	
     /**
      * Register a type. Type must not be defined in the system or reserved.
      * 
@@ -156,7 +170,7 @@ public class TypeLibrary
      * @return
      * @throws TypeException
      */
-	public int register( String uncheckedName, TypeElement structure, TypeReader reader, TypeWriter writer, Class clss )
+	public int register( String uncheckedName, TypeElement structure, TypeLibraryReader reader, TypeLibraryWriter writer, Class clss )
 	throws TypeException
 	{
 	    String name = checkName( uncheckedName );
@@ -316,8 +330,14 @@ public class TypeLibrary
 	    int id = add( definition );
 	    return id;	    
 	}
+	
+	public int bind( String uncheckedName, TypeReader reader, TypeWriter writer, Class clss)
+	throws TypeException
+	{
+		return bind(uncheckedName, new TypeSimpleReader(reader), new TypeSimpleWriter(writer), clss);
+	}
 
-	public int bind( String uncheckedName, TypeReader reader, TypeWriter writer, Class clss )
+	public int bind( String uncheckedName, TypeLibraryReader reader, TypeLibraryWriter writer, Class clss )
 	throws TypeException
 	{
 		String name  = checkName( uncheckedName );
@@ -396,7 +416,7 @@ public class TypeLibrary
 	}
 	
 
-	public TypeReader getReader( int id )
+	public TypeLibraryReader getReader( int id )
 	throws TypeException
 	{
 		if ( !isTypeIdInRange(id) )
@@ -412,7 +432,7 @@ public class TypeLibrary
 		return def.reader;
 	}
 	
-	public TypeWriter getWriter( int id )
+	public TypeLibraryWriter getWriter( int id )
 	throws TypeException
 	{
 		if ( !isTypeIdInRange(id) )

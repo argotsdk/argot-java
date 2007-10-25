@@ -20,10 +20,11 @@ import java.io.IOException;
 import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
+import com.argot.TypeLibrary;
+import com.argot.TypeLibraryWriter;
+import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
-import com.argot.TypeReaderAuto;
-import com.argot.TypeLibrary;
 import com.argot.TypeWriter;
 
 public class MetaEncoding
@@ -51,42 +52,51 @@ implements MetaExpression
         super.bind(library, definition, typeName, typeId);
         _expression.bind( library, definition, typeName, typeId );
     }	
-    
-    public static class MetaEncodingTypeReader
-    implements TypeReader
-    {
-	    public Object read(TypeInputStream in, TypeElement element) throws TypeException, IOException
-	    {
-			if ( element instanceof MetaExpression )
-			{
-				TypeReader reader = new TypeReaderAuto( MetaEncoding.class );
-				return reader.read( in, element );
-			}
-			throw new TypeException( "shouldn't get here.");		
-	    }
-    }
-    
+
     public static class MetaEncodingTypeWriter
-    implements TypeWriter
+    implements TypeLibraryWriter,TypeWriter
     {
-	    public void write(TypeOutputStream out, Object o, TypeElement element) throws TypeException, IOException
+	    public void write(TypeOutputStream out, Object o) throws TypeException, IOException
 	    {
 	    	MetaEncoding enc = (MetaEncoding) o;
 	
 	 		out.writeObject( "meta.expression", enc._expression );
-			out.writeObject( "meta.name", enc._encoding );
-	
+			out.writeObject( "meta.name", enc._encoding );	
 	    }
+
+		public TypeWriter getWriter(TypeMap map) 
+		throws TypeException 
+		{
+			return this;
+		}
     }
     
-    public void doWrite(TypeOutputStream out, Object o) throws TypeException, IOException
+    public TypeWriter getWriter(TypeMap map) 
+    throws TypeException
     {
         throw new TypeException("not implemented");
     }
 
-    public Object doRead(TypeInputStream in) throws TypeException, IOException
+    private class MetaEncodingReader
+    implements TypeReader
     {
-        byte[] data = (byte[]) _expression.doRead( in );
-        return new String( data, _encoding );
+    	private TypeReader _data;
+    	private MetaEncodingReader( TypeReader expression )
+    	{
+    		_data = expression;
+    	}
+    	
+		public Object read(TypeInputStream in)
+		throws TypeException, IOException 
+		{
+	        byte[] data = (byte[]) _data.read( in );
+	        return new String( data, _encoding );
+		}
+    	
+    }
+    public TypeReader getReader(TypeMap map) 
+    throws TypeException
+    {
+    	return new MetaEncodingReader(_expression.getReader(map));
     }
 }

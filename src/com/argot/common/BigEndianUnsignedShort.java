@@ -17,7 +17,6 @@ package com.argot.common;
 
 import java.io.IOException;
 
-import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
 import com.argot.TypeOutputStream;
@@ -33,24 +32,21 @@ implements TypeReader, TypeWriter
 {
 	public static final String TYPENAME = "u16";
 	
-	public Object read(TypeInputStream in, TypeElement element ) 
+	public Object read(TypeInputStream in ) 
 	throws TypeException, IOException
 	{
-		int a,b;
+		byte[] buffer = new byte[2];
 		
-		a = in.getStream().read();
-		if ( a == -1 ) throw new IOException( "end of stream" );
-		b = in.getStream().read();
-		if ( b == -1 ) throw new IOException( "end of stream" );
-		
-		return new Integer( ((a << 8) + b) );
-
+		in.read(buffer,0,2);
+		return new Integer( ((buffer[0] & 0xff) << 8) | (buffer[1] & 0xff) );
 	}
 
-	public void write(TypeOutputStream out, Object o, TypeElement element ) 
+	public void write(TypeOutputStream out, Object o ) 
 	throws TypeException, IOException
 	{
-		int a,b,s;
+		byte[] buffer = new byte[2];
+		int s;
+		
 		if ( o instanceof Integer )
 		{
 			s = ((Integer) o).intValue();
@@ -63,14 +59,11 @@ implements TypeReader, TypeWriter
 			throw new TypeException( "BigEndianShort requires Short or Integer object");
 
 		if ( s < MIN || s > MAX )
-			throw new TypeException( "U16: value out of range:"+ s);
-
-		a = (s & 0xff00) >> 8;
-		b = (s & 0x00ff);
-
-		out.getStream().write( a );
-		out.getStream().write( b );
-
+			throw new TypeException( "u16: value out of range:"+ s);
+		
+		buffer[0] = (byte)((s >> 8) & 0xff );
+		buffer[1] = (byte)(s & 0xff );
+		out.getStream().write(buffer,0,2);
 	}
 	
 	public static final int MIN = 0;

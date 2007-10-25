@@ -19,6 +19,7 @@ package com.argot.meta;
 import com.argot.TypeException;
 import com.argot.TypeLibrary;
 import com.argot.TypeLibraryLoader;
+import com.argot.TypeReaderAuto;
 
 import com.argot.common.BigEndianUnsignedByte;
 import com.argot.common.BigEndianUnsignedShort;
@@ -74,7 +75,7 @@ implements TypeLibraryLoader
 			}
 		);	
 
-		library.register( MetaBasic.TYPENAME, basicDef, new MetaBasic.MetaBasicTypeReader(), new MetaBasic.MetaBasicTypeWriter(), MetaBasic.class );
+		library.register( MetaBasic.TYPENAME, basicDef, new TypeReaderAuto(MetaBasic.class), new MetaBasic.MetaBasicTypeWriter(), MetaBasic.class );
 			
 	    library.reserve( "meta.encoding");
 	    library.reserve( "meta.array");
@@ -123,7 +124,7 @@ implements TypeLibraryLoader
 			}
 		);
 		
-		library.register( "meta.encoding", encodingDef, new MetaEncoding.MetaEncodingTypeReader(), new MetaEncoding.MetaEncodingTypeWriter(), MetaEncoding.class );
+		library.register( "meta.encoding", encodingDef, new TypeReaderAuto(MetaEncoding.class), new MetaEncoding.MetaEncodingTypeWriter(), MetaEncoding.class );
 			
 		MetaDefinition refDef = new MetaSequence(
 			new MetaExpression[] {
@@ -143,7 +144,7 @@ implements TypeLibraryLoader
 			}
 		);
 		
-		library.register( "meta.sequence", seqDef, new MetaSequence.MetaSequenceTypeReader(), new MetaSequence.MetaSequenceTypeWriter(), MetaSequence.class );
+		library.register( "meta.sequence", seqDef, new TypeReaderAuto(MetaSequence.class), new MetaSequence.MetaSequenceTypeWriter(), MetaSequence.class );
 			
 		MetaDefinition arrayDef = new MetaSequence(
 			new MetaExpression[] {
@@ -152,7 +153,7 @@ implements TypeLibraryLoader
 			}
 		);
 
-		library.register( "meta.array", arrayDef, new MetaArray.MetaArrayTypeReader(), new MetaArray.MetaArrayTypeWriter(), MetaArray.class );
+		library.register( "meta.array", arrayDef, new TypeReaderAuto(MetaArray.class), new MetaArray.MetaArrayTypeWriter(), MetaArray.class );
 						
 		MetaMap exprRefDef = new MetaMap( library.getId("meta.expression"), library.getId("meta.reference"));
 		library.register( "meta.expression#reference", exprRefDef, new MetaMarshaller(),new MetaMarshaller(), null );

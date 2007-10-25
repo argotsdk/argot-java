@@ -141,12 +141,12 @@ extends ResourceDictionaryLoader
 		
 		if ( library.getTypeState( "meta.identified" ) == TypeLibrary.TYPE_REGISTERED )
 		{
-			library.bind( MetaIdentified.TYPENAME, new MetaIdentified.MetaIdentifiedTypeReader(), new MetaIdentified.MetaIdentifiedTypeWriter(), MetaIdentified.class );
+			library.bind( MetaIdentified.TYPENAME, new TypeReaderAuto(MetaIdentified.class), new MetaIdentified.MetaIdentifiedTypeWriter(), MetaIdentified.class );
 		}
 		
 		if ( library.getTypeState( "meta.optional" ) == TypeLibrary.TYPE_REGISTERED )
 		{
-			library.bind( MetaOptional.TYPENAME, new MetaOptional.MetaOptionalTypeReader(), new MetaOptional.MetaOptionalTypeWriter(), MetaOptional.class );
+			library.bind( MetaOptional.TYPENAME, new TypeReaderAuto(MetaOptional.class), new MetaOptional.MetaOptionalTypeWriter(), MetaOptional.class );
 		}
 		
 		if ( library.getTypeState( "date" ) == TypeLibrary.TYPE_REGISTERED )

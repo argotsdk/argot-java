@@ -57,11 +57,17 @@ implements TypeTransport
 	 */
 	public TypeEndPoint openLink() throws IOException
 	{
-		ChunkByteBuffer buffer = new ChunkByteBuffer();
 		TypeEndPoint ep = _link.openLink();
 		
-		TypeClientInputStream inStream = new TypeClientInputStream( ep, buffer );
-		return new TypeEndPointBasic( inStream, buffer.getOutputStream() );
+		try {
+			TypeOutputStream tmos = new TypeOutputStream( ep.getOutputStream(), _typeMap );
+			tmos.writeObject( "u8", new Short(ProtocolTypeMap.MSG) );
+			tmos.getStream().flush();
+		} catch (TypeException e) {
+			throw new IOException(e);
+		}
+		
+		return ep;
 	}
 
 	public void closeLink( TypeEndPoint endPoint )
@@ -163,6 +169,7 @@ implements TypeTransport
 			TypeOutputStream tmos = new TypeOutputStream( out, _typeMap );
 			tmos.writeObject( "u8", new Short(ProtocolTypeMap.CHECK_CORE ) );
 			tmos.writeObject( "u16binary", metaDictionary );		
+			tmos.getStream().flush();
 			
 			InputStream in = endPoint.getInputStream();
 			TypeInputStream tmis = new TypeInputStream( in, _typeMap );
@@ -192,6 +199,7 @@ implements TypeTransport
 			tmos.writeObject( "u8", new Short(ProtocolTypeMap.MAP) );
 			tmos.writeObject( "u8ascii", name );
 			tmos.writeObject( "u16binary", definition );		
+			tmos.getStream().flush();
 			
 			InputStream in = endPoint.getInputStream();
 			TypeInputStream tmis = new TypeInputStream( in, _typeMap );
@@ -218,7 +226,7 @@ implements TypeTransport
 			TypeOutputStream tmos = new TypeOutputStream( endPoint.getOutputStream(), _typeMap );
 			tmos.writeObject( "u8", new Short(ProtocolTypeMap.MAPRES) );		
 			tmos.writeObject( "u8ascii", name );
-
+			tmos.getStream().flush();
 			
 			TypeInputStream tmis = new TypeInputStream( endPoint.getInputStream(), _typeMap );
 			Short type = (Short) tmis.readObject( BigEndianUnsignedByte.TYPENAME );
@@ -243,7 +251,8 @@ implements TypeTransport
 			// Write the name and definition to the request body.
 			TypeOutputStream tmos = new TypeOutputStream( endPoint.getOutputStream(), _typeMap );
 			tmos.writeObject( "u8", new Short(ProtocolTypeMap.MAPREV) );		
-			tmos.writeObject( BigEndianSignedInteger.TYPENAME, new Integer( id ) );			
+			tmos.writeObject( BigEndianSignedInteger.TYPENAME, new Integer( id ) );
+			tmos.getStream().flush();
 			
 			TypeInputStream tmis = new TypeInputStream( endPoint.getInputStream(), _typeMap );
 			Short type = (Short) tmis.readObject( BigEndianUnsignedByte.TYPENAME );
@@ -269,7 +278,7 @@ implements TypeTransport
 			// Write the name and definition to the request body.
 			TypeOutputStream tmos = new TypeOutputStream( endPoint.getOutputStream(), _typeMap );
 			tmos.writeObject( "u8", new Short(ProtocolTypeMap.BASE) );		
-
+			tmos.getStream().flush();
 			
 			TypeInputStream tmis = new TypeInputStream( endPoint.getInputStream(), map );
 			Short type = (Short) tmis.readObject( BigEndianUnsignedByte.TYPENAME );

@@ -17,7 +17,6 @@ package com.argot.common;
 
 import java.io.IOException;
 
-import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
 import com.argot.TypeOutputStream;
@@ -31,28 +30,20 @@ implements TypeReader, TypeWriter
 {
 	public static final String TYPENAME = "s64";
 	
-	public Object read(TypeInputStream in, TypeElement element ) 
+	public Object read(TypeInputStream in ) 
 	throws TypeException, IOException
 	{
-		int a,b,c,d,e,f,g,h;
-		
-		a = in.getStream().read(); //56
-		b = in.getStream().read(); //48
-		c = in.getStream().read(); //40
-		d = in.getStream().read(); //32
-		e = in.getStream().read(); //24
-		f = in.getStream().read(); //16
-		g = in.getStream().read(); //8
-		h = in.getStream().read(); //0
-		
-		long value = (((long)a << 56) + ((long)b << 48) + ((long)c << 40) + ((long)d << 32) + ((long)e << 24) + ((long)f << 16) + ((long)g<<8) + (long)h);
+		byte bytes[] = new byte[8];
+		in.read(bytes,0,8);
+
+		long value = (((bytes[0] & 0xffL) << 56) | ((bytes[1] & 0xffL) << 48) | ((bytes[2] & 0xffL) << 40) | ((bytes[3] & 0xffL) << 32) | ((bytes[4] & 0xffL) << 24) | ((bytes[5] & 0xffL) << 16) | ((bytes[6] & 0xffL) << 8) | (bytes[7] & 0xffL ));		
 
 		// need to return a long value here because an unsigned
 		// integer can be bigger than the java int.
 		return new Long( value );
 	}
 
-	public void write(TypeOutputStream out, Object o, TypeElement element ) 
+	public void write(TypeOutputStream out, Object o ) 
 	throws TypeException, IOException
 	{
 		int a,b,c,d,e,f,g,h;

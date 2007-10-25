@@ -17,7 +17,6 @@ package com.argot.common;
 
 import java.io.IOException;
 
-import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
 import com.argot.TypeOutputStream;
@@ -36,29 +35,26 @@ implements TypeReader, TypeWriter
 
 	public static final String TYPENAME = "u16binary";
 	
-	public Object read(TypeInputStream in, TypeElement element)
-		throws TypeException, IOException
+	public Object read(TypeInputStream in)
+	throws TypeException, IOException
 	{
 		Integer id = (Integer) in.readObject( BigEndianUnsignedShort.TYPENAME );
 
 		byte[] bytes = new byte[ id.intValue() ];
-		in.getStream().read(bytes);
+		in.read(bytes,0,bytes.length);
 		
 		return bytes;
 	}
 
-	public void write(TypeOutputStream out, Object o, TypeElement element )
-		throws TypeException, IOException
+	public void write(TypeOutputStream out, Object o )
+	throws TypeException, IOException
 	{
 		if ( !(o instanceof byte[]) )
 			throw new TypeException( "StringType: can only write objects of type String");
-		
-		
+
 		byte[] bytes = (byte[]) o;
 
 		out.writeObject( "u16", new Integer( bytes.length) );
 		out.getStream().write( bytes );
-
 	}
-
 }

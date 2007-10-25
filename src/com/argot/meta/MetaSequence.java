@@ -20,17 +20,17 @@ import java.io.IOException;
 import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
+import com.argot.TypeLibrary;
+import com.argot.TypeLibraryWriter;
+import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
-import com.argot.TypeReaderAuto;
-import com.argot.TypeLibrary;
 import com.argot.TypeWriter;
 
 public class MetaSequence
 extends MetaBase
 implements MetaExpression, MetaDefinition
 {
-	
 	public static String TYPENAME  = "meta.sequence";
 	
 	private MetaExpression[] _objects;
@@ -73,32 +73,10 @@ implements MetaExpression, MetaDefinition
 		return _objects.length;
 	}
 	
-	
-	/**
-	 * This is used to read an actual sequence from a definition which
-	 * uses this function.
-	 * 
-	 * @see com.argot.TypeFunction#read(com.argot.TypeMimeInputStream, com.argot.TypeElement)
-	 */
-	public static class MetaSequenceTypeReader
-	implements TypeReader
-	{
-		public Object read(TypeInputStream in, TypeElement element)
-		throws TypeException, IOException
-		{
-			if ( element instanceof MetaExpression )
-			{
-				TypeReader reader = new TypeReaderAuto( MetaSequence.class );
-				return reader.read( in, element );
-			}
-			throw new TypeException( "shouldn't get here.");
-		}
-	}
-		
 	public static class MetaSequenceTypeWriter
-	implements TypeWriter
+	implements TypeLibraryWriter,TypeWriter
 	{
-		public void write(TypeOutputStream out, Object obj, TypeElement element ) 
+		public void write(TypeOutputStream out, Object obj ) 
 		throws TypeException, IOException
 		{
 			MetaSequence ts = (MetaSequence) obj;
@@ -111,25 +89,54 @@ implements MetaExpression, MetaDefinition
 				out.writeObject( "meta.expression", o );
 			}
 		}
+		
+		public TypeWriter getWriter(TypeMap map) 
+		throws TypeException 
+		{
+			return this;
+		}
+		
 	}
 	
-	public Object doRead(TypeInputStream in)
-	throws TypeException, IOException 
+	private class MetaSequenceReader
+	implements TypeReader
 	{
-		Object[] objects = new Object[ size() ];
+		private TypeReader[] _readers;
+		
+		public MetaSequenceReader( TypeReader[] readers )
+		{
+			_readers = readers;
+		}
+
+		public Object read(TypeInputStream in)
+		throws TypeException, IOException 
+		{
+			Object[] objects = new Object[ size() ];
+			
+			for ( int x=0; x < size() ; x++ )
+			{
+				
+				objects[x] = _readers[x].read(in);
+			}			
+			return objects;
+		}
+		
+	}
+	
+	public TypeReader getReader(TypeMap map)
+	throws TypeException 
+	{
+		TypeReader[] readers = new TypeReader[ size() ];
 		
 		for ( int x=0; x < size() ; x++ )
 		{
-			
-			MetaExpression te = getElement( x );
-			objects[x] = te.doRead( in );
-		}
-		
-		return objects;
+			readers[x] = getElement(x).getReader(map);
+		}		
+		return new MetaSequenceReader(readers);
 	}
 
-	public void doWrite(TypeOutputStream out, Object o)
-	throws TypeException, IOException 
+	public TypeWriter getWriter(TypeMap map)
+	throws TypeException 
 	{
 		throw new TypeException("not implemented");
 	}

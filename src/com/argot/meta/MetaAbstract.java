@@ -19,9 +19,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
+import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
@@ -55,7 +55,7 @@ implements MetaExpression, MetaDefinition
 	public static class MetaAbstractTypeReader
 	implements TypeReader
 	{
-	    public Object read(TypeInputStream in, TypeElement element) throws TypeException, IOException
+	    public Object read(TypeInputStream in) throws TypeException, IOException
 	    {
 			return new MetaAbstract();
 	    }
@@ -64,39 +64,114 @@ implements MetaExpression, MetaDefinition
 	public static class MetaAbstractTypeWriter
 	implements TypeWriter
 	{
-	    public void write(TypeOutputStream out, Object o, TypeElement element) throws TypeException, IOException
+	    public void write(TypeOutputStream out, Object o) throws TypeException, IOException
 	    {
+	    	// do nothing.
 	    }
 	}
 
-    public void doWrite(TypeOutputStream out, Object o) throws TypeException, IOException
-    {
-		int id = out.getTypeMap().getLibrary().getId(o.getClass());
-		Integer mapId = (Integer) _concreteToMap.get( new Integer(id ));
-
-		if ( mapId == null )
-		{
-			throw new TypeException( "can't write abstract type directly.:" + o.getClass().getName() );
-		}
-		out.writeObject("u16", new Integer(out.getTypeMap().getId(mapId.intValue()) ));
+	private class MetaAbstractReader
+	implements TypeReader
+	{
+		private TypeReader _uint16;
+		private Map _mapCache;
 		
-		// This will force the mapId to be mapped in dynamic type maps.
-		out.getTypeMap().getId( mapId.intValue());
-		out.writeObject( out.getTypeMap().getId( id ), o );
+		public MetaAbstractReader(TypeReader uint16)
+		{
+			_uint16 = uint16;
+			_mapCache = new HashMap();
+		}
+		
+		public Object read(TypeInputStream in)
+		throws TypeException, IOException 
+		{
+	        Integer type = (Integer) _uint16.read(in);
+	        TypeReader mappedReader = (TypeReader) _mapCache.get(type);
+	        if ( mappedReader == null )
+	        {
+	        	int id = mapType( in.getTypeMap(), type );
+	        	mappedReader = in.getTypeMap().getReader(id);
+	        	_mapCache.put(type, mappedReader);
+	        }	        
+			return mappedReader.read( in );
+		}
+		
+		private int mapType(TypeMap map, Integer type)
+		throws TypeException
+		{
+	        int mapId = map.getSystemId( type.intValue() );
+			Integer concrete = (Integer) _mapToConcrete.get( new Integer( mapId ));
+	        if ( concrete == null )
+	        {
+	        	throw new TypeException("type not mapped:" + type.intValue() + " " + map.getName( type.intValue() ) ); 
+	        }
+			return map.getId( concrete.intValue());
+		}
+		
+	}
+
+    public TypeReader getReader(TypeMap map) 
+    throws TypeException
+    {
+    	return new MetaAbstractReader(map.getReader(map.getId("u16")));
     }
 
-    public Object doRead(TypeInputStream in) throws TypeException, IOException
-    {
-        Integer type = (Integer) in.readObject( "u16");
-        int mapId = in.getTypeMap().getSystemId( type.intValue() );
-		Integer concrete = (Integer) _mapToConcrete.get( new Integer( mapId ));
-        if ( concrete == null )
-        {
-        	throw new TypeException("type not mapped:" + type.intValue() + " " + in.getTypeMap().getName( type.intValue() ) ); 
-        }
-		return in.readObject( in.getTypeMap().getId( concrete.intValue()) );
-    }
+	private static class CacheEntry
+	{
+		Integer mapId;
+		TypeWriter idWriter;
+	}
 	
+    private class MetaAbstractWriter
+    implements TypeWriter
+    {
+    	private TypeWriter _uint16;
+		private Map _mapCache;
+		
+    	public MetaAbstractWriter(TypeWriter uint16)
+    	{
+    		_uint16 = uint16;
+    		_mapCache = new HashMap();
+    	}
+    	
+		public void write(TypeOutputStream out, Object o)
+		throws TypeException, IOException 
+		{
+			Class clss = o.getClass();
+			CacheEntry entry = (CacheEntry) _mapCache.get(clss);
+			if (entry == null )
+			{
+				entry = mapType(out.getTypeMap(), clss);
+				_mapCache.put(clss, entry);
+			}
+			_uint16.write(out, entry.mapId);
+			entry.idWriter.write(out, o);
+		}
+    	
+		private CacheEntry mapType(TypeMap map, Class clss)
+		throws TypeException
+		{
+			int id = map.getLibrary().getId(clss);
+			Integer mapId = (Integer) _concreteToMap.get( new Integer( id ));
+	        if ( mapId == null )
+	        {
+				throw new TypeException( "can't write abstract type directly.:" + clss.getName() );
+			}
+	        
+	        CacheEntry entry = new CacheEntry();
+	        entry.mapId = new Integer(map.getId(mapId.intValue()));
+	        entry.idWriter = map.getWriter(map.getId( id ));
+			return entry;
+		}
+		
+    }
+    
+    public TypeWriter getWriter(TypeMap map) 
+    throws TypeException
+    {
+    	return new MetaAbstractWriter(map.getWriter(map.getId("u16")));
+    }
+    
 	public boolean isMapped( int id )
 	{
 		return _concreteToMap.get( new Integer(id))==null?false:true;

@@ -18,7 +18,6 @@ package com.argot.common;
 
 import java.io.IOException;
 
-import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
 import com.argot.TypeOutputStream;
@@ -32,8 +31,7 @@ public class IEEEDouble
 	public static class Reader
 	implements TypeReader
 	{
-
-		public Object read(TypeInputStream in, TypeElement element)
+		public Object read(TypeInputStream in)
 		throws TypeException, IOException 
 		{
 			int a,b,c,d,e,f,g,h;
@@ -51,14 +49,12 @@ public class IEEEDouble
 
 			return new Double( Double.longBitsToDouble(value));
 		}
-		
 	}
 	
 	public static class Writer
 	implements TypeWriter
 	{
-
-		public void write(TypeOutputStream out, Object o, TypeElement element)
+		public void write(TypeOutputStream out, Object o)
 		throws TypeException, IOException 
 		{
 			int a,b,c,d,e,f,g,h;
@@ -87,7 +83,6 @@ public class IEEEDouble
 			out.getStream().write( g );
 			out.getStream().write( h );			
 		}
-		
 	}
-	
+		
 }

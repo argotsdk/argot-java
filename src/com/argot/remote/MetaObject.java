@@ -17,7 +17,6 @@ package com.argot.remote;
 
 import java.io.IOException;
 
-import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
 import com.argot.TypeOutputStream;
@@ -58,7 +57,7 @@ public class MetaObject
 	public static class MetaObjectReader
 	implements TypeReader
 	{
-		public Object read(TypeInputStream in, TypeElement element) 
+		public Object read(TypeInputStream in) 
 		throws TypeException, IOException 
 		{
 			MetaLocation location = (MetaLocation) in.readObject(MetaLocation.TYPENAME);
@@ -71,7 +70,7 @@ public class MetaObject
 	public static class MetaObjectWriter
 	implements TypeWriter
 	{
-		public void write(TypeOutputStream out, Object o, TypeElement element) 
+		public void write(TypeOutputStream out, Object o) 
 		throws TypeException, IOException 
 		{
 			MetaObject obj = (MetaObject) o;

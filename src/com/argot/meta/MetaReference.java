@@ -18,9 +18,12 @@ package com.argot.meta;
 import java.io.IOException;
 
 import com.argot.ReferenceTypeMap;
+import com.argot.TypeBound;
 import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
+import com.argot.TypeLibrary;
+import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeReaderAuto;
@@ -63,53 +66,59 @@ implements MetaExpression
 	
 
 	public static class MetaReferenceTypeReader
-	implements TypeReader
+	implements TypeReader,TypeBound
 	{
-	    public Object read(TypeInputStream in, TypeElement element) throws TypeException, IOException
+		TypeReaderAuto _reader = new TypeReaderAuto( MetaReference.class );
+		
+		public void bind(TypeLibrary library, TypeElement definition, String typeName, int typeId) 
+		throws TypeException 
+		{
+			_reader.bind(library, definition, typeName, typeId);
+		}
+		
+	    public Object read(TypeInputStream in) throws TypeException, IOException
 	    {
-	        // was instanceof MetaDefinition. maybe wrong.
-			if ( element instanceof MetaExpression )
-			{
-				// Use the Automatic reader to read and create this object.
-				TypeReader reader = new TypeReaderAuto( MetaReference.class );
-				MetaReference ref = (MetaReference) reader.read( in, element );
-				
-				// Check that what its referencing exists and convert from
-				// external mapping to internal mapping.
-				ReferenceTypeMap mapCore = (ReferenceTypeMap) in.getTypeMap();
-							
-				if (  mapCore.referenceMap().isValid( ref.getType() ) )
-					ref.setType( mapCore.referenceMap().getSystemId( ref.getType () ));
-				else
-					throw new TypeException( "TypeReference: invalid id " + ref.getType() );
-	
-				return ref;
-			}
-			throw new TypeException( "shouldn't get here.");
+	    	
+			// Use the Automatic reader to read and create this object.
+			TypeReader reader = _reader.getReader(in.getTypeMap());
+			MetaReference ref = (MetaReference) reader.read( in );
+			
+			// Check that what its referencing exists and convert from
+			// external mapping to internal mapping.
+			ReferenceTypeMap mapCore = (ReferenceTypeMap) in.getTypeMap();
+						
+			if (  mapCore.referenceMap().isValid( ref.getType() ) )
+				ref.setType( mapCore.referenceMap().getSystemId( ref.getType () ));
+			else
+				throw new TypeException( "TypeReference: invalid id " + ref.getType() );
+
+			return ref;
 	    }
 	}
 	
 	public static class MetaReferenceTypeWriter
 	implements TypeWriter
 	{
-	    public void write(TypeOutputStream out, Object o, TypeElement element) throws TypeException, IOException
+	    public void write(TypeOutputStream out, Object o) throws TypeException, IOException
 	    {
 			MetaReference tr = (MetaReference) o;
 			ReferenceTypeMap mapCore = (ReferenceTypeMap) out.getTypeMap();
 			int id = mapCore.referenceMap().getId( tr._type );
 			out.writeObject( "u16", new Integer( id ));
 			out.writeObject( "meta.name", tr._description );
-	    }
+	    } 
 	}
 	
-    public void doWrite(TypeOutputStream out, Object o) throws TypeException, IOException
+    public TypeWriter getWriter(TypeMap map) 
+    throws TypeException
     {
-        out.writeObject( out.getTypeMap().getId( _type ), o );
+    	return map.getWriter( map.getId(_type));
     }
 
-    public Object doRead(TypeInputStream in) throws TypeException, IOException
+    public TypeReader getReader(TypeMap map) 
+    throws TypeException
     {
-        return in.readObject( in.getTypeMap().getId(_type) );      
+    	return map.getReader( map.getId(_type));
     }
 
 }

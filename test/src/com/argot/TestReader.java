@@ -24,11 +24,10 @@ implements TypeReader
     /* (non-Javadoc)
      * @see com.argot.TypeReader#read(com.argot.TypeInputStream, com.argot.TypeElement)
      */
-    public Object read(TypeInputStream in, TypeElement element)
-            throws TypeException, IOException
+    public Object read(TypeInputStream in)
+    throws TypeException, IOException
     {
         // TODO Auto-generated method stub
         return null;
     }
-
 }

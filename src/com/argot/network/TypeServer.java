@@ -24,17 +24,14 @@ import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeHelper;
 import com.argot.TypeInputStream;
+import com.argot.TypeLibrary;
 import com.argot.TypeMapCore;
 import com.argot.TypeOutputStream;
-import com.argot.TypeLibrary;
-
 import com.argot.common.BigEndianSignedInteger;
 import com.argot.common.BigEndianUnsignedByte;
 import com.argot.common.U8Boolean;
 import com.argot.dictionary.Dictionary;
-
 import com.argot.remote.MetaObject;
-import com.argot.util.ChunkByteBuffer;
 
 public class TypeServer
 implements TypeLink
@@ -164,7 +161,6 @@ implements TypeLink
 		sout.writeObject( "u16binary", definition );
 
 		out.flush();
-		out.close();
 	}
 	
 	/*
@@ -202,7 +198,6 @@ implements TypeLink
 		}		
 		
 		out.flush();
-		out.close();
 	}
 
 	private void processMap( TypeInputStream in, OutputStream out )
@@ -247,7 +242,6 @@ implements TypeLink
 		}
 
 		out.flush();
-		out.close();
 	}
 
 	private void processGetBaseObject( TypeInputStream request, OutputStream out )
@@ -268,7 +262,6 @@ implements TypeLink
 		}
 		
 		out.flush();
-		out.close();
 	}
 
 	/*
@@ -281,18 +274,9 @@ implements TypeLink
 	private void processUserMessage( TypeInputStream request, OutputStream out )
 	throws TypeException, IOException
 	{
-		ChunkByteBuffer buffer = (ChunkByteBuffer) request.readObject( "u32binary" );		
-		ChunkByteBuffer bufferOut = new ChunkByteBuffer();		
-		TypeEndPoint ep = new TypeEndPointBasic( buffer.getInputStream(), bufferOut.getOutputStream() );
+		TypeEndPoint ep = new TypeEndPointBasic( request.getStream(), out );
 		_service.processMessage( ep );
-		bufferOut.close();
-		
-		TypeOutputStream sout = new TypeOutputStream( out, _typeMap );
-		sout.writeObject( "u8", new Short( ProtocolTypeMap.MSG ) );
-		sout.writeObject( "u32binary", bufferOut );
-		
 		out.flush();
-		out.close();
 	}
 	
 	private void processCheckCore( TypeInputStream in, OutputStream out )
@@ -308,7 +292,5 @@ implements TypeLink
 		sout.writeObject( U8Boolean.TYPENAME, new Boolean( metaEqual ) );
 
 		out.flush();
-		out.close();
 	}
-	
 }

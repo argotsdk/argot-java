@@ -50,7 +50,7 @@ implements TypeLink
 		_refMap = refMap;
 		_library = library;
 		_service = service;
-		
+		/*
 		TypeMapCore.mapMeta( refMap, library );
 		refMap.map( 22, library.getId("dictionary.map"));
 		refMap.map( 23, library.getId("dictionary.words"));
@@ -58,6 +58,7 @@ implements TypeLink
 		refMap.map( 25, library.getId("dictionary.entry"));	
 		refMap.map( 26, library.getId("meta.envelop"));
 		refMap.map( 27, library.getId("meta.definition#envelop"));		
+		*/
 	}
 
 	public TypeServer( TypeLibrary library, DynamicTypeMap refMap )
@@ -117,8 +118,6 @@ implements TypeLink
 			TypeOutputStream sout = new TypeOutputStream( connection.getOutputStream(), _typeMap );
 			sout.writeObject( "u8", new Short( ProtocolTypeMap.ERROR ) );
 			sout.getStream().flush();
-			sout.getStream().close();
-
 		}	
 		catch (TypeException e)
 		{
@@ -149,7 +148,6 @@ implements TypeLink
 		{
 			sout.writeObject( "u8", new Short( ProtocolTypeMap.ERROR ) );
 			sout.getStream().flush();
-			sout.getStream().close();			
 			return;
 		}
 		TypeElement struct = _refMap.getStructure( id.intValue() );

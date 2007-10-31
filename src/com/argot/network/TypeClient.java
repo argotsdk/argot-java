@@ -24,6 +24,7 @@ import com.argot.TypeInputStream;
 import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeLibrary;
+import com.argot.TypeWriter;
 import com.argot.common.BigEndianSignedInteger;
 import com.argot.common.BigEndianUnsignedByte;
 import com.argot.common.U8Boolean;
@@ -35,12 +36,14 @@ implements TypeTransport
 {
 	private TypeTransport _link;
 	private ProtocolTypeMap _typeMap;
+	private TypeWriter _uint8;
 
 	public TypeClient( TypeLibrary library, TypeTransport link )
 	throws TypeException
 	{
 		_link = link;
 		_typeMap = new ProtocolTypeMap( library );
+		_uint8 = library.getWriter(library.getId("u8")).getWriter(_typeMap);
 	}
 
 	/*
@@ -61,8 +64,7 @@ implements TypeTransport
 		
 		try {
 			TypeOutputStream tmos = new TypeOutputStream( ep.getOutputStream(), _typeMap );
-			tmos.writeObject( "u8", new Short(ProtocolTypeMap.MSG) );
-			tmos.getStream().flush();
+			_uint8.write(tmos, new Short(ProtocolTypeMap.MSG));
 		} catch (TypeException e) {
 			throw new IOException(e);
 		}
@@ -72,9 +74,7 @@ implements TypeTransport
 
 	public void closeLink( TypeEndPoint endPoint )
 	{
-		TypeClientInputStream inStream = (TypeClientInputStream) endPoint.getInputStream();
-		_link.closeLink( inStream._transport );
-		
+		_link.closeLink( endPoint );		
 	}
 	
 	public class TypeClientInputStream

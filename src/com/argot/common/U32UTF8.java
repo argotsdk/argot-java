@@ -17,13 +17,11 @@ package com.argot.common;
 
 import java.io.IOException;
 
-import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
-import com.argot.common.BigEndianUnsignedInteger;
 
 /**
  * This is a short string encoded in UTF8 format. It uses a single unsigned
@@ -33,31 +31,25 @@ import com.argot.common.BigEndianUnsignedInteger;
 public class U32UTF8
 implements TypeReader, TypeWriter
 {
-
 	public static final String TYPENAME = "u32utf8";
 
-	public Object read(TypeInputStream in, TypeElement element)
-		throws TypeException, IOException
+	public Object read(TypeInputStream in)
+	throws TypeException, IOException
 	{
 		Long id = (Long) in.readObject( BigEndianUnsignedInteger.TYPENAME );
 		
 		if ( id.intValue() > 0 )
 		{
-		
-			byte[] bytes = new byte[ id.intValue() ];
-			
-			int read = in.getStream().read(bytes);
-
-			String ret = new String( bytes, 0, read, "UTF-8");
-
-			return ret;
+			byte[] bytes = new byte[ id.intValue() ];	
+			int read = in.read(bytes,0,bytes.length);
+			return new String( bytes, 0, read, "UTF-8");
 		}
 		
 		return new String("");
 	}
 
-	public void write(TypeOutputStream out, Object o, TypeElement element )
-		throws TypeException, IOException
+	public void write(TypeOutputStream out, Object o )
+	throws TypeException, IOException
 	{
 		if ( !(o instanceof String) )
 		{
@@ -76,5 +68,4 @@ implements TypeReader, TypeWriter
 		out.writeObject( BigEndianUnsignedInteger.TYPENAME, new Long( len  ) );
 		out.getStream().write( bytes, 0,  len );
 	}
-
 }

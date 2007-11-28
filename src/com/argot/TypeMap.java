@@ -230,10 +230,18 @@ public class TypeMap
 	{
 		TypeMapItem item = (TypeMapItem) _map.getObjectFromKey( id );
 		if ( item == null )
-			return _library.getReader( getSystemId( id ) );
+		{
+			// chance that this isn't mapped yet.  Calling getSystemId will force dynamic mapping if required.
+			getSystemId( id );
+			
+			// try again.
+			item = (TypeMapItem) _map.getObjectFromKey( id );
+			//return _library.getReader( getSystemId( id ) ).getReader(this);
+		}
+			
 		
 		if ( item.reader == null )
-			item.reader = _library.getReader( getSystemId( id ));
+			item.reader = _library.getReader( getSystemId( id )).getReader(this);
 		
 		return item.reader;
 	}
@@ -242,10 +250,10 @@ public class TypeMap
 	{	
 		TypeMapItem item = (TypeMapItem) _map.getObjectFromKey( id );
 		if ( item == null )
-			return _library.getWriter( getSystemId( id ) );
+			return _library.getWriter( getSystemId( id ) ).getWriter(this);
 		
 		if ( item.writer == null )
-			item.writer = _library.getWriter( getSystemId( id ));		
+			item.writer = _library.getWriter( getSystemId( id )).getWriter(this);		
 		return item.writer;
 	}
 	

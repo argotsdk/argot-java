@@ -17,7 +17,6 @@ package com.argot.common;
 
 import java.io.IOException;
 
-import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
 import com.argot.TypeOutputStream;
@@ -34,21 +33,17 @@ implements TypeReader, TypeWriter
 {
 	public static final String TYPENAME = "s16";
 
-	public Object read(TypeInputStream in, TypeElement element ) 
+	public Object read(TypeInputStream in ) 
 	throws TypeException, IOException
 	{
-		int a,b;
+		byte[] buffer = new byte[2];
 		
-		a = in.getStream().read();
-		if ( a == -1 ) throw new IOException( "end of stream" );
-		b = in.getStream().read();
-		if ( b == -1 ) throw new IOException( "end of stream" );
-		
-		return new Short( (short) ((a << 8) + b) );
+		in.read(buffer,0,2);
+		return new Short( (short) (((buffer[0] & 0xff) << 8) | (buffer[1] & 0xff)) );
 
 	}
 
-	public void write(TypeOutputStream out, Object o, TypeElement element ) 
+	public void write(TypeOutputStream out, Object o ) 
 	throws TypeException, IOException
 	{
 		int a,b,s;

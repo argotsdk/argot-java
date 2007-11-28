@@ -17,12 +17,10 @@ package com.argot.meta;
 
 import java.io.IOException;
 
-import com.argot.TypeElement;
 import com.argot.TypeException;
-import com.argot.TypeInputStream;
+import com.argot.TypeLibraryWriter;
+import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
-import com.argot.TypeReader;
-import com.argot.TypeReaderAuto;
 import com.argot.TypeWriter;
 import com.argot.common.BigEndianUnsignedByte;
 
@@ -51,26 +49,11 @@ implements MetaDefinition
     {
         return TYPENAME;
     }
-    
-    public static class MetaBasicTypeReader
-    implements TypeReader
-    {
-		public Object read(TypeInputStream in, TypeElement element ) 
-		throws TypeException, IOException
-		{		
-			if ( element instanceof MetaExpression )
-			{
-				TypeReader reader = new TypeReaderAuto( MetaBasic.class );
-				return reader.read( in, element );
-			}
-			throw new TypeException( "shouldn't get here.");		
-		}
-    }
-    
+
     public static class MetaBasicTypeWriter
-    implements TypeWriter
+    implements TypeLibraryWriter,TypeWriter
     {
-		public void write(TypeOutputStream out, Object o, TypeElement element ) 
+		public void write(TypeOutputStream out, Object o ) 
 		throws TypeException, IOException
 		{
 			MetaBasic tb = (MetaBasic) o;
@@ -78,6 +61,12 @@ implements MetaDefinition
 			out.writeObject( BigEndianUnsignedByte.TYPENAME, new Short( tb._width ));
 			out.writeObject( BigEndianUnsignedByte.TYPENAME, new Short( tb._flags ));
 		}
+		
+		public TypeWriter getWriter(TypeMap map) 
+		throws TypeException 
+		{
+			return this;
+		}		
     }
 
 

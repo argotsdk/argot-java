@@ -17,7 +17,6 @@ package com.argot.common;
 
 import java.io.IOException;
 
-import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
 import com.argot.TypeOutputStream;
@@ -27,10 +26,9 @@ import com.argot.TypeWriter;
 public class BigEndianUnsignedInteger
 implements TypeReader, TypeWriter
 {
-	
 	public static final String TYPENAME = "u32";
 
-	public Object read(TypeInputStream in, TypeElement element ) 
+	public Object read(TypeInputStream in ) 
 	throws TypeException, IOException
 	{
 		int a,b,c,d;
@@ -47,7 +45,7 @@ implements TypeReader, TypeWriter
 		return new Long( value );
 	}
 
-	public void write(TypeOutputStream out, Object o, TypeElement element ) 
+	public void write(TypeOutputStream out, Object o ) 
 	throws TypeException, IOException
 	{
 		int a,b,c,d;
@@ -87,8 +85,4 @@ implements TypeReader, TypeWriter
 	
 	// max value is 2^16 x 2^16..  just as easy way to write it.
 	public final long MAX = (long)(65536l*65536l);//2^32-1;
-	
-	
-	
-
 }

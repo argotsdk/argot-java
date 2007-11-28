@@ -17,7 +17,6 @@ package com.argot.common;
 
 import java.io.IOException;
 
-import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
 import com.argot.TypeOutputStream;
@@ -29,7 +28,7 @@ implements TypeReader, TypeWriter
 {
 	public static String TYPENAME = "u8";
 
-	public Object read(TypeInputStream in, TypeElement element ) 
+	public Object read(TypeInputStream in ) 
 	throws TypeException, IOException
 	{
 		int i;
@@ -42,7 +41,7 @@ implements TypeReader, TypeWriter
 		return new Short( (short) i );
 	}
 
-	public void write(TypeOutputStream out, Object o, TypeElement element ) 
+	public void write(TypeOutputStream out, Object o ) 
 	throws TypeException, IOException
 	{
 		if ( o instanceof Integer )
@@ -70,7 +69,7 @@ implements TypeReader, TypeWriter
 			out.getStream().write( b );
 		}
 	}
-
+	
 	public static int MIN = 0;
 	public static int MAX = 256-1;
 

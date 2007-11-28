@@ -25,11 +25,11 @@ extends CommonTest
 		byte b = -114;
         
 		BigEndianSignedByte besb = new BigEndianSignedByte();
-		besb.write( out, new Byte(b), null);
+		besb.write( out, new Byte(b));
 
 		TypeInputStream tmis = getInputStream();
 		
-		Integer sb = (Integer) besb.read( tmis, null );
+		Byte sb = (Byte) besb.read( tmis );
 		assertEquals( b, sb.intValue() );
     }
 

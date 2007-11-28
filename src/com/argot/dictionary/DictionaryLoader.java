@@ -19,6 +19,8 @@ package com.argot.dictionary;
 import com.argot.TypeException;
 import com.argot.TypeLibrary;
 import com.argot.TypeLibraryLoader;
+import com.argot.TypeMap;
+import com.argot.TypeReaderAuto;
 import com.argot.meta.MetaArray;
 import com.argot.meta.MetaDefinition;
 import com.argot.meta.MetaEnvelop;
@@ -47,7 +49,7 @@ implements TypeLibraryLoader
 			}
 		);
 
-		library.register( "meta.envelop", meDef, new MetaEnvelop.MetaEnvelopTypeReader(), new MetaEnvelop.MetaEnvelopTypeWriter(), MetaEnvelop.class );
+		library.register( "meta.envelop", meDef, new TypeReaderAuto(MetaEnvelop.class), new MetaEnvelop.MetaEnvelopTypeWriter(), MetaEnvelop.class );
 		
 	
 		MetaMap exprRefDef = new MetaMap( library.getId("meta.definition"), library.getId("meta.envelop"));		
@@ -82,7 +84,7 @@ implements TypeLibraryLoader
 			}
 		);
 		
-		library.register( "dictionary.map", dmDef, tmm, tmm, null );
+		library.register( "dictionary.map", dmDef, new TypeReaderAuto(TypeMap.class), tmm, null );
 		
 		MetaDefinition dWords =
 				new MetaEnvelop(

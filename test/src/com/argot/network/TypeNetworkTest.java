@@ -20,6 +20,7 @@ import junit.framework.TestCase;
 import com.argot.DynamicTypeMap;
 import com.argot.TypeLibraryLoader;
 import com.argot.TypeLibrary;
+import com.argot.TypeMapCore;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
 import com.argot.common.CommonLoader;
@@ -46,6 +47,14 @@ extends TestCase
     public void testClientMetaDictionaryUsage() throws Exception
     {
     	DynamicTypeMap serverMap = new DynamicTypeMap( _library );
+		TypeMapCore.mapMeta( serverMap, _library );
+		serverMap.map( 22, _library.getId("dictionary.map"));
+		serverMap.map( 23, _library.getId("dictionary.words"));
+		serverMap.map( 24, _library.getId("dictionary.definition"));
+		serverMap.map( 25, _library.getId("dictionary.entry"));	
+		serverMap.map( 26, _library.getId("meta.envelop"));
+		serverMap.map( 27, _library.getId("meta.definition#envelop"));		
+
     	TypeServer typeServer = new TypeServer( _library, serverMap );
     	// client will write to server and expect a response.
     	// server will need to operate on different thread.
@@ -65,6 +74,14 @@ extends TestCase
     public void testClientResolutionGetIdName() throws Exception
     {
     	DynamicTypeMap serverMap = new DynamicTypeMap( _library );
+		TypeMapCore.mapMeta( serverMap, _library );
+		serverMap.map( 22, _library.getId("dictionary.map"));
+		serverMap.map( 23, _library.getId("dictionary.words"));
+		serverMap.map( 24, _library.getId("dictionary.definition"));
+		serverMap.map( 25, _library.getId("dictionary.entry"));	
+		serverMap.map( 26, _library.getId("meta.envelop"));
+		serverMap.map( 27, _library.getId("meta.definition#envelop"));		
+    	
     	TypeServer typeServer = new TypeServer( _library, serverMap );
     	// client will write to server and expect a response.
     	// server will need to operate on different thread.
@@ -80,6 +97,14 @@ extends TestCase
     public void testClientResolutionReverse() throws Exception
     {
     	DynamicTypeMap serverMap = new DynamicTypeMap( _library );
+		TypeMapCore.mapMeta( serverMap, _library );
+		serverMap.map( 22, _library.getId("dictionary.map"));
+		serverMap.map( 23, _library.getId("dictionary.words"));
+		serverMap.map( 24, _library.getId("dictionary.definition"));
+		serverMap.map( 25, _library.getId("dictionary.entry"));	
+		serverMap.map( 26, _library.getId("meta.envelop"));
+		serverMap.map( 27, _library.getId("meta.definition#envelop"));		
+    	
     	TypeServer typeServer = new TypeServer( _library, serverMap );
     	TestTypeTransport transport = new TestTypeTransport( typeServer );
     	TypeClient typeClient = new TypeClient( _library, transport );
@@ -94,6 +119,14 @@ extends TestCase
     public void testClientResolutionLibraryId() throws Exception
     {
     	DynamicTypeMap serverMap = new DynamicTypeMap( _library );
+		TypeMapCore.mapMeta( serverMap, _library );
+		serverMap.map( 22, _library.getId("dictionary.map"));
+		serverMap.map( 23, _library.getId("dictionary.words"));
+		serverMap.map( 24, _library.getId("dictionary.definition"));
+		serverMap.map( 25, _library.getId("dictionary.entry"));	
+		serverMap.map( 26, _library.getId("meta.envelop"));
+		serverMap.map( 27, _library.getId("meta.definition#envelop"));		
+    	
     	TypeServer typeServer = new TypeServer( _library, serverMap );
     	TestTypeTransport transport = new TestTypeTransport( typeServer );
     	TypeClient typeClient = new TypeClient( _library, transport );
@@ -107,6 +140,14 @@ extends TestCase
     public void testClientResolutionReader() throws Exception
     {
     	DynamicTypeMap serverMap = new DynamicTypeMap( _library );
+		TypeMapCore.mapMeta( serverMap, _library );
+		serverMap.map( 22, _library.getId("dictionary.map"));
+		serverMap.map( 23, _library.getId("dictionary.words"));
+		serverMap.map( 24, _library.getId("dictionary.definition"));
+		serverMap.map( 25, _library.getId("dictionary.entry"));	
+		serverMap.map( 26, _library.getId("meta.envelop"));
+		serverMap.map( 27, _library.getId("meta.definition#envelop"));		
+    	
     	TypeServer typeServer = new TypeServer( _library, serverMap );
     	TestTypeTransport transport = new TestTypeTransport( typeServer );
     	TypeClient typeClient = new TypeClient( _library, transport );
@@ -120,6 +161,14 @@ extends TestCase
     public void testClientResolutionWriter() throws Exception
     {
     	DynamicTypeMap serverMap = new DynamicTypeMap( _library );
+		TypeMapCore.mapMeta( serverMap, _library );
+		serverMap.map( 22, _library.getId("dictionary.map"));
+		serverMap.map( 23, _library.getId("dictionary.words"));
+		serverMap.map( 24, _library.getId("dictionary.definition"));
+		serverMap.map( 25, _library.getId("dictionary.entry"));	
+		serverMap.map( 26, _library.getId("meta.envelop"));
+		serverMap.map( 27, _library.getId("meta.definition#envelop"));		
+    	
     	TypeServer typeServer = new TypeServer( _library, serverMap );
     	TestTypeTransport transport = new TestTypeTransport( typeServer );
     	TypeClient typeClient = new TypeClient( _library, transport );

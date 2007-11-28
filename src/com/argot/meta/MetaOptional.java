@@ -17,12 +17,12 @@ package com.argot.meta;
 
 import java.io.IOException;
 
-import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
+import com.argot.TypeLibraryWriter;
+import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
-import com.argot.TypeReaderAuto;
 import com.argot.TypeWriter;
 
 public class MetaOptional
@@ -48,49 +48,84 @@ implements MetaExpression
         return _option;
     }
 
-    public static class MetaOptionalTypeReader
-    implements TypeReader
-    {
-		public Object read(TypeInputStream in, TypeElement element)
-		throws TypeException, IOException
-		{
-			TypeReader reader = new TypeReaderAuto( MetaOptional.class );
-			return reader.read( in, element );
-		}
-    }
-    
     public static class MetaOptionalTypeWriter
-    implements TypeWriter
+    implements TypeLibraryWriter,TypeWriter
     {
-		public void write(TypeOutputStream out, Object o, TypeElement element )
+		public void write(TypeOutputStream out, Object o )
 			throws TypeException, IOException
 		{
 			MetaOptional to = (MetaOptional) o;
 			
 			out.writeObject("meta.expression", to._option );
 		}
+
+		public TypeWriter getWriter(TypeMap map) 
+		throws TypeException 
+		{
+			return this;
+		}
     }
     
-	public Object doRead(TypeInputStream in )
-	throws TypeException, IOException 
+    private class MetaOptionalReader
+    implements TypeReader
+    {
+    	private TypeReader _bool;
+    	private TypeReader _option;
+    	
+    	public MetaOptionalReader(TypeReader bool, TypeReader option)
+    	{
+    		_bool = bool;
+    		_option = option;
+    	}
+    	
+		public Object read(TypeInputStream in)
+		throws TypeException, IOException 
+		{
+			Boolean id = (Boolean) _bool.read( in );
+			if ( id.booleanValue() )
+			    return _option.read( in );
+			return null;
+		}
+    	
+    }
+    
+	public TypeReader getReader(TypeMap map )
+	throws TypeException
 	{
-		Boolean id = (Boolean) in.readObject( "bool" );
-		if ( id.booleanValue() )
-		    return _option.doRead( in );
-		return null;
+		return new MetaOptionalReader(map.getReader(map.getId("bool")),_option.getReader(map));
+	}
+	
+	private class MetaOptionalWriter
+	implements TypeWriter
+	{
+		private TypeWriter _bool;
+		private TypeWriter _option;
+		
+		public MetaOptionalWriter(TypeWriter bool, TypeWriter option)
+		{
+			_bool = bool;
+			_option = option;
+		}
+		
+		public void write(TypeOutputStream out, Object o)
+		throws TypeException, IOException 
+		{
+			if ( o == null )
+		    {
+		        _bool.write( out, new Boolean( false ));
+		        return;
+		    }
+		    
+			_bool.write( out, new Boolean( true ));
+			_option.write( out, o );	
+		}
+		
 	}
 
-	public void doWrite(TypeOutputStream out, Object o)
-	throws TypeException, IOException 
+	public TypeWriter getWriter(TypeMap map)
+	throws TypeException
 	{
-	    if ( o == null )
-	    {
-	        out.writeObject( "bool", new Boolean( false ));
-	        return;
-	    }
-	    
-		out.writeObject("bool", new Boolean( true ));
-		_option.doWrite( out, o );
+	    return new MetaOptionalWriter(map.getWriter(map.getId("bool")), _option.getWriter(map));
 	}
 
 

@@ -17,7 +17,6 @@ package com.argot.common;
 
 import java.io.IOException;
 
-import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
 import com.argot.TypeOutputStream;
@@ -36,18 +35,18 @@ implements TypeReader, TypeWriter
 
 	public static final String TYPENAME = "u32binary";
 	
-	public Object read(TypeInputStream in, TypeElement element)
+	public Object read(TypeInputStream in)
 	throws TypeException, IOException
 	{
 		Long id = (Long) in.readObject( BigEndianUnsignedInteger.TYPENAME );
 
 		byte[] bytes = new byte[ id.intValue() ];
-		in.getStream().read(bytes);
+		in.read(bytes,0,bytes.length);
 		
 		return bytes;
 	}
 
-	public void write(TypeOutputStream out, Object o, TypeElement element )
+	public void write(TypeOutputStream out, Object o )
 	throws TypeException, IOException
 	{
 		if ( !(o instanceof byte[]) )

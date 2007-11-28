@@ -20,10 +20,11 @@ import java.io.IOException;
 import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
+import com.argot.TypeLibrary;
+import com.argot.TypeLibraryWriter;
+import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
-import com.argot.TypeReaderAuto;
-import com.argot.TypeLibrary;
 import com.argot.TypeWriter;
 
 public class MetaArray
@@ -67,22 +68,11 @@ implements MetaExpression
 	{
 	    return library.getId( TYPENAME );
 	}
-	
-	public static class MetaArrayTypeReader
-	implements TypeReader
-	{
-		public Object read(TypeInputStream in, TypeElement element)
-		throws TypeException, IOException
-		{
-			TypeReaderAuto r = new TypeReaderAuto( MetaArray.class );
-			return r.read( in, element );
-		}
-	}
 
 	public static class MetaArrayTypeWriter
-	implements TypeWriter
+	implements TypeLibraryWriter,TypeWriter
 	{
-		public void write(TypeOutputStream out, Object o, TypeElement element )
+		public void write(TypeOutputStream out, Object o )
 		throws TypeException, IOException
 		{
 			MetaArray ma = (MetaArray) o;
@@ -90,48 +80,73 @@ implements MetaExpression
 			out.writeObject( "meta.expression", ma._type );
 					
 		}
+		
+		public TypeWriter getWriter(TypeMap map) 
+		throws TypeException 
+		{
+			return this;
+		}		
 	}
 	
-	public Object doRead(TypeInputStream in)
-	throws TypeException, IOException 
+	private static class MetaArrayReader
+	implements TypeReader
 	{
-	    Object sizeObject =  _size.doRead( in );
-	    
-		int size = 0;
+		TypeReader _size;
+		TypeReader _data;
 		
-		if ( sizeObject instanceof Byte )
+		private MetaArrayReader(TypeReader size, TypeReader data)
 		{
-			size = ((Byte)sizeObject).intValue();
+			_size = size;
+			_data = data;
 		}
-		else if (sizeObject instanceof Short)
+		
+		public Object read(TypeInputStream in)
+		throws TypeException, IOException 
 		{
-			size = ((Short)sizeObject).intValue();
+		    Object sizeObject =  _size.read(in);
+		    
+			int size = 0;
 			
-		}
-		else if (sizeObject instanceof Integer )
-		{
-			size = ((Integer)sizeObject).intValue();
-		}
-		else if (sizeObject instanceof Long )
-		{
-		    size = ((Long)sizeObject).intValue();
-		}
-		else
-		{
-			throw new TypeException("MetaArray not able to use size object");
-		}
-				
-		Object[] objects = new Object[ size ];
-		for ( int x = 0 ; x < size; x ++ )
-		{
-			objects[x] = _type.doRead( in );
+			if ( sizeObject instanceof Byte )
+			{
+				size = ((Byte)sizeObject).intValue();
+			}
+			else if (sizeObject instanceof Short)
+			{
+				size = ((Short)sizeObject).intValue();
+			}
+			else if (sizeObject instanceof Integer )
+			{
+				size = ((Integer)sizeObject).intValue();
+			}
+			else if (sizeObject instanceof Long )
+			{
+			    size = ((Long)sizeObject).intValue();
+			}
+			else
+			{
+				throw new TypeException("MetaArray not able to use size object");
+			}
+					
+			Object[] objects = new Object[ size ];
+			for ( int x = 0 ; x < size; x ++ )
+			{
+				objects[x] = _data.read( in );
+			}
+			
+			return objects;
 		}
 		
-		return objects;
+	}
+	
+	public TypeReader getReader(TypeMap map)
+	throws TypeException 
+	{
+		return new MetaArrayReader( _size.getReader(map), _type.getReader(map));
 	}
 
-	public void doWrite(TypeOutputStream out, Object o)
-	throws TypeException, IOException 
+	public TypeWriter getWriter(TypeMap map)
+	throws TypeException 
 	{
 		throw new TypeException("not implemented");
 	}

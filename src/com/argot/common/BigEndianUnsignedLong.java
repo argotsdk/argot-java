@@ -17,7 +17,6 @@ package com.argot.common;
 
 import java.io.IOException;
 
-import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
 import com.argot.TypeOutputStream;
@@ -29,7 +28,7 @@ implements TypeReader, TypeWriter
 {
 	public static final String TYPENAME = "u64";
 	
-	public Object read(TypeInputStream in, TypeElement element ) 
+	public Object read(TypeInputStream in ) 
 	throws TypeException, IOException
 	{
 		int a,b,c,d,e,f,g,h;
@@ -50,7 +49,7 @@ implements TypeReader, TypeWriter
 		return new Long( value );
 	}
 
-	public void write(TypeOutputStream out, Object o, TypeElement element ) 
+	public void write(TypeOutputStream out, Object o ) 
 	throws TypeException, IOException
 	{
 		int a,b,c,d,e,f,g,h;
@@ -82,7 +81,7 @@ implements TypeReader, TypeWriter
 		out.getStream().write( h );
 
 	}
-	
+
 	// NOTE: As java can not store anything bigger than
 	//       a long.  It means that the max value is one
 	//       bit short of the max of 2^64.

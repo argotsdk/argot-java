@@ -17,7 +17,6 @@ package com.argot.common;
 
 import java.io.IOException;
 
-import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
 import com.argot.TypeOutputStream;
@@ -36,18 +35,17 @@ implements TypeReader, TypeWriter
 {
 	public static final String TYPENAME = "bool";
 	
-	public Object read(TypeInputStream in, TypeElement element ) 
+	public Object read(TypeInputStream in ) 
 	throws TypeException, IOException
 	{
 		int a;
 	
-		a = in.getStream().read();
+		a = in.read();
 	
 		return new Boolean( a == 0 ? false : true );
-
 	}
 
-	public void write(TypeOutputStream out, Object o, TypeElement element ) 
+	public void write(TypeOutputStream out, Object o ) 
 	throws TypeException, IOException
 	{
 		int a;
@@ -59,7 +57,5 @@ implements TypeReader, TypeWriter
 			throw new TypeException( "U8Boolean requires Boolean object");
 
 		out.getStream().write( a );
-
-	}
-
+	}	
 }

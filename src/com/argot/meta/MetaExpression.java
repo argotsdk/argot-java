@@ -15,21 +15,20 @@
  */
 package com.argot.meta;
 
-import java.io.IOException;
-
 import com.argot.TypeElement;
 import com.argot.TypeException;
-import com.argot.TypeInputStream;
-import com.argot.TypeOutputStream;
+import com.argot.TypeMap;
+import com.argot.TypeReader;
+import com.argot.TypeWriter;
 
 public interface MetaExpression
 extends TypeElement
 {
    
-	public void doWrite( TypeOutputStream out, Object o )
-	throws TypeException, IOException;
+	public TypeWriter getWriter( TypeMap map )
+	throws TypeException;
 	
-	public Object doRead( TypeInputStream in )
-	throws TypeException, IOException;
+	public TypeReader getReader( TypeMap map )
+	throws TypeException;
 
 }

@@ -47,8 +47,7 @@ public class TypeOutputStream
 	throws TypeException, IOException
 	{
 		TypeWriter writer = _map.getWriter( id );
-		TypeElement element = _map.getStructure( id );
-		writer.write( this, o, element );
+		writer.write( this, o );
 	}
 	
 	public void writeObject( String name, Object o )
@@ -57,7 +56,8 @@ public class TypeOutputStream
 		int id = this.getTypeMap().getId( name );
 		if ( id == TypeLibrary.NOTYPE )
 			throw new TypeException( "not found: " + name);
-		writeObject( id, o );
+		TypeWriter writer = _map.getWriter( id );
+		writer.write( this, o );
 	}
 
 }

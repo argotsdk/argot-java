@@ -32,7 +32,6 @@ import java.io.OutputStream;
 
 import java.nio.ByteBuffer;
 
-import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
 import com.argot.TypeOutputStream;
@@ -393,8 +392,8 @@ public class ChunkByteBuffer
 	public static class ChunkByteBufferReader
 	implements TypeReader
 	{
-		public Object read(TypeInputStream in, TypeElement element)
-			throws TypeException, IOException
+		public Object read(TypeInputStream in)
+		throws TypeException, IOException
 		{
 			Long id = (Long) in.readObject( BigEndianUnsignedInteger.TYPENAME );
 			
@@ -443,8 +442,8 @@ public class ChunkByteBuffer
 	public static class ChunkByteBufferWriter
 	implements TypeWriter
 	{
-		public void write(TypeOutputStream out, Object o, TypeElement element)
-			throws TypeException, IOException
+		public void write(TypeOutputStream out, Object o)
+		throws TypeException, IOException
 		{
 			if ( !(o instanceof ChunkByteBuffer) )
 				throw new TypeException( "StringType: can only write objects of type String");

@@ -241,8 +241,8 @@ extends TestCase
         TestReader reader = new TestReader();
         _library.register( "test", new TestTypeElement(), reader, new TestWriter(), null );
         
-        TypeReader read = _library.getReader( _library.getId("test"));
-        assertEquals( reader, read );
+        TypeLibraryReader read = _library.getReader( _library.getId("test"));
+        assertNotNull( read );
     }
     
     public void testGetReaderFail() throws Exception
@@ -251,7 +251,7 @@ extends TestCase
         
         try
         {
-            TypeReader read = _library.getReader( _library.getId("test"));
+            TypeLibraryReader read = _library.getReader( _library.getId("test"));
             assertNotNull(read);
             fail();
         } 
@@ -262,7 +262,7 @@ extends TestCase
         
         try
         {
-            TypeReader read = _library.getReader( _library.getId("badtype"));
+            TypeLibraryReader read = _library.getReader( _library.getId("badtype"));
             assertNotNull( read );
             fail();
         } 
@@ -278,8 +278,8 @@ extends TestCase
         TestWriter writer = new TestWriter();
         _library.register( "test", new TestTypeElement(), new TestReader(), writer, null );
         
-        TypeWriter write = _library.getWriter( _library.getId("test"));
-        assertEquals( writer, write );
+        TypeLibraryWriter write = _library.getWriter( _library.getId("test"));
+        assertNotNull( write );
     }
     
     public void testGetWriterFail() throws Exception
@@ -288,7 +288,7 @@ extends TestCase
         
         try
         {
-            TypeWriter read = _library.getWriter( _library.getId("test"));
+            TypeLibraryWriter read = _library.getWriter( _library.getId("test"));
             assertNotNull(read);
             fail();
         } 
@@ -299,7 +299,7 @@ extends TestCase
         
         try
         {
-            TypeWriter read = _library.getWriter( _library.getId("badtype"));
+            TypeLibraryWriter read = _library.getWriter( _library.getId("badtype"));
             assertNotNull(read);
             fail();
         } 

@@ -23,6 +23,6 @@ import java.io.IOException;
  */
 public interface TypeReader
 {
-	public Object read( TypeInputStream in , TypeElement element )
+	public Object read( TypeInputStream in )
 	throws TypeException, IOException;
 }

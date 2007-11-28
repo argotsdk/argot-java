@@ -21,7 +21,7 @@ public class TypeReaderInvalid
 implements TypeReader
 {
 
-    public Object read(TypeInputStream in, TypeElement element) throws TypeException, IOException
+    public Object read(TypeInputStream in) throws TypeException, IOException
     {
         throw new TypeException("TypeReader invalid");
     }

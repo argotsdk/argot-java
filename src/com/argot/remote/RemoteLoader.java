@@ -68,7 +68,7 @@ extends ResourceDictionaryLoader
 		library.bind( "remote.exception", new MetaMarshaller(), new MetaMarshaller(), null );
 		library.bind( "remote.exception#empty", new MetaMarshaller(),new MetaMarshaller(), null );
 		library.bind( "remote.exception.basic", new MetaMarshaller(),new MetaMarshaller(), null );
-		library.bind( "remote.stack_trace_element", new TypeReaderAuto( MetaRemoteStackTraceElement.class ),new MetaRemoteStackTraceElement("","","",0), MetaRemoteStackTraceElement.class );
+		library.bind( "remote.stack_trace_element", new TypeReaderAuto( MetaRemoteStackTraceElement.class ),new MetaRemoteStackTraceElement.MetaRemoteStackTraceElementWriter(), MetaRemoteStackTraceElement.class );
 		library.bind( "remote.exception.wrapped", new MetaRemoteException.Reader(WrappedRemoteException.class), new MetaRemoteException.Writer(), WrappedRemoteException.class );
 		library.bind( "remote.exception#wrapped", new MetaMarshaller(),new MetaMarshaller(), null );
 	}

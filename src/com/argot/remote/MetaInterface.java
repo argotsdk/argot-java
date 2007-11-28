@@ -27,7 +27,6 @@ import com.argot.TypeInputStream;
 import com.argot.TypeLibrary;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
-
 import com.argot.TypeWriter;
 import com.argot.common.BigEndianUnsignedByte;
 import com.argot.common.BigEndianUnsignedShort;
@@ -293,19 +292,9 @@ implements MetaDefinition
 	public static class MetaInterfaceReader
 	implements TypeReader
 	{
-		public Object read(TypeInputStream in, TypeElement element) 
+		public Object read(TypeInputStream in) 
 		throws TypeException, IOException 
-		{
-		    // was instanceof MetaDefintion.  maybe wrong.
-			/*
-			if ( element instanceof MetaExpression )
-			{
-				TypeReader reader = new TypeReaderAuto( this.getClass() );
-				return reader.read( in, element );
-			}
-			throw new TypeException( "shouldn't get here.");
-			*/
-			
+		{		
 			Short size = (Short) in.readObject( BigEndianUnsignedByte.TYPENAME );
 			int interfaces[] = new int[size.intValue()];
 			for ( int x=0; x<size.intValue(); x++ )
@@ -321,7 +310,7 @@ implements MetaDefinition
 	public static class MetaInterfaceWriter
 	implements TypeWriter
 	{
-		public void write(TypeOutputStream out, Object o, TypeElement element) 
+		public void write(TypeOutputStream out, Object o) 
 		throws TypeException, IOException 
 		{
 			MetaInterface mc = (MetaInterface) o;

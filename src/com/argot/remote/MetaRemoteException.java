@@ -18,12 +18,15 @@ package com.argot.remote;
 
 import java.io.IOException;
 
+import com.argot.TypeBound;
 import com.argot.TypeConstructor;
 import com.argot.TypeConstructorAuto;
 import com.argot.TypeElement;
 import com.argot.TypeException;
-import com.argot.TypeInputStream;
 import com.argot.TypeLibrary;
+import com.argot.TypeLibraryReader;
+import com.argot.TypeLibraryWriter;
+import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeReaderAuto;
@@ -82,7 +85,7 @@ public class MetaRemoteException
 	}
 	
 	public static class Reader
-	implements TypeReader
+	implements TypeLibraryReader,TypeBound
 	{
 		private TypeReaderAuto _autoReader;
 		
@@ -95,13 +98,18 @@ public class MetaRemoteException
 			}
 			_autoReader = new TypeReaderAuto(new ExceptionConstructor(clazz));
 		}
-		
-		public Object read(TypeInputStream in, TypeElement element)
-		throws TypeException, IOException 
+
+		public void bind(TypeLibrary library, TypeElement definition, String typeName, int typeId) 
+		throws TypeException 
 		{
-			return _autoReader.read(in, element);
+			_autoReader.bind(library, definition, typeName, typeId);
 		}
 		
+		public TypeReader getReader(TypeMap map) 
+		throws TypeException 
+		{
+			return _autoReader.getReader(map);
+		}
 	}
 
 	public static boolean isWrapRequired(TypeLibrary library, Throwable cause)
@@ -116,9 +124,9 @@ public class MetaRemoteException
 	}
 	
 	public static class Writer
-	implements TypeWriter
+	implements TypeLibraryWriter,TypeWriter
 	{
-		public void write(TypeOutputStream out, Object o, TypeElement element)
+		public void write(TypeOutputStream out, Object o)
 		throws TypeException, IOException
 		{
 			Throwable e = (Throwable) o;
@@ -164,6 +172,12 @@ public class MetaRemoteException
 				MetaRemoteStackTraceElement trace = new MetaRemoteStackTraceElement( elements[x].getClassName(), elements[x].getMethodName(), elements[x].getFileName(), elements[x].getLineNumber());
 				out.writeObject( MetaRemoteStackTraceElement.TYPENAME, trace );
 			}
+		}
+
+		public TypeWriter getWriter(TypeMap map) 
+		throws TypeException 
+		{
+			return this;
 		}
 	}
 }

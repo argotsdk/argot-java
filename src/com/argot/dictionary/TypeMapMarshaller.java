@@ -20,24 +20,15 @@ import java.util.Iterator;
 
 import com.argot.TypeElement;
 import com.argot.TypeException;
+import com.argot.TypeLibraryWriter;
 import com.argot.TypeMap;
-import com.argot.TypeInputStream;
 import com.argot.TypeOutputStream;
-import com.argot.TypeReader;
-import com.argot.TypeReaderAuto;
 import com.argot.TypeWriter;
 
 public class TypeMapMarshaller
-implements TypeReader, TypeWriter
+implements TypeLibraryWriter, TypeWriter
 {
-
-    public Object read(TypeInputStream in, TypeElement element) throws TypeException, IOException
-    {
-		TypeReader reader = new TypeReaderAuto( TypeMap.class );
-		return reader.read( in, element );
-    }
-
-    public void write(TypeOutputStream out, Object o, TypeElement element) throws TypeException, IOException
+    public void write(TypeOutputStream out, Object o) throws TypeException, IOException
     {
 		TypeMap map = (TypeMap) o;
 		
@@ -58,5 +49,12 @@ implements TypeReader, TypeWriter
 		}
 
     }
+    
+	public TypeWriter getWriter(TypeMap map) 
+	throws TypeException 
+	{
+		return this;
+	}
+    
 
 }

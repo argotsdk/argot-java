@@ -18,32 +18,50 @@ package com.argot.common;
 import java.io.IOException;
 import java.util.Date;
 
-import com.argot.TypeElement;
 import com.argot.TypeException;
-import com.argot.TypeInputStream;
+import com.argot.TypeLibraryReader;
+import com.argot.TypeLibraryWriter;
+import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
 
 public class DateS64
-implements TypeReader, TypeWriter
+implements TypeLibraryReader, TypeLibraryWriter
 {
 
 	public static final String TYPENAME = "date.java";
 	
-	public void write(TypeOutputStream out, Object o, TypeElement element)
-		throws TypeException, IOException
+	private static class DateS64Writer
+	implements TypeWriter
 	{
-		Date d = (Date) o;
-		if ( d == null )
-			out.writeObject( BigEndianSignedLong.TYPENAME, new Long( Long.MIN_VALUE ) );
-		else
-			out.writeObject( BigEndianSignedLong.TYPENAME, new Long( d.getTime() ) );
+		private TypeWriter _int64;
+		
+		public DateS64Writer( TypeWriter int64 )
+		{
+			_int64 = int64;
+		}
+		
+		public void write(TypeOutputStream out, Object o)
+		throws TypeException, IOException
+		{
+			Date d = (Date) o;
+			if ( d == null )
+				_int64.write( out, new Long( Long.MIN_VALUE ) );
+			else
+				_int64.write( out, new Long( d.getTime() ) );
+		}
 	}
-
-    public Object read(TypeInputStream in, TypeElement element) throws TypeException, IOException
-    {
+	
+	public TypeReader getReader(TypeMap map) 
+	throws TypeException 
+	{
         throw new TypeException("not implemented");
     }
 
+	public TypeWriter getWriter(TypeMap map) 
+	throws TypeException 
+	{
+		return new DateS64Writer(map.getWriter(map.getId(BigEndianSignedLong.TYPENAME)));
+	}
 }

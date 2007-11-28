@@ -15,34 +15,42 @@
  */
 package com.argot.meta;
 
-import java.io.IOException;
-
+import com.argot.TypeBound;
 import com.argot.TypeElement;
 import com.argot.TypeException;
-import com.argot.TypeInputStream;
-import com.argot.TypeOutputStream;
+import com.argot.TypeLibrary;
+import com.argot.TypeLibraryReader;
+import com.argot.TypeLibraryWriter;
+import com.argot.TypeMap;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
 
 
 public class MetaMarshaller
-implements TypeReader, TypeWriter
+implements TypeBound,TypeLibraryReader, TypeLibraryWriter
 {
+	private MetaExpression _expression;
+	
+	public void bind(TypeLibrary library, TypeElement definition, String typeName, int typeId) 
+	throws TypeException 
+	{
+		if ( !(definition instanceof MetaExpression))
+		{
+			throw new TypeException("MetaMarshaller: requires MetaExpression type for TypeElement");
+		}
+		_expression = (MetaExpression) definition;
+	}
 
-    public Object read(TypeInputStream in, TypeElement element) 
-    throws TypeException, IOException
-    {
-        MetaExpression expression = (MetaExpression) element;
-        return expression.doRead( in );
-    }
+	public TypeReader getReader(TypeMap map) 
+	throws TypeException 
+	{
+		return _expression.getReader(map);
+	}
 
-    public void write(TypeOutputStream out, Object o, TypeElement element) 
-    throws TypeException, IOException
-    {
-        MetaExpression expression = (MetaExpression) element;
-        expression.doWrite( out, o );
-        
-    }
-
+	public TypeWriter getWriter(TypeMap map) 
+	throws TypeException 
+	{
+		return _expression.getWriter(map);
+	}
  
 }

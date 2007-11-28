@@ -17,17 +17,17 @@ package com.argot;
 
 import java.io.IOException;
 
-public class TestWriter implements TypeWriter
+public class TestWriter 
+implements TypeWriter
 {
 
     /* (non-Javadoc)
      * @see com.argot.TypeWriter#write(com.argot.TypeOutputStream, java.lang.Object, com.argot.TypeElement)
      */
-    public void write(TypeOutputStream out, Object o, TypeElement element)
-            throws TypeException, IOException
+    public void write(TypeOutputStream out, Object o)
+    throws TypeException, IOException
     {
         // TODO Auto-generated method stub
 
     }
-
 }

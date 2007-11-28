@@ -9,16 +9,18 @@ import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
 import com.argot.TypeLibrary;
+import com.argot.TypeLibraryReader;
+import com.argot.TypeLibraryWriter;
+import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
-
 import com.argot.meta.MetaExpression;
 import com.argot.meta.MetaReference;
 import com.argot.meta.MetaSequence;
 
 public class TypeBeanMarshaller 
-implements TypeReader, TypeWriter, TypeBound
+implements TypeLibraryReader, TypeLibraryWriter, TypeBound
 {
 	Class _typeClass;
 	Method[] _getMethods;
@@ -94,76 +96,128 @@ implements TypeReader, TypeWriter, TypeBound
 		
 		throw new TypeException("TypeBeanMarshaller: No setter method found:" + _typeClass.getName() + "." + method);
 	}
+
 	
-	public void write(TypeOutputStream out, Object o, TypeElement element)
-	throws TypeException, IOException 
+	private class TypeBeanMarshallerReader
+	implements TypeReader
 	{
-		for (int x=0;x<_sequence.size();x++)
+		private TypeReader[] _sequenceReaders;
+		
+		public TypeBeanMarshallerReader(TypeReader[] sequenceReaders )
 		{
-			try 
-			{
-				_sequence.getElement(x).doWrite(out, _getMethods[x].invoke(o, null));
-			} 
-			catch (IllegalArgumentException e) 
-			{
-				throw new TypeException("TypeBeanMarshaller: Failed to get data from object:" + _typeClass.getName() + "." + _getMethods[x].getName() + "()",e);
-			} 
-			catch (IllegalAccessException e) 
-			{
-				throw new TypeException("TypeBeanMarshaller: Failed to get data from object:" + _typeClass.getName() + "." + _getMethods[x].getName() + "()",e);
-			} 
-			catch (InvocationTargetException e) 
-			{
-				throw new TypeException("TypeBeanMarshaller: Failed to get data from object:" + _typeClass.getName() + "." + _getMethods[x].getName() + "()",e);
-			}
+			_sequenceReaders = sequenceReaders;
+		}
+		
+		public Object read(TypeInputStream in)
+		throws TypeException, IOException 
+		{
+				Object o;
+				try 
+				{
+					o = _typeClass.newInstance();
+				} 
+				catch (InstantiationException e) 
+				{
+					throw new TypeException(e.getMessage(),e);
+				} 
+				catch (IllegalAccessException e) 
+				{
+					throw new TypeException(e.getMessage(),e);
+				}
+				
+				
+				Object[] args = new Object[1];
+				for (int x=0;x<_sequenceReaders.length;x++)
+				{
+					args[0] = _sequenceReaders[x].read(in);
+
+					try
+					{
+						_setMethods[x].invoke(o, args);
+					} 
+					catch (IllegalArgumentException e) 
+					{
+						throw new TypeException("TypeBeanMarshaller: Failed to call set method:" + _typeClass.getName() + "." + _setMethods[x].getName() + "(" + args[0].getClass().getName() + ")",e);
+					} 
+					catch (IllegalAccessException e) 
+					{
+						throw new TypeException("TypeBeanMarshaller: Failed to call set method:" + _typeClass.getName() + "." + _setMethods[x].getName() + "(" + args[0].getClass().getName() + ")",e);
+					} 
+					catch (InvocationTargetException e) 
+					{
+						throw new TypeException("TypeBeanMarshaller: Failed to call set method:" + _typeClass.getName() + "." + _setMethods[x].getName() + "(" + args[0].getClass().getName() + ")",e);
+					}
+					
+				}
+				return o;
+			
 		}
 		
 	}
 
-	public Object read(TypeInputStream in, TypeElement element)
-	throws TypeException, IOException 
+	public TypeReader getReader(TypeMap map) 
+	throws TypeException 
 	{
-			Object o;
-			try 
-			{
-				o = _typeClass.newInstance();
-			} 
-			catch (InstantiationException e) 
-			{
-				throw new TypeException(e.getMessage(),e);
-			} 
-			catch (IllegalAccessException e) 
-			{
-				throw new TypeException(e.getMessage(),e);
-			}
-			
-			
-			Object[] args = new Object[1];
-			for (int x=0;x<_sequence.size();x++)
-			{
-				args[0] = _sequence.getElement(x).doRead(in);
+		TypeReader readers[] = new TypeReader[_sequence.size()];
+		
+		for (int x=0;x<readers.length;x++)
+		{
+			readers[x] = _sequence.getElement(x).getReader(map);
+		}
+		
+		return new TypeBeanMarshallerReader( readers );
+	}
+	
+	
+	private class TypeBeanMarshallerWriter
+	implements TypeWriter
+	{
+		TypeWriter[] _sequenceWriters;
+		
+		public TypeBeanMarshallerWriter(TypeWriter[] sequenceWriters )
+		{
+			_sequenceWriters = sequenceWriters;
+		}
 
-				try
+		public void write(TypeOutputStream out, Object o)
+		throws TypeException, IOException 
+		{
+			for (int x=0;x<_sequenceWriters.length;x++)
+			{
+				try 
 				{
-					_setMethods[x].invoke(o, args);
+					_sequenceWriters[x].write(out, _getMethods[x].invoke(o, null));
 				} 
 				catch (IllegalArgumentException e) 
 				{
-					throw new TypeException("TypeBeanMarshaller: Failed to call set method:" + _typeClass.getName() + "." + _setMethods[x].getName() + "(" + args[0].getClass().getName() + ")",e);
+					throw new TypeException("TypeBeanMarshaller: Failed to get data from object:" + _typeClass.getName() + "." + _getMethods[x].getName() + "()",e);
 				} 
 				catch (IllegalAccessException e) 
 				{
-					throw new TypeException("TypeBeanMarshaller: Failed to call set method:" + _typeClass.getName() + "." + _setMethods[x].getName() + "(" + args[0].getClass().getName() + ")",e);
+					throw new TypeException("TypeBeanMarshaller: Failed to get data from object:" + _typeClass.getName() + "." + _getMethods[x].getName() + "()",e);
 				} 
 				catch (InvocationTargetException e) 
 				{
-					throw new TypeException("TypeBeanMarshaller: Failed to call set method:" + _typeClass.getName() + "." + _setMethods[x].getName() + "(" + args[0].getClass().getName() + ")",e);
+					throw new TypeException("TypeBeanMarshaller: Failed to get data from object:" + _typeClass.getName() + "." + _getMethods[x].getName() + "()",e);
 				}
-				
 			}
-			return o;
-		
+			
+		}
 	}
+
+	public TypeWriter getWriter(TypeMap map) 
+	throws TypeException 
+	{
+		TypeWriter writers[] = new TypeWriter[_sequence.size()];
+		
+		for (int x=0;x<writers.length;x++)
+		{
+			writers[x] = _sequence.getElement(x).getWriter(map);
+		}
+		
+		return new TypeBeanMarshallerWriter(writers);
+	}
+
 
 
 }

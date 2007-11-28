@@ -21,7 +21,7 @@ public class TypeWriterInvalid
 implements TypeWriter
 {
 
-    public void write(TypeOutputStream out, Object o, TypeElement element)
+    public void write(TypeOutputStream out, Object o)
             throws TypeException, IOException
     {
         throw new TypeException("TypeWriter not installed for type");

@@ -17,44 +17,61 @@ package com.argot;
 
 import java.io.IOException;
 
-import com.argot.meta.MetaExpression;
 import com.argot.meta.MetaSequence;
 
 public class TypeReaderAuto
-implements TypeReader
+implements TypeBound,TypeLibraryReader
 {
 	private TypeConstructor _constructor;
+	private MetaSequence _metaSequence;
 	
 	public TypeReaderAuto( Class clss )
 	{
 		_constructor = new TypeConstructorAuto( clss );
+		_metaSequence = null;
 	}
 	
 	public TypeReaderAuto( TypeConstructor constructor )
 	{
 		_constructor = constructor;
 	}
-	
-	public Object read(TypeInputStream in, TypeElement element)
-	throws TypeException, IOException
+
+	public void bind(TypeLibrary library, TypeElement definition, String typeName, int typeId) 
+	throws TypeException 
 	{
-		if ( !( element instanceof MetaExpression))
+		if ( !( definition instanceof MetaSequence))
 		{
-			throw new TypeException( "TypeReaderAuto: required TypeDefinition to read data.");
+			throw new TypeException( "TypeReaderAuto: required MetaSequence to read data.");
 		}
+		_metaSequence = (MetaSequence) definition;
+	}	
 	
-		MetaExpression metaDefinition = (MetaExpression) element;
-		if ( metaDefinition instanceof MetaSequence )
+	private class TypeAutoReader
+	implements TypeReader
+	{
+		private TypeReader _sequence;
+		private MetaSequence _metaSequence;
+		
+		public TypeAutoReader( TypeReader sequence, MetaSequence metaSequence )
 		{
-			MetaSequence sequence = (MetaSequence) metaDefinition;
-			Object[] objects = (Object[]) sequence.doRead( in );
-			return _constructor.construct( sequence, objects );						
-		}
-		else
-		{
-			throw new TypeException( "TypeReaderAuto: can not read unknown type");
+			_sequence = sequence;
+			_metaSequence = metaSequence;
 		}
 		
+		public Object read(TypeInputStream in)
+		throws TypeException, IOException
+		{
+			Object[] objects = (Object[]) _sequence.read( in );
+			return _constructor.construct( _metaSequence, objects );									
+		}
 	}
+	
+	public TypeReader getReader(TypeMap map) 
+	throws TypeException 
+	{
+		return new TypeAutoReader( _metaSequence.getReader(map), _metaSequence );
+	}
+
+
 
 }

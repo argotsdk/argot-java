@@ -70,11 +70,11 @@ extends TestCase
 		int i = -(int)(Math.PI*100000000l);
 	
 		BigEndianSignedInteger besi = new BigEndianSignedInteger();
-		besi.write( out, new Integer( i ), null );
+		besi.write( out, new Integer( i ) );
 
 		TypeInputStream tmis = getInputStream();
 
-		Integer si = (Integer) besi.read( tmis, null );
+		Integer si = (Integer) besi.read( tmis );
 		assertEquals( i, si.intValue() );
     }
     
@@ -83,11 +83,11 @@ extends TestCase
 		long l = -(long)(Math.PI*1000000000000000000l);
 		
 		BigEndianSignedLong besl = new BigEndianSignedLong();
-		besl.write( out, new Long( l), null );
+		besl.write( out, new Long( l) );
 		
 		TypeInputStream tmis = getInputStream();
 
-		Long sl = (Long) besl.read( tmis, null );
+		Long sl = (Long) besl.read( tmis );
 		assertEquals( l, sl.longValue() );
     }
     
@@ -96,11 +96,11 @@ extends TestCase
 		short s = -(short)(Math.PI*10000l);
 			
 		BigEndianSignedShort bess = new BigEndianSignedShort();
-		bess.write( out, new Integer( s ), null );
+		bess.write( out, new Integer( s ) );
 		
 		TypeInputStream tmis = getInputStream();
         
-		Short sr = (Short) bess.read( tmis, null );
+		Short sr = (Short) bess.read( tmis );
 		assertEquals( s, sr.shortValue() );
     }
     
@@ -109,11 +109,11 @@ extends TestCase
 		short bs = (240);
         
 		BigEndianUnsignedByte beub = new BigEndianUnsignedByte();
-		beub.write( out, new Short( bs ), null );
+		beub.write( out, new Short( bs ) );
 
 		TypeInputStream tmis = getInputStream();
 		
-		Short us = (Short) beub.read( tmis, null );
+		Short us = (Short) beub.read( tmis );
 		assertEquals( bs, us.shortValue() );
     }
     
@@ -122,11 +122,11 @@ extends TestCase
 		short s = (short)(Math.PI*10000l);
 		
 		BigEndianUnsignedShort beus = new BigEndianUnsignedShort();
-		beus.write( out, new Integer( s ), null );
+		beus.write( out, new Integer( s ) );
 
 		TypeInputStream tmis = getInputStream();
 		
-		Integer us = (Integer) beus.read( tmis, null );		
+		Integer us = (Integer) beus.read( tmis );		
 		assertEquals( s, us.shortValue() );
     }
     
@@ -135,10 +135,10 @@ extends TestCase
 		int i = (int)(Math.PI*100000000l);
         
 		BigEndianUnsignedInteger beui = new BigEndianUnsignedInteger();
-		beui.write( out, new Long( i ), null); 
+		beui.write( out, new Long( i )); 
 		TypeInputStream tmis = getInputStream();
 
-		Long ui = (Long) beui.read( tmis, null );
+		Long ui = (Long) beui.read( tmis );
 		assertEquals( i, ui.longValue() );
     }
     
@@ -147,11 +147,11 @@ extends TestCase
 		long l = (long)(Math.PI*1000000000000000000l);
 
 		BigEndianUnsignedLong beul = new BigEndianUnsignedLong();
-		beul.write( out, new Long( l ), null);
+		beul.write( out, new Long( l ));
 		
 		TypeInputStream tmis = getInputStream();        
 
-		Long ul = (Long) beul.read( tmis, null );
+		Long ul = (Long) beul.read( tmis );
 		assertEquals( l, ul.longValue() );
     }
     

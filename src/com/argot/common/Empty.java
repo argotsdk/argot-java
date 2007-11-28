@@ -17,7 +17,6 @@ package com.argot.common;
 
 import java.io.IOException;
 
-import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
 import com.argot.TypeOutputStream;
@@ -35,17 +34,16 @@ implements TypeReader, TypeWriter
 	
 	public static final String TYPENAME = "empty";
 
-	public Object read(TypeInputStream in, TypeElement element ) 
+	public Object read(TypeInputStream in ) 
 	throws TypeException, IOException
 	{
 		// There is nothing to read, as this is an empty value.
 		return null;
 	}
 
-	public void write(TypeOutputStream out, Object o, TypeElement element )
+	public void write(TypeOutputStream out, Object o )
 	throws TypeException, IOException
 	{
 		// There is nothing to write, as this is an empty value.
 	}
-
 }

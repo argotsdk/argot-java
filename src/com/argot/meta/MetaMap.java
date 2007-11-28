@@ -18,13 +18,15 @@ package com.argot.meta;
 import java.io.IOException;
 
 import com.argot.ReferenceTypeMap;
+import com.argot.TypeBound;
 import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
+import com.argot.TypeLibrary;
+import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeReaderAuto;
-import com.argot.TypeLibrary;
 import com.argot.TypeWriter;
 
 public class MetaMap
@@ -44,7 +46,6 @@ implements MetaExpression, MetaDefinition
 	{
 		_abstractType = abstractType;
 		_concreteType = concreteType;
-		
 	}
 
     public String getTypeName()
@@ -82,8 +83,8 @@ implements MetaExpression, MetaDefinition
 		_metaAbstract = (MetaAbstract) abstractElement;
 	}
 
-    public void bind(TypeLibrary library, TypeElement definition,
-            String typeName, int typeId) throws TypeException
+    public void bind(TypeLibrary library, TypeElement definition, String typeName, int typeId) 
+    throws TypeException
     {
         super.bind(library, definition, typeName, typeId);
         check( library );
@@ -111,49 +112,50 @@ implements MetaExpression, MetaDefinition
 	}
 	
 	public static class MetaMapTypeReader
-	implements TypeReader
+	implements TypeReader,TypeBound
 	{
-	    public Object read(TypeInputStream in, TypeElement element) throws TypeException, IOException
+		TypeReaderAuto _reader = new TypeReaderAuto( MetaMap.class );
+		
+		public void bind(TypeLibrary library, TypeElement definition, String typeName, int typeId) 
+		throws TypeException 
+		{
+			_reader.bind(library, definition, typeName, typeId);
+		}
+		
+	    public Object read(TypeInputStream in) throws TypeException, IOException
 	    {
-	        // was instanceof MetaDefinition.  maybe wrong.
-			if ( element instanceof MetaExpression )
+	    	TypeReader reader = _reader.getReader(in.getTypeMap());
+			MetaMap map = (MetaMap) reader.read( in );
+			// before we return this we need to change the
+			// values from the mapped to the internal values.
+			
+			ReferenceTypeMap mapCore = (ReferenceTypeMap) in.getTypeMap();
+					
+			if (  mapCore.referenceMap().isValid( map.getAbstractType() ) )
 			{
-				TypeReader reader = new TypeReaderAuto( MetaMap.class );
-				MetaMap map = (MetaMap) reader.read( in, element );
-				// before we return this we need to change the
-				// values from the mapped to the internal values.
-				
-				ReferenceTypeMap mapCore = (ReferenceTypeMap) in.getTypeMap();
-						
-				if (  mapCore.referenceMap().isValid( map.getAbstractType() ) )
-				{
-					map.setAbstractType( mapCore.referenceMap().getSystemId( map.getAbstractType () ));
-				}
-				else
-				{
-					throw new TypeException( "TypeReference: invalid id " );
-				}
-				
-				if (  mapCore.referenceMap().isValid( map.getConcreteType() ) )
-				{
-					map.setConcreteType( mapCore.referenceMap().getSystemId( map.getConcreteType () ));
-				}
-				else
-				{
-					throw new TypeException( "TypeReference: invalid id " );
-				}
-				return map;
-				
-				
+				map.setAbstractType( mapCore.referenceMap().getSystemId( map.getAbstractType () ));
 			}
-			throw new TypeException( "shouldn't get here.");
+			else
+			{
+				throw new TypeException( "TypeReference: invalid id " );
+			}
+			
+			if (  mapCore.referenceMap().isValid( map.getConcreteType() ) )
+			{
+				map.setConcreteType( mapCore.referenceMap().getSystemId( map.getConcreteType () ));
+			}
+			else
+			{
+				throw new TypeException( "TypeReference: invalid id " );
+			}
+			return map;				
 	    }
 	}
 	
 	public static class MetaMapTypeWriter
 	implements TypeWriter
 	{
-	    public void write(TypeOutputStream out, Object o, TypeElement element) throws TypeException, IOException
+	    public void write(TypeOutputStream out, Object o) throws TypeException, IOException
 	    {
 			MetaMap tr = (MetaMap) o;
 			ReferenceTypeMap mapCore = (ReferenceTypeMap) out.getTypeMap();
@@ -161,26 +163,49 @@ implements MetaExpression, MetaDefinition
 			out.writeObject( "u16", new Integer( abstractId ));
 			int concreteId = mapCore.referenceMap().getId( tr._concreteType );
 			out.writeObject( "u16", new Integer( concreteId ) );
-	    }
+	    }   
+	}
+
+	private class MetaMapReader
+	implements TypeReader
+	{
+		public Object read(TypeInputStream in)
+		throws TypeException, IOException 
+		{
+	        // This probably shouldn't happen.
+	        // Someone reads an abstract type.  Which checks its local
+	        // list and reads directly.  
+	        
+	        //  But just in case. Just read the concrete type.
+	        return in.readObject( in.getTypeMap().getId(_concreteType) );
+		}
+		
 	}
 	
-    public void doWrite(TypeOutputStream out, Object o) throws TypeException, IOException
+    public TypeReader getReader(TypeMap map) 
+    throws TypeException
     {
-    	out.writeObject("u16", new Integer(out.getTypeMap().getId(this.getMemberTypeId()) ));
-		
-		// This will force the mapId to be mapped in dynamic type maps.
-		out.getTypeMap().getId( this.getMemberTypeId() );
-		out.writeObject( out.getTypeMap().getId( _concreteType ), o );    	
+    	return new MetaMapReader();
     }
-
-    public Object doRead(TypeInputStream in) throws TypeException, IOException
+	
+	
+	private class MetaMapWriter
+	implements TypeWriter
+	{
+		public void write(TypeOutputStream out, Object o)
+		throws TypeException, IOException 
+		{
+	    	out.writeObject("u16", new Integer(out.getTypeMap().getId(getMemberTypeId()) ));
+			
+			// This will force the mapId to be mapped in dynamic type maps.
+			out.getTypeMap().getId(getMemberTypeId() );
+			out.writeObject( out.getTypeMap().getId( _concreteType ), o );    	
+		}
+	}
+	
+    public TypeWriter getWriter(TypeMap map) 
+    throws TypeException
     {
-        // This probably shouldn't happen.
-        // Someone reads an abstract type.  Which checks its local
-        // list and reads directly.  
-        
-        //  But just in case. Just read the concrete type.
-        return in.readObject( in.getTypeMap().getId(_concreteType) );
+    	return new MetaMapWriter();
     }
-
 }

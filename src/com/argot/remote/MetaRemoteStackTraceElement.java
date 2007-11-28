@@ -18,15 +18,15 @@ package com.argot.remote;
 
 import java.io.IOException;
 
-import com.argot.TypeElement;
 import com.argot.TypeException;
+import com.argot.TypeLibraryWriter;
+import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeWriter;
 import com.argot.common.BigEndianSignedInteger;
 import com.argot.common.U8Ascii;
 
 public class MetaRemoteStackTraceElement
-implements TypeWriter
 {
 	public static final String TYPENAME = "remote.stack_trace_element";
 
@@ -68,13 +68,23 @@ implements TypeWriter
 		return _class + "." + _method + "(" + _file + ":" + _line + ")";
 	}
 
-	public void write(TypeOutputStream out, Object o, TypeElement element)
-		throws TypeException, IOException
+	public static class MetaRemoteStackTraceElementWriter
+	implements TypeLibraryWriter,TypeWriter
 	{
-		MetaRemoteStackTraceElement e = (MetaRemoteStackTraceElement) o;
-		out.writeObject( U8Ascii.TYPENAME, e.getClassName() );
-		out.writeObject( U8Ascii.TYPENAME, e.getMethodName() );
-		out.writeObject( U8Ascii.TYPENAME, e.getFileName() );
-		out.writeObject( BigEndianSignedInteger.TYPENAME, new Integer( e.getLineNumber() ));
+		public void write(TypeOutputStream out, Object o)
+		throws TypeException, IOException
+		{
+			MetaRemoteStackTraceElement e = (MetaRemoteStackTraceElement) o;
+			out.writeObject( U8Ascii.TYPENAME, e.getClassName() );
+			out.writeObject( U8Ascii.TYPENAME, e.getMethodName() );
+			out.writeObject( U8Ascii.TYPENAME, e.getFileName() );
+			out.writeObject( BigEndianSignedInteger.TYPENAME, new Integer( e.getLineNumber() ));
+		}
+		
+		public TypeWriter getWriter(TypeMap map) 
+		throws TypeException 
+		{
+			return this;
+		}		
 	}
 }

@@ -17,7 +17,6 @@ package com.argot.common;
 
 import java.io.IOException;
 
-import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
 import com.argot.TypeOutputStream;
@@ -35,25 +34,22 @@ implements TypeReader, TypeWriter
 
 	public static String TYPENAME = "s8";
 	
-	public Object read(TypeInputStream in, TypeElement element ) 
+	public Object read(TypeInputStream in ) 
 	throws TypeException, IOException
 	{
 		int i;
 
-		i = in.getStream().read();
-		
-		if ( i == -1 ) 
-			throw new IOException( "EOF" );
-		
+		i = in.read();
+				
 		if ( i > 127 ) i = (i & 0x7F) + 128;
 
 		// This should take the lower eight bits of the integer
 		// and convert them to a byte of value -127 to +127.  The
 		// value is then converted back to int.
-		return new Integer( (byte)i );
+		return new Byte( (byte)i );
 	}
 
-	public void write(TypeOutputStream out, Object o, TypeElement element ) 
+	public void write(TypeOutputStream out, Object o ) 
 	throws TypeException, IOException
 	{
 		int b;
@@ -90,5 +86,4 @@ implements TypeReader, TypeWriter
 
 	public static int MIN = -128; //-(2^7);
 	public static int MAX = 127;  //2^7-1;
-
 }

@@ -52,11 +52,10 @@ public class TypeInputStream
 	throws TypeException, IOException
 	{		
 		TypeReader reader = _map.getReader( id );
-		TypeElement element = _map.getStructure( id );
 		
 		try
 		{
-			return reader.read( this, element );
+			return reader.read( this );
 		}
 		catch (TypeStreamException readEx)
 		{
@@ -77,11 +76,10 @@ public class TypeInputStream
 			throw new TypeException( "type not registered");
 			
 		TypeReader reader = _map.getReader( id );
-		TypeElement element = _map.getStructure( id );
 		
 		try
 		{
-			return reader.read( this, element );
+			return reader.read( this );
 		}
 		catch (TypeStreamException readEx)
 		{
@@ -92,5 +90,44 @@ public class TypeInputStream
 		{
 			throw new TypeStreamException( _map.getName(id), ioEx );			
 		}
+	}
+	
+	/**
+	 * Helper method that will throw an exception if the input stream closes.
+	 * @return
+	 * @throws TypeException
+	 * @throws IOException
+	 */
+	public int read()
+	throws TypeException,IOException
+	{
+		int b = _in.read();
+		if (b == -1)
+			throw new TypeException("TypeInputStream: input stream closed");
+		return b;
+	}
+	
+	/**
+	 * Helper method that will throw an exception if all the bytes are not read.
+	 * Required because InputStream.read can return without filling the full buffer.
+	 * 
+	 * @param buffer
+	 * @param offset
+	 * @param count
+	 * @return
+	 * @throws TypeException
+	 * @throws IOException
+	 */
+	public int read(byte[] buffer,int offset,int count)
+	throws TypeException,IOException
+	{
+		int read = 0;
+		while(count>0)
+		{
+			read += _in.read(buffer,offset,count);
+			count-=read;
+			offset+=read;
+		}
+		return read;
 	}
 }

@@ -17,12 +17,12 @@ package com.argot.meta;
 
 import java.io.IOException;
 
-import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
+import com.argot.TypeLibraryWriter;
+import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
-import com.argot.TypeReaderAuto;
 import com.argot.TypeWriter;
 
 /**
@@ -47,44 +47,75 @@ implements MetaExpression
     {
         return TYPENAME;
     }
-    
-    public static class MetaIdentifiedTypeReader
-    implements TypeReader
-    {
-		public Object read(TypeInputStream in, TypeElement element)
-		throws TypeException, IOException
-		{
-			TypeReader reader = new TypeReaderAuto( MetaIdentified.class );
-			return reader.read( in, element );
-		}
-    }
 
     public static class MetaIdentifiedTypeWriter
-    implements TypeWriter
+    implements TypeLibraryWriter,TypeWriter
     {
-		public void write(TypeOutputStream out, Object o, TypeElement element )
+		public void write(TypeOutputStream out, Object o )
 			throws TypeException, IOException
 		{
 			MetaIdentified ti = (MetaIdentified) o;
 			
 			out.writeObject( "meta.name", ti._description );
 		}
+
+		public TypeWriter getWriter(TypeMap map) 
+		throws TypeException 
+		{
+			return this;
+		}
     }
     
-	public Object doRead(TypeInputStream in )
-	throws TypeException, IOException 
+    private class MetaIdentifiedReader
+    implements TypeReader
+    {
+    	private TypeReader _uint16;
+    	
+    	public MetaIdentifiedReader(TypeReader uint16)
+    	{
+    		_uint16 = uint16;
+    	}
+    	
+    	public Object read(TypeInputStream in)
+		throws TypeException, IOException 
+		{
+    		Integer id = (Integer) _uint16.read(in);
+    		return in.readObject( id.intValue() );  
+		}
+    	
+    }
+    
+	public TypeReader getReader(TypeMap map )
+	throws TypeException 
 	{
-		Integer id = (Integer) in.readObject( "u16" );
-		return in.readObject( id.intValue() );  
+		return new MetaIdentifiedReader( map.getReader(map.getId("u16")));  
+	}
+	
+	private class MetaIdentifiedWriter
+	implements TypeWriter
+	{
+		private TypeWriter _uint16;
+		
+		public MetaIdentifiedWriter(TypeWriter uint16)
+		{
+			_uint16 = uint16;
+		}
+		
+		public void write(TypeOutputStream out, Object o)
+		throws TypeException, IOException 
+		{
+			int systemId = out.getTypeMap().getLibrary().getId(o.getClass());
+			int id = out.getTypeMap().getId(systemId);
+			_uint16.write( out, new Integer(id));
+			out.writeObject( id, o );
+		}
+		
 	}
 
-	public void doWrite(TypeOutputStream out, Object o)
-	throws TypeException, IOException 
+	public TypeWriter getWriter(TypeMap map)
+	throws TypeException 
 	{
-		int systemId = out.getTypeMap().getLibrary().getId(o.getClass());
-		int id = out.getTypeMap().getId(systemId);
-		out.writeObject( "u16", new Integer(id));
-		out.writeObject( id, o );
+		return new MetaIdentifiedWriter(map.getWriter(map.getId("u16")));
 	}
 
 }

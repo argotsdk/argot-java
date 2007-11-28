@@ -69,8 +69,8 @@ implements IBookstore
 	{
 		FileOutputStream outputStream = new FileOutputStream( filename );
 		TypeMap typeMap = getDataFileTypeMap();
-		TypeOutputStream typeInputStream = new TypeOutputStream( outputStream, typeMap );
-		typeInputStream.writeObject( "booklist",  getAllBooks() );
+		TypeOutputStream typeOutputStream = new TypeOutputStream( outputStream, typeMap );
+		typeOutputStream.writeObject( "booklist",  getAllBooks() );
 	}
     
     

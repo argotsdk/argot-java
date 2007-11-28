@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import com.argot.TypeBound;
 import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
@@ -202,13 +203,21 @@ implements MetaDefinition
 	}
 
 	public static class MetaMethodReader
-	implements TypeReader
+	implements TypeReader,TypeBound
 	{
-		public Object read(TypeInputStream in, TypeElement element) 
+		TypeReaderAuto _reader = new TypeReaderAuto( MetaMethod.class );
+		
+		public void bind(TypeLibrary library, TypeElement definition, String typeName, int typeId) 
+		throws TypeException 
+		{
+			_reader.bind(library, definition, typeName, typeId);
+		}
+		
+		public Object read(TypeInputStream in) 
 		throws TypeException, IOException 
 		{
-			TypeReader reader = new TypeReaderAuto( MetaMethod.class );
-			MetaMethod mm = (MetaMethod) reader.read( in, element );
+			TypeReader reader = _reader.getReader(in.getTypeMap());
+			MetaMethod mm = (MetaMethod) reader.read( in );
 			mm._interfaceId = in.getTypeMap().getSystemId( mm._interfaceId );
 			for ( int x=0 ; x< mm._errorTypes.length ; x++ )
 			{
@@ -221,7 +230,7 @@ implements MetaDefinition
 	public static class MetaMethodWriter
 	implements TypeWriter
 	{
-		public void write(TypeOutputStream out, Object o, TypeElement element) 
+		public void write(TypeOutputStream out, Object o) 
 		throws TypeException, IOException 
 		{
 			MetaMethod mm = (MetaMethod) o;
@@ -237,8 +246,6 @@ implements MetaDefinition
 				out.writeObject( BigEndianUnsignedByte.TYPENAME, new Integer( mm.getRequestTypes().length ));
 				for( x=0 ;x < mm.getRequestTypes().length; x++ )
 				{
-					//id = out.getTypeMap().getId( mm.getRequestTypes()[x].getParamType() );
-					//out.writeObject( BigEndianUnsignedShort.TYPENAME, new Integer(id) );
 					out.writeObject( MetaParameter.TYPENAME, mm.getRequestTypes()[x] );
 				}
 			}

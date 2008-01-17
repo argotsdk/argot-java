@@ -50,8 +50,8 @@ public class TypeLibrary
 	
 	public TypeLibrary()
 	{
-		System.out.println("\nArgot Version 1.2.1");
-		System.out.println("Copyright 2003-2007 (C) Live Media Pty Ltd.");
+		System.out.println("\nArgot Version 1.2.2");
+		System.out.println("Copyright 2003-2008 (C) Live Media Pty Ltd.");
 		System.out.println("www.einet.com.au\n");
 		
 		_types = new ArrayList();

@@ -51,7 +51,7 @@ Please view the example .argot files to see how argot is specified.
 Version History
 ---------------
 
-1.2.2 - 28 January 2008
+1.2.2 - 17 January 2008
 
 - Many changes to improve performance
 - Added TypeLibraryReader & TypeLibraryWriter

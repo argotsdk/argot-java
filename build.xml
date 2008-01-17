@@ -158,7 +158,7 @@
 	<target name="argot-compiler-config" description="setup argot compiler task definition">
 		<path id="argotc.lib">
 			<pathelement location="${build.bin}"/>
-			<pathelement location="lib/argot-compiler-1.2.1a.jar"/>
+			<pathelement location="lib/argot-compiler-1.2.2.jar"/>
 		</path>
 		<taskdef name="argotc" classname="com.argot.compiler.ant.AntArgotCompiler" classpathref="argotc.lib"/>		
 	</target>

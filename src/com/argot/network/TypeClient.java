@@ -66,7 +66,8 @@ implements TypeTransport
 			TypeOutputStream tmos = new TypeOutputStream( ep.getOutputStream(), _typeMap );
 			_uint8.write(tmos, new Short(ProtocolTypeMap.MSG));
 		} catch (TypeException e) {
-			throw new IOException(e);
+			// Java 1.4 only has simple IOException constructors.
+			throw new IOException(e.toString());
 		}
 		
 		return ep;
@@ -144,7 +145,8 @@ implements TypeTransport
 			catch (TypeException e)
 			{
 				_error = true;
-				throw new IOException( e.toString(), e );
+				// Java 1.4 only has simple IOException constructors.
+				throw new IOException( e.toString() );
 			}
 			catch (IOException e)
 			{

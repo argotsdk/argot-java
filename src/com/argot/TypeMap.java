@@ -17,7 +17,11 @@ package com.argot;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 
 import com.argot.common.DateS64;
 import com.argot.common.U16ArrayByte;
@@ -54,7 +58,24 @@ public class TypeMap
 	
 	public Iterator getIterator()
 	{
-		return _map.iterator();
+		List list = new ArrayList();
+		Iterator i = _map.iterator();
+		while ( i.hasNext() )
+		{
+			list.add( i.next() );
+		}
+		Collections.sort( list, new IntegerComparator() );
+		return list.iterator();
+	}
+	
+	private class IntegerComparator
+	implements Comparator
+	{
+		public int compare(Object arg0, Object arg1) {
+			Integer i1 = (Integer) arg0;
+			Integer i2 = (Integer) arg1;	
+			return i1.intValue() - i2.intValue();
+		}	
 	}
 	
 	public TypeMap( TypeLibrary library )

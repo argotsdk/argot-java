@@ -15,6 +15,8 @@
  */
 package com.argot;
 
+import java.util.Iterator;
+
 import com.argot.meta.MetaLoader;
 import com.argot.meta.MetaReference;
 
@@ -58,5 +60,26 @@ extends TestCase
     {
         int id = _map.getId( _library.getId( MetaReference.TYPENAME ));
         assertEquals( TypeMapCore.REFERENCEID, id );
+    }
+    
+    public void testIterator() throws Exception
+    {
+    	_map = new TypeMap( _library );
+    	_map.map( 34, 0 );
+    	_map.map( 20, 10);
+    	_map.map( 45, 1);
+    	
+    	Iterator iter = _map.getIterator();
+    	
+    	Integer i = (Integer) iter.next();
+    	assertEquals( 20, i.intValue() );
+
+    	i = (Integer) iter.next();
+    	assertEquals( 34, i.intValue() );
+
+    	i = (Integer) iter.next();
+    	assertEquals( 45, i.intValue() );
+    	
+    	assertFalse( iter.hasNext() );
     }
 }

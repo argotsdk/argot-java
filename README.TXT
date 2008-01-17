@@ -51,6 +51,17 @@ Please view the example .argot files to see how argot is specified.
 Version History
 ---------------
 
+1.2.2 - 28 January 2008
+
+- Many changes to improve performance
+- Added TypeLibraryReader & TypeLibraryWriter
+- Added TypeSimpleReader & TypeSimpleWriter for compatability.
+- Modified TypeMap iterator to return list in order.
+- Ensured compatibility with JRE 1.5
+   Note:  Can be downgraded to JRE 1.4 without too much trouble.
+          Requires 1.5 so that remove exceptions stack traces can be created.
+          Remove StackTraceElement construction to downgrade to 1.4
+
 1.2.1a - 14 October 2007
 
 - Added TypeBeanMarshaller.

@@ -46,11 +46,12 @@ public class TypeLibrary
 		public TypeLibraryWriter writer;
 		public Class clss;
 		public TypeElement structure;
+		public boolean isSimple;
 	}
 	
 	public TypeLibrary()
 	{
-		System.out.println("\nArgot Version 1.2.2");
+		System.out.println("\nArgot Version 1.3.0");
 		System.out.println("Copyright 2003-2008 (C) Live Media Pty Ltd.");
 		System.out.println("www.einet.com.au\n");
 		
@@ -199,6 +200,7 @@ public class TypeLibrary
 		    definition.writer = writer;
 		    definition.clss = clss;  // Can be null.
 		    definition.state = TYPE_COMPLETE;
+		    definition.isSimple = false;
 		    	    
 		    add( definition );
 	    }
@@ -268,6 +270,7 @@ public class TypeLibrary
 		    definition.writer = null;
 		    definition.clss = null;  // Can be null.
 		    definition.state = TYPE_REGISTERED;
+		    definition.isSimple = false;
 		    	    
 		    add( definition );
 	    }
@@ -326,6 +329,7 @@ public class TypeLibrary
 	    definition.writer = null;
 	    definition.clss = null;  // Can be null.
 	    definition.state = TYPE_RESERVED;
+	    definition.isSimple = false;
 	    	    
 	    int id = add( definition );
 	    return id;	    
@@ -397,7 +401,33 @@ public class TypeLibrary
 			throw new TypeNotDefinedException( "type not found" );
 		
 		return def.name;
-	}	
+	}
+	
+	public boolean isSimpleType( int id )
+	throws TypeException
+	{
+		if ( !isTypeIdInRange(id) )
+			throw new TypeNotDefinedException( "type id not in range");
+		
+		TypeDefinition def = (TypeDefinition) _types.get( id );
+		if ( def == null )
+			throw new TypeNotDefinedException( "type not found" );
+		
+		return def.isSimple;
+	}
+	
+	public void setSimpleType( int id, boolean isSimple )
+	throws TypeException
+	{
+		if ( !isTypeIdInRange(id) )
+			throw new TypeNotDefinedException( "type id not in range");
+		
+		TypeDefinition def = (TypeDefinition) _types.get( id );
+		if ( def == null )
+			throw new TypeNotDefinedException( "type not found" );
+		
+		def.isSimple = isSimple;
+	}
 
 	public TypeElement getStructure( int id )
 	throws TypeException

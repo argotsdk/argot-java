@@ -17,6 +17,7 @@ package com.argot.meta;
 
 import java.io.IOException;
 
+import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
 import com.argot.TypeLibraryWriter;
@@ -26,8 +27,7 @@ import com.argot.TypeReader;
 import com.argot.TypeWriter;
 
 public class MetaOptional
-extends MetaBase
-implements MetaExpression
+extends MetaExpression
 {
 	public static String TYPENAME = "meta.optional";
 
@@ -48,8 +48,25 @@ implements MetaExpression
         return _option;
     }
 
+	public static class MetaOptionalTypeReader
+	extends MetaExpressionReaderAuto
+	implements MetaExpressionReader
+	{
+		public MetaOptionalTypeReader() 
+		{
+			super(MetaOptional.class);
+		}
+
+		public TypeReader getExpressionReader(TypeMap map, MetaExpressionResolver resolver, TypeElement element)
+		throws TypeException 
+		{
+			MetaOptional metaOptional = (MetaOptional) element;
+			return new MetaOptionalReader(map.getReader(map.getId("bool")),resolver.getExpressionReader(map, metaOptional._option));		
+		}	
+	}    
+    
     public static class MetaOptionalTypeWriter
-    implements TypeLibraryWriter,TypeWriter
+    implements TypeLibraryWriter,TypeWriter,MetaExpressionWriter
     {
 		public void write(TypeOutputStream out, Object o )
 			throws TypeException, IOException
@@ -64,9 +81,16 @@ implements MetaExpression
 		{
 			return this;
 		}
+
+		public TypeWriter getExpressionWriter(TypeMap map, MetaExpressionResolver resolver, TypeElement element)
+		throws TypeException 
+		{
+			MetaOptional metaOptional = (MetaOptional) element;
+			return new MetaOptionalWriter(map.getWriter(map.getId("bool")), resolver.getExpressionWriter(map, metaOptional._option));		
+		}
     }
     
-    private class MetaOptionalReader
+    private static class MetaOptionalReader
     implements TypeReader
     {
     	private TypeReader _bool;
@@ -88,14 +112,8 @@ implements MetaExpression
 		}
     	
     }
-    
-	public TypeReader getReader(TypeMap map )
-	throws TypeException
-	{
-		return new MetaOptionalReader(map.getReader(map.getId("bool")),_option.getReader(map));
-	}
 	
-	private class MetaOptionalWriter
+	private static class MetaOptionalWriter
 	implements TypeWriter
 	{
 		private TypeWriter _bool;
@@ -121,12 +139,4 @@ implements MetaExpression
 		}
 		
 	}
-
-	public TypeWriter getWriter(TypeMap map)
-	throws TypeException
-	{
-	    return new MetaOptionalWriter(map.getWriter(map.getId("bool")), _option.getWriter(map));
-	}
-
-
 }

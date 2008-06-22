@@ -43,100 +43,118 @@ extends ResourceDictionaryLoader
 	
 	public void bind( TypeLibrary library ) throws TypeException
 	{
+		int id;
+		
 		if ( library.getTypeState( Empty.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
 		{
 			Empty te = new Empty();
-			library.bind( Empty.TYPENAME,te,te,te.getClass() );
+			id = library.bind( Empty.TYPENAME,te,te,te.getClass() );
+			library.setSimpleType(id,true);
 		}
 		
 		// Register Big Endian Unsigned Types.
-		if ( library.getTypeState( BigEndianUnsignedByte.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
+		if ( library.getTypeState( UInt8.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
 		{
-			BigEndianUnsignedByte bbe = new BigEndianUnsignedByte();
-			library.bind( BigEndianUnsignedByte.TYPENAME, bbe,bbe,null );			
+			UInt8 bbe = new UInt8();
+			id = library.bind( UInt8.TYPENAME, bbe,bbe,null );			
+			library.setSimpleType(id,true);
 		}
 		
-		if ( library.getTypeState( BigEndianUnsignedShort.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
+		if ( library.getTypeState( UInt16.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
 		{
-			BigEndianUnsignedShort bbs = new BigEndianUnsignedShort();
-			library.bind( BigEndianUnsignedShort.TYPENAME, bbs,bbs, null );
+			UInt16 bbs = new UInt16();
+			id = library.bind( UInt16.TYPENAME, bbs,bbs, null );
+			library.setSimpleType(id,true);			
 		}
 		
-		if ( library.getTypeState( BigEndianUnsignedInteger.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
+		if ( library.getTypeState( UInt32.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
 		{
-			BigEndianUnsignedInteger bei = new BigEndianUnsignedInteger();
-			library.bind( BigEndianUnsignedInteger.TYPENAME, bei,bei, null );
+			UInt32 bei = new UInt32();
+			id = library.bind( UInt32.TYPENAME, bei,bei, null );
+			library.setSimpleType(id,true);
 		}
 
-		if ( library.getTypeState( BigEndianUnsignedLong.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
+		if ( library.getTypeState( UInt64.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
 		{
-			BigEndianUnsignedLong bbe = new BigEndianUnsignedLong();
-			library.bind( BigEndianUnsignedLong.TYPENAME, bbe,bbe, null );			
+			UInt64 bbe = new UInt64();
+			id = library.bind( UInt64.TYPENAME, bbe,bbe, null );
+			library.setSimpleType(id,true);
 		}
 
 		// Register Big Endian Signed Types.
-		if ( library.getTypeState( BigEndianSignedByte.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
+		if ( library.getTypeState( Int8.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
 		{
-			BigEndianSignedByte bbe = new BigEndianSignedByte();
-			library.bind( BigEndianSignedByte.TYPENAME, bbe,bbe,Byte.class );			
+			Int8 bbe = new Int8();
+			id = library.bind( Int8.TYPENAME, bbe,bbe,Byte.class );
+			library.setSimpleType(id,true);
 		}
 		
-		if ( library.getTypeState( BigEndianSignedShort.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
+		if ( library.getTypeState( Int16.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
 		{
-			BigEndianSignedShort bbs = new BigEndianSignedShort();
-			library.bind( BigEndianSignedShort.TYPENAME, bbs,bbs,Short.class );
+			Int16 bbs = new Int16();
+			id = library.bind( Int16.TYPENAME, bbs,bbs,Short.class );
+			library.setSimpleType(id,true);
 		}
 		
-		if ( library.getTypeState( BigEndianSignedInteger.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
+		if ( library.getTypeState( Int32.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
 		{
-			BigEndianSignedInteger bei = new BigEndianSignedInteger();
-			library.bind( BigEndianSignedInteger.TYPENAME, bei,bei, Integer.class );
+			Int32 bei = new Int32();
+			id = library.bind( Int32.TYPENAME, bei,bei, Integer.class );
+			library.setSimpleType(id,true);
 		}
 
-		if ( library.getTypeState(BigEndianSignedLong.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
+		if ( library.getTypeState(Int64.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
 		{
-			BigEndianSignedLong bbe = new BigEndianSignedLong();
-			library.bind( BigEndianSignedLong.TYPENAME, bbe,bbe,Long.class );			
+			Int64 bbe = new Int64();
+			id = library.bind( Int64.TYPENAME, bbe,bbe,Long.class );
+			library.setSimpleType(id,true);
 		}
 
 		if ( library.getTypeState(IEEEFloat.TYPENAME) == TypeLibrary.TYPE_REGISTERED )
 		{
-			library.bind( IEEEFloat.TYPENAME, new IEEEFloat.Reader(), new IEEEFloat.Writer(), Float.class);
+			id = library.bind( IEEEFloat.TYPENAME, new IEEEFloat.Reader(), new IEEEFloat.Writer(), Float.class);
+			library.setSimpleType(id,true);
 		}
 
 		if ( library.getTypeState(IEEEDouble.TYPENAME) == TypeLibrary.TYPE_REGISTERED )
 		{
-			library.bind( IEEEDouble.TYPENAME, new IEEEDouble.Reader(), new IEEEDouble.Writer(), Double.class);
+			id = library.bind( IEEEDouble.TYPENAME, new IEEEDouble.Reader(), new IEEEDouble.Writer(), Double.class);
+			library.setSimpleType(id,true);
 		}
 		
 		if ( library.getTypeState( U8Ascii.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
 		{	
 			U8Ascii sbu = new U8Ascii();
-			library.bind( U8Ascii.TYPENAME, sbu, sbu, String.class );
+			id = library.bind( U8Ascii.TYPENAME, sbu, sbu, String.class );
+			library.setSimpleType(id,true);
 		}
 
 		if ( library.getTypeState( U32UTF8.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
 		{	
 			U32UTF8 sbu = new U32UTF8();
-			library.bind( U32UTF8.TYPENAME, sbu, sbu, null );
+			id = library.bind( U32UTF8.TYPENAME, sbu, sbu, null );
+			library.setSimpleType(id,true);
 		}
 
 		if ( library.getTypeState( U16ArrayByte.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
 		{
 			U16ArrayByte aib = new U16ArrayByte();
-			library.bind( U16ArrayByte.TYPENAME, aib,aib, byte[].class );
+			id = library.bind( U16ArrayByte.TYPENAME, aib,aib, byte[].class );
+			library.setSimpleType(id,true);
 		}
 		
 		if ( library.getTypeState( U32ArrayByte.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
 		{
 			U32ArrayByte asb = new U32ArrayByte();
-			library.bind( U32ArrayByte.TYPENAME, asb, asb, null );
+			id = library.bind( U32ArrayByte.TYPENAME, asb, asb, null );
+			library.setSimpleType(id,true);
 		}
 		
 		if ( library.getTypeState( U8Boolean.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
 		{
 			U8Boolean bb = new U8Boolean();
-			library.bind( U8Boolean.TYPENAME, bb, bb, Boolean.class );
+			id = library.bind( U8Boolean.TYPENAME, bb, bb, Boolean.class );
+			library.setSimpleType(id,true);
 		}
 		
 		if ( library.getTypeState( "meta.identified" ) == TypeLibrary.TYPE_REGISTERED )
@@ -155,7 +173,8 @@ extends ResourceDictionaryLoader
 		}
 		if ( library.getTypeState( "date.java") == TypeLibrary.TYPE_REGISTERED )
 		{
-		    library.bind( DateS64.TYPENAME, new TypeReaderAuto( Date.class ), new DateS64(), Date.class );
+		    id = library.bind( DateS64.TYPENAME, new TypeReaderAuto( Date.class ), new DateS64(), Date.class );
+			library.setSimpleType(id,true);
 		}
 			
 	}

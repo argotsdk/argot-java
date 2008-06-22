@@ -33,6 +33,8 @@ import com.argot.TypeMapCore;
 import com.argot.TypeInputStream;
 import com.argot.TypeOutputStream;
 import com.argot.TypeLibrary;
+import com.argot.common.UInt16;
+import com.argot.common.UInt8;
 import com.argot.meta.MetaDefinition;
 
 /**
@@ -49,31 +51,22 @@ public class Dictionary
 		
 		// write out the dictionary used to write the content.
 		TypeMapCore refCore = TypeMapCore.getCoreTypeMap( library);
-		refCore.map( 22, library.getId("dictionary.map"));
-		refCore.map( 23, library.getId("dictionary.words"));
-		refCore.map( 24, library.getId("dictionary.definition"));
-		refCore.map( 25, library.getId("dictionary.entry"));	
-		refCore.map( 26, library.getId("meta.envelop"));
-		refCore.map( 27, library.getId("meta.definition#envelop"));
+		refCore.map( 42, library.getId("dictionary.words"));
+
 		
 		// get the core type map.
 		DynamicTypeMap core = new DynamicTypeMap( library, refCore );
 		TypeMapCore.mapMeta( core, library );
-		core.map( 22, library.getId("dictionary.map"));
-		core.map( 23, library.getId("dictionary.words"));
-		core.map( 24, library.getId("dictionary.definition"));
-		core.map( 25, library.getId("dictionary.entry"));	
-		core.map( 26, library.getId("meta.envelop"));
-		core.map( 27, library.getId("meta.definition#envelop"));
-	
+		core.map( 42, library.getId("dictionary.words"));
+
 		// create a dynamic type map.
 		DynamicTypeMap dtm = new DynamicTypeMap( library, map );
 		
 		// write out the message content.  Definition of the core type map.
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(); 
 		TypeOutputStream tmos = new TypeOutputStream( baos , dtm );
-		tmos.writeObject( "u16", new Integer(dtm.getId( library.getId("dictionary.map"))));
-		tmos.writeObject( "dictionary.map", map );
+		tmos.writeObject( UInt16.TYPENAME, new Integer(dtm.getId( library.getId("dictionary.entry.list"))));
+		tmos.writeObject( "dictionary.entry.list", map );
 		tmos.getStream().close();
 		baos.close();
 		
@@ -94,7 +87,7 @@ public class Dictionary
 			
 			baos2 = new ByteArrayOutputStream(); 
 			tmos2 = new TypeOutputStream( baos2 , core );
-			tmos2.writeObject( "u8", new Integer( 1 ));
+			tmos2.writeObject( UInt8.TYPENAME, new Integer( 1 ));
 			tmos2.writeObject( "dictionary.words", dtm );
 			tmos2.getStream().close();
 			baos2.close();
@@ -121,7 +114,7 @@ public class Dictionary
 	private static void writeCoreMap( TypeOutputStream out, ReferenceTypeMap map ) throws TypeException, IOException
 	{
 		// writing out the core and then the extensions.
-		out.writeObject( "U8" , new Integer( 2 ));
+		out.writeObject( UInt8.TYPENAME , new Integer( 2 ));
 		
 		// write out the core elements.
 		List coreIds = TypeMapCore.getCoreIdentifiers();
@@ -129,7 +122,7 @@ public class Dictionary
 		TypeOutputStream out1 = new TypeOutputStream( baos1, map );
 		
 		// write the number of entries.
-		out1.writeObject( "U16", new Integer( coreIds.size() ));
+		out1.writeObject( UInt16.TYPENAME, new Integer( coreIds.size() ));
 		
 			
 		Iterator i = coreIds.iterator();	
@@ -139,9 +132,9 @@ public class Dictionary
 			String name = map.getName( id );
 			MetaDefinition definition = (MetaDefinition) map.getStructure(id);
 
-			out1.writeObject( "U16", new Integer(id));
+			out1.writeObject( UInt16.TYPENAME, new Integer(id));
 			out1.writeObject( "meta.name", name );
-			out1.writeObject( "dictionary.definition", definition );
+			out1.writeObject( "meta.definition.envelop", definition );
 			
 		}
 		
@@ -149,7 +142,7 @@ public class Dictionary
 		baos1.close();
 		
 		byte[] coreBuffer = baos1.toByteArray();
-		out.writeObject( "u16", new Integer( coreBuffer.length ));
+		out.writeObject( UInt16.TYPENAME, new Integer( coreBuffer.length ));
 		out.getStream().write( coreBuffer );
 
 		// write out extensions.		
@@ -159,7 +152,7 @@ public class Dictionary
 
 		// count the number of extensions
 		int extensionCount = 0;
-		i = map.getIterator();
+		i = map.getIdList().iterator();
 		while (i.hasNext() )
 		{
 			Integer id = (Integer) i.next();
@@ -171,10 +164,10 @@ public class Dictionary
 			extensionCount++;
 		}
 		
-		out2.writeObject("U16", new Integer( extensionCount ));
+		out2.writeObject(UInt16.TYPENAME, new Integer( extensionCount ));
 		
 		// write out the extensions
-		i = map.getIterator();
+		i = map.getIdList().iterator();
 		while (i.hasNext() )
 		{
 			Integer id = (Integer) i.next();
@@ -186,9 +179,9 @@ public class Dictionary
 			String name = map.getName( id.intValue() );
 			MetaDefinition definition = (MetaDefinition) map.getStructure(id.intValue());
 						
-			out2.writeObject( "U16", new Integer(id.intValue()));
+			out2.writeObject( UInt16.TYPENAME, new Integer(id.intValue()));
 			out2.writeObject( "meta.name", name );
-			out2.writeObject( "dictionary.definition", definition );
+			out2.writeObject( "meta.definition.envelop", definition );
 					
 		}
 		
@@ -196,7 +189,7 @@ public class Dictionary
 		baos2.close();
 		
 		byte[] extBuffer = baos2.toByteArray();
-		out.writeObject( "u16", new Integer( extBuffer.length ));
+		out.writeObject( UInt16.TYPENAME, new Integer( extBuffer.length ));
 		out.getStream().write( extBuffer );
 	}
 	
@@ -210,20 +203,10 @@ public class Dictionary
 	public static TypeMap readDictionary( TypeLibrary library, InputStream fis) throws TypeException, IOException
 	{
 		TypeMapCore refCore = TypeMapCore.getCoreTypeMap( library );
-		refCore.map( 22, library.getId("dictionary.map"));
-		refCore.map( 23, library.getId("dictionary.words"));
-		refCore.map( 24, library.getId("dictionary.definition"));
-		refCore.map( 25, library.getId("dictionary.entry"));	
-		refCore.map( 26, library.getId("meta.envelop"));
-		refCore.map( 27, library.getId("meta.definition#envelop"));
+		refCore.map( 42, library.getId("dictionary.words"));
 		
 		TypeMapCore core = TypeMapCore.getCoreTypeMap( library, refCore);
-		core.map( 22, library.getId("dictionary.map"));
-		core.map( 23, library.getId("dictionary.words"));
-		core.map( 24, library.getId("dictionary.definition"));
-		core.map( 25, library.getId("dictionary.entry"));	
-		core.map( 26, library.getId("meta.envelop"));
-		core.map( 27, library.getId("meta.definition#envelop"));
+		core.map( 42, library.getId("dictionary.words"));
     	
 		TypeInputStream tmis = new TypeInputStream( fis, core );
         
@@ -235,7 +218,7 @@ public class Dictionary
 		ReferenceTypeMap messageMap = readMessageMap( tmis, coreMap );
 		// read the final dictionary. register types if needed.
 
-		Integer ident = (Integer) tmis.readObject( "u16" );
+		Integer ident = (Integer) tmis.readObject( UInt16.TYPENAME );
 		if ( ident.intValue() != 1 )
 			throw new TypeException( "Wrong dictionary index value" );
 
@@ -249,23 +232,13 @@ public class Dictionary
 	private static ReferenceTypeMap readCore( TypeLibrary library, TypeInputStream tmis ) throws TypeException, IOException
 	{
 		TypeMapCore refCore = TypeMapCore.getCoreTypeMap( library );
-		refCore.map( 22, library.getId("dictionary.map"));
-		refCore.map( 23, library.getId("dictionary.words"));
-		refCore.map( 24, library.getId("dictionary.definition"));
-		refCore.map( 25, library.getId("dictionary.entry"));	
-		refCore.map( 26, library.getId("meta.envelop"));
-		refCore.map( 27, library.getId("meta.definition#envelop"));
+		refCore.map( 42, library.getId("dictionary.words"));
 
 		TypeMapCore core = TypeMapCore.getCoreTypeMap( library, refCore);
-		core.map( 22, library.getId("dictionary.map"));
-		core.map( 23, library.getId("dictionary.words"));
-		core.map( 24, library.getId("dictionary.definition"));
-		core.map( 25, library.getId("dictionary.entry"));	
-		core.map( 26, library.getId("meta.envelop"));
-		core.map( 27, library.getId("meta.definition#envelop"));
+		core.map( 42, library.getId("dictionary.words"));
  		
 		// read the core array size.  expect = 2.
-		Short arraySize = (Short) tmis.readObject( "u8" );
+		Short arraySize = (Short) tmis.readObject( UInt8.TYPENAME );
 		
 		byte[] readcore = (byte[]) tmis.readObject( "dictionary.words" );
 		byte[] localCore = writeCore( core );
@@ -303,7 +276,7 @@ public class Dictionary
 		ReferenceTypeMap mapSpec = new ReferenceTypeMap( coreMap.getLibrary(), coreMap );
 		
 		// read the core array size.  expect = 2.
-		Short arraySize = (Short) tmis.readObject( "u8" );
+		Short arraySize = (Short) tmis.readObject( UInt8.TYPENAME );
 		
 		// now the core is confirmed we can add in the extensions.
 		for ( int x=0; x < arraySize.intValue(); x++ )
@@ -325,16 +298,16 @@ public class Dictionary
 	{
 	
 			
-		int size = ((Integer)dictDataIn.readObject("u16" )).intValue();
+		int size = ((Integer)dictDataIn.readObject( UInt16.TYPENAME )).intValue();
 		Triple newTypes[] = new Triple[size];
 		
 		// Step 1.  Read all the types in.
 		for ( int x = 0; x<size; x++ )
 		{
 			Triple newType = new Triple();
-			newType.id = ((Integer)dictDataIn.readObject( "u16")).intValue();
+			newType.id = ((Integer)dictDataIn.readObject( UInt16.TYPENAME )).intValue();
 			newType.name = (String) dictDataIn.readObject( "meta.name" );
-			newType.structure = (byte[]) dictDataIn.readObject( "dictionary.definition" );
+			newType.structure = (byte[]) dictDataIn.readObject( "meta.definition.envelop" );
 			newTypes[x] = newType;
 		}
 
@@ -377,6 +350,7 @@ public class Dictionary
 		// are resolved.
 		for ( int x = 0; x<size; x++ )
 		{
+			//System.out.println("Reading.." + newTypes[x].name );
 			newTypes[x].definition = (MetaDefinition) mapSpec.readStructure( coreMap, newTypes[x].structure );
 		}
 		
@@ -400,7 +374,7 @@ public class Dictionary
 		TypeOutputStream out1 = new TypeOutputStream( baos1, map );
 		
 		// write the number of entries.
-		out1.writeObject( "u16", new Integer( coreIds.size() ));
+		out1.writeObject( UInt16.TYPENAME, new Integer( coreIds.size() ));
 		
 			
 		Iterator i = coreIds.iterator();	
@@ -410,9 +384,9 @@ public class Dictionary
 			String name = map.getName( id );
 			MetaDefinition definition = (MetaDefinition) map.getStructure(id);
 						
-			out1.writeObject( "u16", new Integer(id));
+			out1.writeObject( UInt16.TYPENAME, new Integer(id));
 			out1.writeObject( "meta.name", name );
-			out1.writeObject( "dictionary.definition", definition );
+			out1.writeObject( "meta.definition.envelop", definition );
 			
 		}
 

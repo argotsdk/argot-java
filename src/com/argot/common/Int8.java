@@ -28,11 +28,11 @@ import com.argot.TypeWriter;
  * type and returns an object of type Integer.  A java byte represents
  * a value of -127 to 127.
  */
-public class BigEndianSignedByte
+public class Int8
 implements TypeReader, TypeWriter
 {
 
-	public static String TYPENAME = "s8";
+	public static String TYPENAME = "sint8";
 	
 	public Object read(TypeInputStream in ) 
 	throws TypeException, IOException

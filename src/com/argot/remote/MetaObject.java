@@ -22,7 +22,7 @@ import com.argot.TypeInputStream;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
-import com.argot.common.BigEndianUnsignedShort;
+import com.argot.common.UInt16;
 
 
 /**
@@ -61,7 +61,7 @@ public class MetaObject
 		throws TypeException, IOException 
 		{
 			MetaLocation location = (MetaLocation) in.readObject(MetaLocation.TYPENAME);
-			Integer id = (Integer) in.readObject(BigEndianUnsignedShort.TYPENAME );
+			Integer id = (Integer) in.readObject(UInt16.TYPENAME );
 			int sysId = in.getTypeMap().getSystemId( id.intValue() );
 			return new MetaObject( location, sysId );
 		}
@@ -77,7 +77,7 @@ public class MetaObject
 			
 			out.writeObject( MetaLocation.TYPENAME, obj.getLocation() );
 			int mapId = out.getTypeMap().getId( obj.getType() );
-			out.writeObject(  BigEndianUnsignedShort.TYPENAME, new Integer( mapId ) );
+			out.writeObject(  UInt16.TYPENAME, new Integer( mapId ) );
 		}
 	}
 }

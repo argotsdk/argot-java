@@ -28,8 +28,8 @@ import com.argot.TypeReader;
 import com.argot.TypeWriter;
 
 public class MetaEncoding
-extends MetaBase
-implements MetaExpression
+extends MetaExpression
+implements MetaDefinition
 {
     public static final String TYPENAME = "meta.encoding";
     
@@ -53,14 +53,31 @@ implements MetaExpression
         _expression.bind( library, definition, typeName, typeId );
     }	
 
+	public static class MetaEncodingTypeReader
+	extends MetaExpressionReaderAuto
+	implements MetaExpressionReader
+	{
+		public MetaEncodingTypeReader() 
+		{
+			super(MetaEncoding.class);
+		}
+
+		public TypeReader getExpressionReader(TypeMap map, MetaExpressionResolver resolver, TypeElement element)
+		throws TypeException 
+		{
+			MetaEncoding metaEncoding = (MetaEncoding) element;
+	    	return new MetaEncodingReader(resolver.getExpressionReader(map, metaEncoding._expression), metaEncoding._encoding);			
+		}	
+	}    
+    
     public static class MetaEncodingTypeWriter
-    implements TypeLibraryWriter,TypeWriter
+    implements TypeLibraryWriter,TypeWriter,MetaExpressionWriter
     {
 	    public void write(TypeOutputStream out, Object o) throws TypeException, IOException
 	    {
 	    	MetaEncoding enc = (MetaEncoding) o;
 	
-	 		out.writeObject( "meta.expression", enc._expression );
+	 		out.writeObject( MetaExpression.TYPENAME, enc._expression );
 			out.writeObject( "meta.name", enc._encoding );	
 	    }
 
@@ -69,21 +86,24 @@ implements MetaExpression
 		{
 			return this;
 		}
-    }
-    
-    public TypeWriter getWriter(TypeMap map) 
-    throws TypeException
-    {
-        throw new TypeException("not implemented");
+
+		public TypeWriter getExpressionWriter(TypeMap map, MetaExpressionResolver resolver, TypeElement element)
+		throws TypeException 
+		{
+	        throw new TypeException("not implemented");
+		}
     }
 
-    private class MetaEncodingReader
+    private static class MetaEncodingReader
     implements TypeReader
     {
     	private TypeReader _data;
-    	private MetaEncodingReader( TypeReader expression )
+    	private String _encoding;
+    	
+    	private MetaEncodingReader( TypeReader expression, String encoding )
     	{
     		_data = expression;
+    		_encoding = encoding;
     	}
     	
 		public Object read(TypeInputStream in)
@@ -93,10 +113,5 @@ implements MetaExpression
 	        return new String( data, _encoding );
 		}
     	
-    }
-    public TypeReader getReader(TypeMap map) 
-    throws TypeException
-    {
-    	return new MetaEncodingReader(_expression.getReader(map));
     }
 }

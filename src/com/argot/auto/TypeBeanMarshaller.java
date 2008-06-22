@@ -16,17 +16,31 @@ import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
 import com.argot.meta.MetaExpression;
+import com.argot.meta.MetaExpressionLibraryResolver;
+import com.argot.meta.MetaExpressionResolver;
 import com.argot.meta.MetaReference;
 import com.argot.meta.MetaSequence;
+import com.argot.meta.MetaTag;
 
 public class TypeBeanMarshaller 
 implements TypeLibraryReader, TypeLibraryWriter, TypeBound
 {
+	MetaExpressionResolver _expressionResolver;
 	Class _typeClass;
 	Method[] _getMethods;
 	Method[] _setMethods;	
 	MetaSequence _sequence;
 
+	public TypeBeanMarshaller()
+	{
+		this(new MetaExpressionLibraryResolver());
+	}
+	
+	public TypeBeanMarshaller(MetaExpressionResolver resolver )
+	{
+		_expressionResolver = resolver;
+	}
+	
 	public void bind(TypeLibrary library, TypeElement definition, String typeName, int typeId) 
 	throws TypeException 
 	{
@@ -43,13 +57,13 @@ implements TypeLibraryReader, TypeLibraryWriter, TypeBound
 		for (int x=0;x<_sequence.size();x++)
 		{
 			MetaExpression expression = _sequence.getElement(x);
-			if ( !(expression instanceof MetaReference))
+			if ( !(expression instanceof MetaTag))
 			{
-				throw new TypeException("TypeBeanMarshaller: All sequence elements not meta.reference type.");			
+				throw new TypeException("TypeBeanMarshaller: All sequence elements not meta.tag type.");			
 			}
 			
-			MetaReference reference = (MetaReference) expression;
-			String description = reference.getMethod();
+			MetaTag reference = (MetaTag) expression;
+			String description = reference.getDescription();
 			String firstChar = description.substring(0,1);
 			firstChar = firstChar.toUpperCase();
 			String method = "get" + firstChar + description.substring(1);
@@ -162,7 +176,7 @@ implements TypeLibraryReader, TypeLibraryWriter, TypeBound
 		
 		for (int x=0;x<readers.length;x++)
 		{
-			readers[x] = _sequence.getElement(x).getReader(map);
+			readers[x] = _expressionResolver.getExpressionReader( map, _sequence.getElement(x) );
 		}
 		
 		return new TypeBeanMarshallerReader( readers );
@@ -212,7 +226,7 @@ implements TypeLibraryReader, TypeLibraryWriter, TypeBound
 		
 		for (int x=0;x<writers.length;x++)
 		{
-			writers[x] = _sequence.getElement(x).getWriter(map);
+			writers[x] = _expressionResolver.getExpressionWriter(map, _sequence.getElement(x));
 		}
 		
 		return new TypeBeanMarshallerWriter(writers);

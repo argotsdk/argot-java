@@ -27,11 +27,11 @@ import com.argot.TypeWriter;
  * This is a basic 32-bit signed int value stored in big endian format,
  * two's compliment.  
  */
-public class BigEndianSignedInteger
+public class Int32
 implements TypeReader, TypeWriter
 {
 	
-	public static final String TYPENAME = "s32";
+	public static final String TYPENAME = "sint32";
 
 	public Object read(TypeInputStream in ) 
 	throws TypeException, IOException

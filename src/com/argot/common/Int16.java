@@ -23,54 +23,56 @@ import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
 
-public class BigEndianUnsignedByte
+
+/**
+ * This is a basic 16-bit unsigned int value stored in big endian format.
+ * Reads and writes Integer type.
+ */
+public class Int16
 implements TypeReader, TypeWriter
 {
-	public static String TYPENAME = "u8";
+	public static final String TYPENAME = "sint16";
 
 	public Object read(TypeInputStream in ) 
 	throws TypeException, IOException
 	{
-		int i;
+		byte[] buffer = new byte[2];
+		
+		in.read(buffer,0,2);
+		return new Short( (short) (((buffer[0] & 0xff) << 8) | (buffer[1] & 0xff)) );
 
-		i = in.getStream().read();
-		
-		if ( i == -1 ) 
-			throw new IOException( "EOF" );
-		
-		return new Short( (short) i );
 	}
 
 	public void write(TypeOutputStream out, Object o ) 
 	throws TypeException, IOException
 	{
+		int a,b,s;
 		if ( o instanceof Integer )
 		{
-			int b = ((Integer) o).intValue();
-			if ( b < 0 || b > MAX )
-				throw new TypeException( "U8B: out of range: " + b );
-				
-			out.getStream().write( b );
+			s = ((Integer) o).intValue();
 		}
 		else if ( o instanceof Short )
 		{
-			int b = ((Short) o).intValue();
-			if ( b < 0 || b > MAX )
-				throw new TypeException( "U8B: out of range: " + b );
+			s = ((Short) o).intValue();
+		}
+		else
+			throw new TypeException( "BigEndianShort requires Short or Integer object");
 
-			out.getStream().write( b );
-		}
-		else if ( o instanceof Byte )
-		{
-			int b = ((Byte)o).intValue();
-			if ( b < MIN || b > MAX )
-				throw new TypeException( "U8B: out of range: " + b );
-				
-			out.getStream().write( b );
-		}
+		if ( s < MIN || s > MAX )
+			throw new TypeException( "U16B: value out of range" + s);
+
+		// This is going to turn our signed value into a unsigned
+		// 16 bits.
+		s = s & 0xffff;
+		
+		a = (s & 0xff00) >> 8;
+		b = (s & 0x00ff);
+
+		out.getStream().write( a );
+		out.getStream().write( b );
+
 	}
 	
-	public static int MIN = 0;
-	public static int MAX = 256-1;
-
+	public static final int MIN = -32768; // -2^15;
+	public static final int MAX =  32767; // 2^15-1; 
 }

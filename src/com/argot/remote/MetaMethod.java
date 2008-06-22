@@ -28,15 +28,15 @@ import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeReaderAuto;
 import com.argot.TypeWriter;
-import com.argot.common.BigEndianUnsignedByte;
-import com.argot.common.BigEndianUnsignedShort;
 import com.argot.common.U8Ascii;
+import com.argot.common.UInt16;
+import com.argot.common.UInt8;
 import com.argot.meta.MetaAbstract;
-import com.argot.meta.MetaBase;
 import com.argot.meta.MetaDefinition;
+import com.argot.meta.MetaExpression;
 
 public class MetaMethod 
-extends MetaBase
+extends MetaExpression
 implements MetaDefinition
 {
 	private int _interfaceId;
@@ -238,12 +238,12 @@ implements MetaDefinition
 			
 			// write interface id.
 			int id = out.getTypeMap().getId( mm.getInterfaceType() );
-			out.writeObject( BigEndianUnsignedShort.TYPENAME, new Integer(id) );
+			out.writeObject( UInt16.TYPENAME, new Integer(id) );
 			out.writeObject( U8Ascii.TYPENAME, mm.getMethodName() );
 			
 			if ( mm.getRequestTypes() != null )
 			{
-				out.writeObject( BigEndianUnsignedByte.TYPENAME, new Integer( mm.getRequestTypes().length ));
+				out.writeObject( UInt8.TYPENAME, new Integer( mm.getRequestTypes().length ));
 				for( x=0 ;x < mm.getRequestTypes().length; x++ )
 				{
 					out.writeObject( MetaParameter.TYPENAME, mm.getRequestTypes()[x] );
@@ -251,12 +251,12 @@ implements MetaDefinition
 			}
 			else
 			{
-				out.writeObject( BigEndianUnsignedByte.TYPENAME, new Integer(0));
+				out.writeObject( UInt8.TYPENAME, new Integer(0));
 			}
 	
 			if ( mm.getResponseTypes() != null )
 			{
-				out.writeObject( BigEndianUnsignedByte.TYPENAME, new Integer( mm.getResponseTypes().length ));
+				out.writeObject( UInt8.TYPENAME, new Integer( mm.getResponseTypes().length ));
 				for( x=0 ;x < mm.getResponseTypes().length; x++ )
 				{
 					//id = out.getTypeMap().getId( mm.getResponseTypes()[x].getParamType() );
@@ -266,21 +266,21 @@ implements MetaDefinition
 			}
 			else
 			{
-				out.writeObject( BigEndianUnsignedByte.TYPENAME, new Integer(0));
+				out.writeObject( UInt8.TYPENAME, new Integer(0));
 			}
 	
 			if ( mm.getErrorTypes() != null )
 			{
-				out.writeObject( BigEndianUnsignedByte.TYPENAME, new Integer( mm.getErrorTypes().length ));
+				out.writeObject( UInt8.TYPENAME, new Integer( mm.getErrorTypes().length ));
 				for( x=0 ;x < mm.getErrorTypes().length; x++ )
 				{
 					id = out.getTypeMap().getId( mm.getErrorTypes()[x]);
-					out.writeObject( BigEndianUnsignedShort.TYPENAME, new Integer(id) );
+					out.writeObject( UInt16.TYPENAME, new Integer(id) );
 				}
 			}
 			else
 			{
-				out.writeObject( BigEndianUnsignedByte.TYPENAME, new Integer(0));
+				out.writeObject( UInt8.TYPENAME, new Integer(0));
 			}
 		}
 	}

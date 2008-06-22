@@ -35,36 +35,48 @@ import com.argot.meta.MetaDefinition;
 
 public class MessageReader 
 {
-	public static Object readMessage( TypeLibrary library, InputStream fis) throws TypeException, IOException
+	public static ReferenceTypeMap readMessageDataDictionary( TypeLibrary library, InputStream is)
+	throws TypeException, IOException
 	{
 		TypeMapCore refCore = TypeMapCore.getCoreTypeMap( library );
-		refCore.map( 22, library.getId("dictionary.map"));
-		refCore.map( 23, library.getId("dictionary.words"));
-		refCore.map( 24, library.getId("dictionary.definition"));
-		refCore.map( 25, library.getId("dictionary.entry"));	
-		refCore.map( 26, library.getId("meta.envelop"));
-		refCore.map( 27, library.getId("meta.definition#envelop"));
+		refCore.map( 42, library.getId("dictionary.words"));
 		
 		TypeMapCore core = TypeMapCore.getCoreTypeMap( library, refCore);
-		core.map( 22, library.getId("dictionary.map"));
-		core.map( 23, library.getId("dictionary.words"));
-		core.map( 24, library.getId("dictionary.definition"));
-		core.map( 25, library.getId("dictionary.entry"));	
-		core.map( 26, library.getId("meta.envelop"));
-		core.map( 27, library.getId("meta.definition#envelop"));
-    	
+		core.map( 42, library.getId("dictionary.words"));
+		
+		TypeInputStream tmis = new TypeInputStream( is, core );
+        
+        
+		// read the core map.
+		ReferenceTypeMap coreMap = readCore( library, tmis );
+		
+		// read the message map using the core map.        
+		ReferenceTypeMap messageMap = readMessageMap( tmis, coreMap );
+		return messageMap;
+	}
+	
+	public static Object readMessage( TypeLibrary library, InputStream fis) 
+	throws TypeException, IOException
+	{
+		TypeMapCore refCore = TypeMapCore.getCoreTypeMap( library );
+		refCore.map( 42, library.getId("dictionary.words"));
+		
+		TypeMapCore core = TypeMapCore.getCoreTypeMap( library, refCore);
+		core.map( 42, library.getId("dictionary.words"));
+		
 		TypeInputStream tmis = new TypeInputStream( fis, core );
         
         
 		// read the core map.
 		ReferenceTypeMap coreMap = readCore( library, tmis );
-		// read the message map using the core map.
-        
+		
+		// read the message map using the core map.        
 		ReferenceTypeMap messageMap = readMessageMap( tmis, coreMap );
+		
 		// read the final dictionary. register types if needed.
 		tmis.setTypeMap( messageMap );
 		
-		Integer ident = (Integer) tmis.readObject( "u16" );
+		Integer ident = (Integer) tmis.readObject( "uint16" );
 		TypeInputStream tis = new TypeInputStream( fis, messageMap );
 		return tis.readObject( ident.intValue() );
 	}
@@ -72,23 +84,13 @@ public class MessageReader
 	private static ReferenceTypeMap readCore( TypeLibrary library, TypeInputStream tmis ) throws TypeException, IOException
 	{
 		TypeMapCore refCore = TypeMapCore.getCoreTypeMap( library );
-		refCore.map( 22, library.getId("dictionary.map"));
-		refCore.map( 23, library.getId("dictionary.words"));
-		refCore.map( 24, library.getId("dictionary.definition"));
-		refCore.map( 25, library.getId("dictionary.entry"));	
-		refCore.map( 26, library.getId("meta.envelop"));
-		refCore.map( 27, library.getId("meta.definition#envelop"));
-
+		refCore.map( 42, library.getId("dictionary.words"));
+		
 		TypeMapCore core = TypeMapCore.getCoreTypeMap( library, refCore);
-		core.map( 22, library.getId("dictionary.map"));
-		core.map( 23, library.getId("dictionary.words"));
-		core.map( 24, library.getId("dictionary.definition"));
-		core.map( 25, library.getId("dictionary.entry"));	
-		core.map( 26, library.getId("meta.envelop"));
-		core.map( 27, library.getId("meta.definition#envelop"));
- 		
+		core.map( 42, library.getId("dictionary.words"));
+		
 		// read the core array size.  expect = 2.
-		Short arraySize = (Short) tmis.readObject( "u8" );
+		Short arraySize = (Short) tmis.readObject( "uint8" );
 		
 		byte[] readcore = (byte[]) tmis.readObject( "dictionary.words" );
 		byte[] localCore = writeCore( core );
@@ -126,7 +128,7 @@ public class MessageReader
 		ReferenceTypeMap mapSpec = new ReferenceTypeMap( coreMap.getLibrary(), coreMap );
 		
 		// read the core array size.  expect = 2.
-		Short arraySize = (Short) tmis.readObject( "u8" );
+		Short arraySize = (Short) tmis.readObject( "uint8" );
 		
 		// now the core is confirmed we can add in the extensions.
 		for ( int x=0; x < arraySize.intValue(); x++ )
@@ -148,16 +150,16 @@ public class MessageReader
 	{
 	
 			
-		int size = ((Integer)dictDataIn.readObject("U16" )).intValue();
+		int size = ((Integer)dictDataIn.readObject("uint16" )).intValue();
 		Triple newTypes[] = new Triple[size];
 		
 		// Step 1.  Read all the types in.
 		for ( int x = 0; x<size; x++ )
 		{
 			Triple newType = new Triple();
-			newType.id = ((Integer)dictDataIn.readObject( "U16")).intValue();
+			newType.id = ((Integer)dictDataIn.readObject( "uint16")).intValue();
 			newType.name = (String) dictDataIn.readObject( "meta.name" );
-			newType.structure = (byte[]) dictDataIn.readObject( "dictionary.definition" );
+			newType.structure = (byte[]) dictDataIn.readObject( "meta.definition.envelop" );
 			newTypes[x] = newType;
 		}
 
@@ -223,7 +225,7 @@ public class MessageReader
 		TypeOutputStream out1 = new TypeOutputStream( baos1, map );
 		
 		// write the number of entries.
-		out1.writeObject( "U16", new Integer( coreIds.size() ));
+		out1.writeObject( "uint16", new Integer( coreIds.size() ));
 		
 			
 		Iterator i = coreIds.iterator();	
@@ -233,9 +235,9 @@ public class MessageReader
 			String name = map.getName( id );
 			MetaDefinition definition = (MetaDefinition) map.getStructure(id);
 						
-			out1.writeObject( "U16", new Integer(id));
+			out1.writeObject( "uint16", new Integer(id));
 			out1.writeObject( "meta.name", name );
-			out1.writeObject( "dictionary.definition", definition );
+			out1.writeObject( "meta.definition.envelop", definition );
 			
 		}
 

@@ -27,8 +27,8 @@ import com.argot.TypeInputStream;
 import com.argot.TypeLibrary;
 import com.argot.TypeMapCore;
 import com.argot.TypeOutputStream;
-import com.argot.common.BigEndianSignedInteger;
-import com.argot.common.BigEndianUnsignedByte;
+import com.argot.common.Int32;
+import com.argot.common.UInt8;
 import com.argot.common.U8Boolean;
 import com.argot.dictionary.Dictionary;
 import com.argot.remote.MetaObject;
@@ -80,7 +80,7 @@ implements TypeLink
 		{
 			OutputStream out = connection.getOutputStream();
 			TypeInputStream in = new TypeInputStream( connection.getInputStream(), _typeMap );
-			Object o = in.readObject( BigEndianUnsignedByte.TYPENAME );
+			Object o = in.readObject( UInt8.TYPENAME );
 			int action = ((Short) o).intValue();
 					
 			if ( action == ProtocolTypeMap.MAP )
@@ -116,7 +116,7 @@ implements TypeLink
 			
 			// return an error array.
 			TypeOutputStream sout = new TypeOutputStream( connection.getOutputStream(), _typeMap );
-			sout.writeObject( "u8", new Short( ProtocolTypeMap.ERROR ) );
+			sout.writeObject( "uint8", new Short( ProtocolTypeMap.ERROR ) );
 			sout.getStream().flush();
 		}	
 		catch (TypeException e)
@@ -135,7 +135,7 @@ implements TypeLink
 	private void processMapReverse( TypeInputStream in, OutputStream out )
 	throws TypeException, IOException
 	{
-		Integer id = (Integer) in.readObject( BigEndianSignedInteger.TYPENAME );
+		Integer id = (Integer) in.readObject( Int32.TYPENAME );
 
 		TypeOutputStream sout = new TypeOutputStream( out, _typeMap );
 
@@ -146,7 +146,7 @@ implements TypeLink
 		}
 		catch (TypeException e)
 		{
-			sout.writeObject( "u8", new Short( ProtocolTypeMap.ERROR ) );
+			sout.writeObject( "uint8", new Short( ProtocolTypeMap.ERROR ) );
 			sout.getStream().flush();
 			return;
 		}
@@ -154,7 +154,7 @@ implements TypeLink
 
 		byte[] definition = TypeHelper.toByteArray( _refMap, struct );
 		
-		sout.writeObject( "u8", new Short( ProtocolTypeMap.MAPREV ) );
+		sout.writeObject( "uint8", new Short( ProtocolTypeMap.MAPREV ) );
 		sout.writeObject( "u8ascii", name );
 		sout.writeObject( "u16binary", definition );
 
@@ -175,13 +175,13 @@ implements TypeLink
 
 		TypeOutputStream sout = new TypeOutputStream( out, _typeMap );
 
-		sout.writeObject( "u8", new Short( ProtocolTypeMap.MAPRES ) );			
+		sout.writeObject( "uint8", new Short( ProtocolTypeMap.MAPRES ) );			
 		
 		// First see if we have a type of the same name.
 		int systemId = _library.getId( name );
 		if ( systemId == TypeLibrary.NOTYPE )
 		{
-			sout.writeObject( BigEndianSignedInteger.TYPENAME, new Integer(-1));
+			sout.writeObject( Int32.TYPENAME, new Integer(-1));
 		}
 		else
 		{
@@ -191,7 +191,7 @@ implements TypeLink
 			// mapped it will
 			id = _refMap.getId( name );
 			
-			sout.writeObject( BigEndianSignedInteger.TYPENAME, new Integer(id));
+			sout.writeObject( Int32.TYPENAME, new Integer(id));
 			
 		}		
 		
@@ -210,13 +210,13 @@ implements TypeLink
 		// and will return an invalid id.
 		
 		TypeOutputStream sout = new TypeOutputStream( out, _typeMap );
-		sout.writeObject( "u8", new Short( ProtocolTypeMap.MAP ) );			
+		sout.writeObject( "uint8", new Short( ProtocolTypeMap.MAP ) );			
 		
 		// First see if we have a type of the same name.
 		int systemId = _library.getId( name );
 		if ( systemId == TypeLibrary.NOTYPE )
 		{
-			sout.writeObject( BigEndianSignedInteger.TYPENAME, new Integer(-1));
+			sout.writeObject( Int32.TYPENAME, new Integer(-1));
 		}
 		else
 		{
@@ -229,13 +229,13 @@ implements TypeLink
 				
 				id = _refMap.getId( name );
 
-				sout.writeObject( BigEndianSignedInteger.TYPENAME, new Integer(id));
+				sout.writeObject( Int32.TYPENAME, new Integer(id));
 				
 			}
 			else
 			{
 				// Return an invalid id.
-				sout.writeObject( BigEndianSignedInteger.TYPENAME, new Integer(-1));
+				sout.writeObject( Int32.TYPENAME, new Integer(-1));
 			}
 		}
 
@@ -246,7 +246,7 @@ implements TypeLink
 	throws TypeException, IOException
 	{		
 		TypeOutputStream sout = new TypeOutputStream( out, _refMap );
-		sout.writeObject( "u8", new Short( ProtocolTypeMap.BASE ) );			
+		sout.writeObject( "uint8", new Short( ProtocolTypeMap.BASE ) );			
 		
 		// Check base name.
 		if ( _object == null )
@@ -286,7 +286,7 @@ implements TypeLink
 		boolean metaEqual = Arrays.equals( clientMetaDictionary, serverMetaDictionary );
 		
 		TypeOutputStream sout = new TypeOutputStream( out, _typeMap );
-		sout.writeObject( BigEndianUnsignedByte.TYPENAME, new Short( ProtocolTypeMap.CHECK_CORE ) );			
+		sout.writeObject( UInt8.TYPENAME, new Short( ProtocolTypeMap.CHECK_CORE ) );			
 		sout.writeObject( U8Boolean.TYPENAME, new Boolean( metaEqual ) );
 
 		out.flush();

@@ -32,7 +32,7 @@ implements TypeConstructor
 		_constructor = null;
 	}
 
-    public Object construct(MetaSequence sequence, Object[] objects)
+    public Object construct(TypeElement sequence, Object[] objects)
     throws TypeException
     {
     	if (_constructor == null)

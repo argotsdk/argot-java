@@ -36,12 +36,12 @@ extends TypeMap
 	{
 		super( library );
 		
-		map( 1, library.getId( "u8" ));
+		map( 1, library.getId( "uint8" ));
 		map( 2, library.getId( "u8ascii" ));
-		map( 3, library.getId( "s32" ));
+		map( 3, library.getId( "sint32" ));
 		map( 4, library.getId( "u16binary" ));
-		map( 5, library.getId( "u16" ));
-		map( 6, library.getId( "u32" ));
+		map( 5, library.getId( "uint16" ));
+		map( 6, library.getId( "uint32" ));
 		map( 7, library.getId( "u32binary" ));
 		this.setReader( 7, new ChunkByteBuffer.ChunkByteBufferReader() );
 		this.setWriter( 7, new ChunkByteBuffer.ChunkByteBufferWriter() );

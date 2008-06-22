@@ -25,8 +25,8 @@ import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeLibrary;
 import com.argot.TypeWriter;
-import com.argot.common.BigEndianSignedInteger;
-import com.argot.common.BigEndianUnsignedByte;
+import com.argot.common.Int32;
+import com.argot.common.UInt8;
 import com.argot.common.U8Boolean;
 import com.argot.remote.MetaObject;
 import com.argot.util.ChunkByteBuffer;
@@ -43,7 +43,7 @@ implements TypeTransport
 	{
 		_link = link;
 		_typeMap = new ProtocolTypeMap( library );
-		_uint8 = library.getWriter(library.getId("u8")).getWriter(_typeMap);
+		_uint8 = library.getWriter(library.getId("uint8")).getWriter(_typeMap);
 	}
 
 	/*
@@ -137,7 +137,7 @@ implements TypeTransport
 				
 				InputStream in = _transport.getInputStream();
 				TypeInputStream tmis = new TypeInputStream( in, _typeMap );
-				Short type = (Short) tmis.readObject( BigEndianUnsignedByte.TYPENAME );
+				Short type = (Short) tmis.readObject( UInt8.TYPENAME );
 				if ( type.intValue() != ProtocolTypeMap.MSG )throw new IOException("Bad Protocol Error"); 
 				_buffer = (ChunkByteBuffer) tmis.readObject( "u32binary" );
 				_stream = _buffer.getInputStream();
@@ -169,13 +169,13 @@ implements TypeTransport
 			// Write the name and definition to the request body.	
 			OutputStream out = endPoint.getOutputStream();
 			TypeOutputStream tmos = new TypeOutputStream( out, _typeMap );
-			tmos.writeObject( "u8", new Short(ProtocolTypeMap.CHECK_CORE ) );
+			tmos.writeObject( "uint8", new Short(ProtocolTypeMap.CHECK_CORE ) );
 			tmos.writeObject( "u16binary", metaDictionary );		
 			tmos.getStream().flush();
 			
 			InputStream in = endPoint.getInputStream();
 			TypeInputStream tmis = new TypeInputStream( in, _typeMap );
-			Short type = (Short) tmis.readObject( BigEndianUnsignedByte.TYPENAME );
+			Short type = (Short) tmis.readObject( UInt8.TYPENAME );
 			if ( type.intValue() != ProtocolTypeMap.CHECK_CORE )throw new TypeException("Bad Protocol Error"); 
 			Boolean value = (Boolean) tmis.readObject( U8Boolean.TYPENAME );
 
@@ -198,16 +198,16 @@ implements TypeTransport
 			// Write the name and definition to the request body.	
 			OutputStream out = endPoint.getOutputStream();
 			TypeOutputStream tmos = new TypeOutputStream( out, _typeMap );
-			tmos.writeObject( "u8", new Short(ProtocolTypeMap.MAP) );
+			tmos.writeObject( "uint8", new Short(ProtocolTypeMap.MAP) );
 			tmos.writeObject( "u8ascii", name );
 			tmos.writeObject( "u16binary", definition );		
 			tmos.getStream().flush();
 			
 			InputStream in = endPoint.getInputStream();
 			TypeInputStream tmis = new TypeInputStream( in, _typeMap );
-			Short type = (Short) tmis.readObject( BigEndianUnsignedByte.TYPENAME );
+			Short type = (Short) tmis.readObject( UInt8.TYPENAME );
 			if ( type.intValue() != ProtocolTypeMap.MAP )throw new TypeException("Bad Protocol Error"); 
-			Integer value = (Integer) tmis.readObject( BigEndianSignedInteger.TYPENAME );
+			Integer value = (Integer) tmis.readObject( Int32.TYPENAME );
 
 			return value.intValue();
 		}
@@ -226,14 +226,14 @@ implements TypeTransport
 		{
 			// Write the name and definition to the request body.	
 			TypeOutputStream tmos = new TypeOutputStream( endPoint.getOutputStream(), _typeMap );
-			tmos.writeObject( "u8", new Short(ProtocolTypeMap.MAPRES) );		
+			tmos.writeObject( "uint8", new Short(ProtocolTypeMap.MAPRES) );		
 			tmos.writeObject( "u8ascii", name );
 			tmos.getStream().flush();
 			
 			TypeInputStream tmis = new TypeInputStream( endPoint.getInputStream(), _typeMap );
-			Short type = (Short) tmis.readObject( BigEndianUnsignedByte.TYPENAME );
+			Short type = (Short) tmis.readObject( UInt8.TYPENAME );
 			if ( type.intValue() != ProtocolTypeMap.MAPRES )throw new TypeException("Bad Protocol Error");		
-			Integer value = (Integer) tmis.readObject( BigEndianSignedInteger.TYPENAME );
+			Integer value = (Integer) tmis.readObject( Int32.TYPENAME );
 	
 			return value.intValue();
 		}
@@ -252,12 +252,12 @@ implements TypeTransport
 		{
 			// Write the name and definition to the request body.
 			TypeOutputStream tmos = new TypeOutputStream( endPoint.getOutputStream(), _typeMap );
-			tmos.writeObject( "u8", new Short(ProtocolTypeMap.MAPREV) );		
-			tmos.writeObject( BigEndianSignedInteger.TYPENAME, new Integer( id ) );
+			tmos.writeObject( "uint8", new Short(ProtocolTypeMap.MAPREV) );		
+			tmos.writeObject( Int32.TYPENAME, new Integer( id ) );
 			tmos.getStream().flush();
 			
 			TypeInputStream tmis = new TypeInputStream( endPoint.getInputStream(), _typeMap );
-			Short type = (Short) tmis.readObject( BigEndianUnsignedByte.TYPENAME );
+			Short type = (Short) tmis.readObject( UInt8.TYPENAME );
 			if ( type.intValue() != ProtocolTypeMap.MAPREV )throw new TypeException("Unable to resolve reverse id: " + id);		
 			String name = (String) tmis.readObject( "u8ascii" );
 			byte[] definition = (byte[]) tmis.readObject( "u16binary" );
@@ -279,11 +279,11 @@ implements TypeTransport
 		{
 			// Write the name and definition to the request body.
 			TypeOutputStream tmos = new TypeOutputStream( endPoint.getOutputStream(), _typeMap );
-			tmos.writeObject( "u8", new Short(ProtocolTypeMap.BASE) );		
+			tmos.writeObject( "uint8", new Short(ProtocolTypeMap.BASE) );		
 			tmos.getStream().flush();
 			
 			TypeInputStream tmis = new TypeInputStream( endPoint.getInputStream(), map );
-			Short type = (Short) tmis.readObject( BigEndianUnsignedByte.TYPENAME );
+			Short type = (Short) tmis.readObject( UInt8.TYPENAME );
 			if ( type.intValue() != ProtocolTypeMap.BASE )throw new TypeException("Bad Protocol Error");		
 			Boolean value = (Boolean) tmis.readObject( U8Boolean.TYPENAME );
 			if ( !value.booleanValue() )

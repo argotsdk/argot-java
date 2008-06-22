@@ -70,7 +70,7 @@ extends ResourceDictionaryLoader
 		library.bind( "remote.exception.basic", new MetaMarshaller(),new MetaMarshaller(), null );
 		library.bind( "remote.stack_trace_element", new TypeReaderAuto( MetaRemoteStackTraceElement.class ),new MetaRemoteStackTraceElement.MetaRemoteStackTraceElementWriter(), MetaRemoteStackTraceElement.class );
 		library.bind( "remote.exception.wrapped", new MetaRemoteException.Reader(WrappedRemoteException.class), new MetaRemoteException.Writer(), WrappedRemoteException.class );
-		library.bind( "remote.exception#wrapped", new MetaMarshaller(),new MetaMarshaller(), null );
+		library.bind( "remote.exception#remote.exception.wrapped", new MetaMarshaller(),new MetaMarshaller(), null );
 	}
 
 

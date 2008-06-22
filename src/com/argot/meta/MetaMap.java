@@ -28,10 +28,11 @@ import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeReaderAuto;
 import com.argot.TypeWriter;
+import com.argot.common.UInt16;
 
 public class MetaMap
-extends MetaBase
-implements MetaExpression, MetaDefinition
+extends MetaExpression
+implements MetaDefinition
 {
     public static final String TYPENAME = "meta.map";
     
@@ -58,7 +59,14 @@ implements MetaExpression, MetaDefinition
 	    return library.getId( TYPENAME );
 	}
 	
-
+	public String getMapTypeName( TypeLibrary library ) throws TypeException
+	{
+		String abstractName = library.getName( _abstractType );
+		String concreteName = library.getName( _concreteType );
+		
+		return abstractName + "#" + concreteName;
+	}
+	
 	public void check( TypeLibrary library ) throws TypeException
 	{
 		_library = library;
@@ -88,7 +96,13 @@ implements MetaExpression, MetaDefinition
     {
         super.bind(library, definition, typeName, typeId);
         check( library );
-		_metaAbstract.addMap( _concreteType, typeId );
+        
+        TypeElement concreteElement = _library.getStructure( _concreteType ); 
+        if (concreteElement instanceof MetaAbstract)
+        {
+        	((MetaAbstract)concreteElement).addAbstractMap(_metaAbstract);
+        }
+        _metaAbstract.addMap( _concreteType, typeId );
     }	
     
 	public int getAbstractType()
@@ -160,9 +174,9 @@ implements MetaExpression, MetaDefinition
 			MetaMap tr = (MetaMap) o;
 			ReferenceTypeMap mapCore = (ReferenceTypeMap) out.getTypeMap();
 			int abstractId = mapCore.referenceMap().getId( tr._abstractType );
-			out.writeObject( "u16", new Integer( abstractId ));
+			out.writeObject( UInt16.TYPENAME, new Integer( abstractId ));
 			int concreteId = mapCore.referenceMap().getId( tr._concreteType );
-			out.writeObject( "u16", new Integer( concreteId ) );
+			out.writeObject( UInt16.TYPENAME, new Integer( concreteId ) );
 	    }   
 	}
 
@@ -195,7 +209,7 @@ implements MetaExpression, MetaDefinition
 		public void write(TypeOutputStream out, Object o)
 		throws TypeException, IOException 
 		{
-	    	out.writeObject("u16", new Integer(out.getTypeMap().getId(getMemberTypeId()) ));
+	    	out.writeObject(UInt16.TYPENAME, new Integer(out.getTypeMap().getId(getMemberTypeId()) ));
 			
 			// This will force the mapId to be mapped in dynamic type maps.
 			out.getTypeMap().getId(getMemberTypeId() );

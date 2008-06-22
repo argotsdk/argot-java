@@ -17,18 +17,56 @@ package com.argot.meta;
 
 import com.argot.TypeElement;
 import com.argot.TypeException;
-import com.argot.TypeMap;
-import com.argot.TypeReader;
-import com.argot.TypeWriter;
+import com.argot.TypeLibrary;
 
-public interface MetaExpression
-extends TypeElement
+public abstract class MetaExpression
+implements TypeElement
 {
-   
-	public TypeWriter getWriter( TypeMap map )
-	throws TypeException;
+	public static final String TYPENAME = "meta.expression";
 	
-	public TypeReader getReader( TypeMap map )
-	throws TypeException;
+    private TypeLibrary _library;
+    private TypeElement _definition;
+    private String _memberTypeName;
+    private int _memberTypeId;
+    private int _typeId;
+ 
+    public void bind(TypeLibrary library, TypeElement definition, String memberTypeName, int memberTypeId) 
+    throws TypeException
+    {
+        _library = library;
+        _definition = definition;
+        _memberTypeName = memberTypeName;
+        _memberTypeId = memberTypeId;
+        _typeId = _library.getId( getTypeName() );
+    }
+    
+    public TypeLibrary getLibrary()
+    {
+        return _library;
+    }
+    
+    public TypeElement getTypeDefinition()
+    {
+        return _definition;
+    }
 
+    public String getMemberTypeName()
+    {
+        return _memberTypeName;
+    }
+    
+    public int getMemberTypeId()
+    {
+        return _memberTypeId;
+    }
+    
+    public int getTypeId()
+    {
+        return _typeId;
+    }
+    
+    public abstract String getTypeName();
+    
+
+    
 }

@@ -28,15 +28,15 @@ import com.argot.TypeLibrary;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
-import com.argot.common.BigEndianUnsignedByte;
-import com.argot.common.BigEndianUnsignedShort;
-import com.argot.meta.MetaBase;
+import com.argot.common.UInt8;
+import com.argot.common.UInt16;
 import com.argot.meta.MetaDefinition;
+import com.argot.meta.MetaExpression;
 
 
 
 public class MetaInterface 
-extends MetaBase
+extends MetaExpression
 implements MetaDefinition
 {
 	public static final String TYPENAME = "remote.interface";
@@ -295,11 +295,11 @@ implements MetaDefinition
 		public Object read(TypeInputStream in) 
 		throws TypeException, IOException 
 		{		
-			Short size = (Short) in.readObject( BigEndianUnsignedByte.TYPENAME );
+			Short size = (Short) in.readObject( UInt8.TYPENAME );
 			int interfaces[] = new int[size.intValue()];
 			for ( int x=0; x<size.intValue(); x++ )
 			{
-				Integer id = (Integer) in.readObject( BigEndianUnsignedShort.TYPENAME );
+				Integer id = (Integer) in.readObject( UInt16.TYPENAME );
 				interfaces[x] = in.getTypeMap().getSystemId( id.intValue() );
 			}
 			
@@ -317,16 +317,16 @@ implements MetaDefinition
 			
 			if ( mc.getInterfaces() != null )
 			{
-				out.writeObject( BigEndianUnsignedByte.TYPENAME, new Integer( mc.getInterfaces().length ));
+				out.writeObject( UInt8.TYPENAME, new Integer( mc.getInterfaces().length ));
 				for( int x=0 ;x < mc.getInterfaces().length; x++ )
 				{
 					int id = out.getTypeMap().getId( mc.getInterfaces()[x]);
-					out.writeObject( BigEndianUnsignedShort.TYPENAME, new Integer(id) );
+					out.writeObject( UInt16.TYPENAME, new Integer(id) );
 				}
 			}
 			else
 			{
-				out.writeObject( BigEndianUnsignedByte.TYPENAME, new Integer(0));
+				out.writeObject( UInt8.TYPENAME, new Integer(0));
 			}
 		}
 	}

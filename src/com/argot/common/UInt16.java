@@ -27,10 +27,10 @@ import com.argot.TypeWriter;
  * This is a basic 16-bit unsigned int value stored in big endian format.
  * Reads and writes Integer type.
  */
-public class BigEndianUnsignedShort
+public class UInt16
 implements TypeReader, TypeWriter
 {
-	public static final String TYPENAME = "u16";
+	public static final String TYPENAME = "uint16";
 	
 	public Object read(TypeInputStream in ) 
 	throws TypeException, IOException

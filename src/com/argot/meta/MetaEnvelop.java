@@ -18,8 +18,10 @@ package com.argot.meta;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
+import com.argot.TypeLibrary;
 import com.argot.TypeLibraryWriter;
 import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
@@ -33,8 +35,8 @@ import com.argot.TypeWriter;
  * because it can be specified that way.
  */
 public class MetaEnvelop
-extends MetaBase
-implements MetaExpression, MetaDefinition
+extends MetaExpression
+implements MetaDefinition
 {
 	public static final String TYPENAME = "meta.envelop";
 	
@@ -51,9 +53,43 @@ implements MetaExpression, MetaDefinition
     {
         return TYPENAME;
     }
+    
+    public void bind(TypeLibrary library, TypeElement definition, String typeName, int typeId) throws TypeException
+    {
+        super.bind(library, definition, typeName, typeId);
+        _size.bind(library, definition, typeName, typeId);
+        _type.bind(library, definition, typeName, typeId);
+    }
+    
+    public MetaExpression getSizeExpression()
+    {
+    	return _size;
+    }
+    
+    public MetaExpression getTypeExpression()
+    {
+    	return _type;
+    }
+    
+	public static class MetaEnvelopTypeReader
+	extends MetaExpressionReaderAuto
+	implements MetaExpressionReader
+	{
+		public MetaEnvelopTypeReader() 
+		{
+			super(MetaEnvelop.class);
+		}
 
+		public TypeReader getExpressionReader(TypeMap map, MetaExpressionResolver resolver, TypeElement element)
+		throws TypeException 
+		{
+			MetaEnvelop metaEnvelop = (MetaEnvelop) element;
+			return new MetaEnvelopReader(resolver.getExpressionReader(map, metaEnvelop._size));		
+		}	
+	}    
+    
     public static class MetaEnvelopTypeWriter
-    implements TypeLibraryWriter,TypeWriter
+    implements TypeLibraryWriter,TypeWriter,MetaExpressionWriter
     {
 		public void write(TypeOutputStream out, Object o )
 		throws TypeException, IOException
@@ -69,9 +105,16 @@ implements MetaExpression, MetaDefinition
 		{
 			return this;
 		}
+
+		public TypeWriter getExpressionWriter(TypeMap map, MetaExpressionResolver resolver, TypeElement element)
+		throws TypeException 
+		{
+			MetaEnvelop metaEnvelop = (MetaEnvelop) element;
+			return new MetaEnvelopWriter( resolver.getExpressionWriter(map, metaEnvelop._type), resolver.getExpressionWriter(map, metaEnvelop._size));
+		}
     }
 
-    private class MetaEnvelopReader
+    private static class MetaEnvelopReader
     implements TypeReader
     {
     	private TypeReader _size;
@@ -112,15 +155,8 @@ implements MetaExpression, MetaDefinition
 		}
     	
     }
-    
-	public TypeReader getReader(TypeMap map)
-	throws TypeException 
-	{
-		return new MetaEnvelopReader(_size.getReader(map));
-	}
-
-
-	private class MetaEnvelopWriter
+ 
+	private static class MetaEnvelopWriter
 	implements TypeWriter
 	{
 		private TypeWriter _type;
@@ -143,17 +179,10 @@ implements MetaExpression, MetaDefinition
 			bout.close();
 			
 			byte b[] = bout.toByteArray();
-			
+
 			_size.write( out, new Integer(b.length) );
 			out.getStream().write( b );	
 		}
 		
 	}
-	
-	public TypeWriter getWriter(TypeMap map)
-	throws TypeException 
-	{
-		return new MetaEnvelopWriter( _type.getWriter(map), _size.getWriter(map));
-	}
-
 }

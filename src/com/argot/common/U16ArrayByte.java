@@ -38,7 +38,7 @@ implements TypeReader, TypeWriter
 	public Object read(TypeInputStream in)
 	throws TypeException, IOException
 	{
-		Integer id = (Integer) in.readObject( BigEndianUnsignedShort.TYPENAME );
+		Integer id = (Integer) in.readObject( UInt16.TYPENAME );
 
 		byte[] bytes = new byte[ id.intValue() ];
 		in.read(bytes,0,bytes.length);
@@ -54,7 +54,7 @@ implements TypeReader, TypeWriter
 
 		byte[] bytes = (byte[]) o;
 
-		out.writeObject( "u16", new Integer( bytes.length) );
+		out.writeObject( "uint16", new Integer( bytes.length) );
 		out.getStream().write( bytes );
 	}
 }

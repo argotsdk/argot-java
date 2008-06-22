@@ -43,23 +43,13 @@ public class MessageWriter
 		
 		// write out the dictionary used to write the content.
 		TypeMapCore refCore = TypeMapCore.getCoreTypeMap( _library );
-		refCore.map( 22, _library.getId("dictionary.map"));
-		refCore.map( 23, _library.getId("dictionary.words"));
-		refCore.map( 24, _library.getId("dictionary.definition"));
-		refCore.map( 25, _library.getId("dictionary.entry"));	
-		refCore.map( 26, _library.getId("meta.envelop"));
-		refCore.map( 27, _library.getId("meta.definition#envelop"));
+		refCore.map( 42, _library.getId("dictionary.words"));
 		
 		// get the core type map.
 
 		// write out the dictionary used to write the content.
 		TypeMapCore core = TypeMapCore.getCoreTypeMap( _library, refCore);
-		core.map( 22, _library.getId("dictionary.map"));
-		core.map( 23, _library.getId("dictionary.words"));
-		core.map( 24, _library.getId("dictionary.definition"));
-		core.map( 25, _library.getId("dictionary.entry"));	
-		core.map( 26, _library.getId("meta.envelop"));
-		core.map( 27, _library.getId("meta.definition#envelop"));
+		core.map( 42, _library.getId("dictionary.words"));
 	
 		// create a dynamic type map.
 		DynamicTypeMap dtm = new DynamicTypeMap( _library );
@@ -67,7 +57,7 @@ public class MessageWriter
 		// write out the message content.  Definition of the core type map.
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(); 
 		TypeOutputStream tmos = new TypeOutputStream( baos , dtm );
-		tmos.writeObject( "u16", new Integer(dtm.getId( _library.getId( type ))));
+		tmos.writeObject( "uint16", new Integer(dtm.getId( _library.getId( type ))));
 		tmos.writeObject( type, object );
 		baos.close();
 
@@ -77,13 +67,13 @@ public class MessageWriter
 		core.setReferenceMap( dtm );
 		ByteArrayOutputStream baos2 = new ByteArrayOutputStream(); 
 		TypeOutputStream tmos2 = new TypeOutputStream( baos2 , core );
-		tmos2.writeObject( "u8", new Integer( 1 ));
+		tmos2.writeObject( "uint8", new Integer( 1 ));
 		tmos2.writeObject( "dictionary.words", dtm );
 		baos2.close();
 		
 		baos2 = new ByteArrayOutputStream(); 
 		tmos2 = new TypeOutputStream( baos2 , core );
-		tmos2.writeObject( "u8", new Integer( 1 ));
+		tmos2.writeObject( "uint8", new Integer( 1 ));
 		tmos2.writeObject( "dictionary.words", dtm );
 		baos2.close();
 		
@@ -103,7 +93,7 @@ public class MessageWriter
 	private static void writeCoreMap( TypeOutputStream out, TypeMapCore map ) throws TypeException, IOException
 	{
 		// writing out the core and then the extensions.
-		out.writeObject( "U8" , new Integer( 2 ));
+		out.writeObject( "uint8" , new Integer( 2 ));
 		
 		// write out the core elements.
 		List coreIds = TypeMapCore.getCoreIdentifiers();
@@ -111,7 +101,7 @@ public class MessageWriter
 		TypeOutputStream out1 = new TypeOutputStream( baos1, map );
 		
 		// write the number of entries.
-		out1.writeObject( "U16", new Integer( coreIds.size() ));
+		out1.writeObject( "uint16", new Integer( coreIds.size() ));
 		
 			
 		Iterator i = coreIds.iterator();	
@@ -121,16 +111,16 @@ public class MessageWriter
 			String name = map.getName( id );
 			TypeElement definition = (TypeElement) map.getStructure(id);
 						
-			out1.writeObject( "U16", new Integer(id));
+			out1.writeObject( "uint16", new Integer(id));
 			out1.writeObject( "meta.name", name );
-			out1.writeObject( "dictionary.definition", definition );
+			out1.writeObject( "meta.definition.envelop", definition );
 			
 		}
 		
 		baos1.close();
 		
 		byte[] coreBuffer = baos1.toByteArray();
-		out.writeObject( "u16", new Integer( coreBuffer.length ));
+		out.writeObject( "uint16", new Integer( coreBuffer.length ));
 		out.getStream().write( coreBuffer );
 
 		// write out extensions.		
@@ -139,7 +129,7 @@ public class MessageWriter
 
 		// count the number of extensions
 		int extensionCount = 0;
-		i = map.getIterator();
+		i = map.getIdList().iterator();
 		while (i.hasNext() )
 		{
 			Integer id = (Integer) i.next();
@@ -151,10 +141,10 @@ public class MessageWriter
 			extensionCount++;
 		}
 		
-		out2.writeObject("U16", new Integer( extensionCount ));
+		out2.writeObject("uint16", new Integer( extensionCount ));
 		
 		// write out the extensions
-		i = map.getIterator();
+		i = map.getIdList().iterator();
 		while (i.hasNext() )
 		{
 			Integer id = (Integer) i.next();
@@ -166,16 +156,16 @@ public class MessageWriter
 			String name = map.getName( id.intValue() );
 			MetaDefinition definition = (MetaDefinition) map.getStructure(id.intValue());
 						
-			out2.writeObject( "U16", new Integer(id.intValue()));
+			out2.writeObject( "uint16", new Integer(id.intValue()));
 			out2.writeObject( "meta.name", name );
-			out2.writeObject( "dictionary.definition", definition );
+			out2.writeObject( "meta.definition.envelop", definition );
 					
 		}
 
 		baos2.close();
 		
 		byte[] extBuffer = baos2.toByteArray();
-		out.writeObject( "u16", new Integer( extBuffer.length ));
+		out.writeObject( "uint16", new Integer( extBuffer.length ));
 		out.getStream().write( extBuffer );
 	}
     

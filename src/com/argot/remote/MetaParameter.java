@@ -26,12 +26,12 @@ import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeReaderAuto;
 import com.argot.TypeWriter;
-import com.argot.common.BigEndianUnsignedShort;
 import com.argot.common.U8Ascii;
-import com.argot.meta.MetaBase;
+import com.argot.common.UInt16;
+import com.argot.meta.MetaExpression;
 
 public class MetaParameter
-extends MetaBase
+extends MetaExpression
 {
 	public static final String TYPENAME = "remote.parameter";
 
@@ -88,7 +88,7 @@ extends MetaBase
 		{
 			MetaParameter mp = (MetaParameter) o;
 			int id = out.getTypeMap().getId( mp._typeId );
-			out.writeObject( BigEndianUnsignedShort.TYPENAME, new Integer(id));
+			out.writeObject( UInt16.TYPENAME, new Integer(id));
 			out.writeObject( U8Ascii.TYPENAME, mp._name );
 		}
 	}

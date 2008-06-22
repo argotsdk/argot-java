@@ -26,14 +26,14 @@ import java.util.List;
 import com.argot.common.DateS64;
 import com.argot.common.U16ArrayByte;
 import com.argot.common.U32ArrayByte;
-import com.argot.common.BigEndianSignedByte;
-import com.argot.common.BigEndianSignedInteger;
-import com.argot.common.BigEndianSignedLong;
-import com.argot.common.BigEndianSignedShort;
-import com.argot.common.BigEndianUnsignedByte;
-import com.argot.common.BigEndianUnsignedInteger;
-import com.argot.common.BigEndianUnsignedLong;
-import com.argot.common.BigEndianUnsignedShort;
+import com.argot.common.Int8;
+import com.argot.common.Int32;
+import com.argot.common.Int64;
+import com.argot.common.Int16;
+import com.argot.common.UInt8;
+import com.argot.common.UInt32;
+import com.argot.common.UInt64;
+import com.argot.common.UInt16;
 import com.argot.common.U8Boolean;
 import com.argot.common.U8Ascii;
 import com.argot.common.U32UTF8;
@@ -56,7 +56,7 @@ public class TypeMap
 		return _map.size();
 	}
 	
-	public Iterator getIterator()
+	public List getIdList()
 	{
 		List list = new ArrayList();
 		Iterator i = _map.iterator();
@@ -65,7 +65,7 @@ public class TypeMap
 			list.add( i.next() );
 		}
 		Collections.sort( list, new IntegerComparator() );
-		return list.iterator();
+		return list;
 	}
 	
 	private class IntegerComparator
@@ -88,30 +88,30 @@ public class TypeMap
 	throws TypeException
 	{
 		// Map Unsigned types.
-		if ( !isValid( BigEndianUnsignedByte.TYPENAME ) )
-			map( base+1, getLibrary().getId( BigEndianUnsignedByte.TYPENAME ) );
+		if ( !isValid( UInt8.TYPENAME ) )
+			map( base+1, getLibrary().getId( UInt8.TYPENAME ) );
 		
-		if ( !isValid( BigEndianUnsignedShort.TYPENAME ) )
-			map( base+2, getLibrary().getId( BigEndianUnsignedShort.TYPENAME ) );
+		if ( !isValid( UInt16.TYPENAME ) )
+			map( base+2, getLibrary().getId( UInt16.TYPENAME ) );
 			
-		if ( !isValid( BigEndianUnsignedInteger.TYPENAME ) )
-			map( base+3, getLibrary().getId( BigEndianUnsignedInteger.TYPENAME ));
+		if ( !isValid( UInt32.TYPENAME ) )
+			map( base+3, getLibrary().getId( UInt32.TYPENAME ));
 					
-		if ( !isValid( BigEndianUnsignedLong.TYPENAME ) )
-			map( base+4, getLibrary().getId( BigEndianUnsignedLong.TYPENAME ));
+		if ( !isValid( UInt64.TYPENAME ) )
+			map( base+4, getLibrary().getId( UInt64.TYPENAME ));
 			
 		// Map Signed types.
-		if ( !isValid( BigEndianSignedByte.TYPENAME ) )
-			map( base+5, getLibrary().getId( BigEndianSignedByte.TYPENAME ) );
+		if ( !isValid( Int8.TYPENAME ) )
+			map( base+5, getLibrary().getId( Int8.TYPENAME ) );
 
-		if ( !isValid( BigEndianSignedShort.TYPENAME ) )
-			map( base+6, getLibrary().getId( BigEndianSignedShort.TYPENAME ) );
+		if ( !isValid( Int16.TYPENAME ) )
+			map( base+6, getLibrary().getId( Int16.TYPENAME ) );
 			
-		if ( !isValid( BigEndianSignedInteger.TYPENAME ) )
-			map( base+7, getLibrary().getId( BigEndianSignedInteger.TYPENAME ));
+		if ( !isValid( Int32.TYPENAME ) )
+			map( base+7, getLibrary().getId( Int32.TYPENAME ));
 					
-		if ( !isValid( BigEndianSignedLong.TYPENAME ) )
-			map( base+8, getLibrary().getId( BigEndianSignedLong.TYPENAME ));
+		if ( !isValid( Int64.TYPENAME ) )
+			map( base+8, getLibrary().getId( Int64.TYPENAME ));
 	
 		if ( !isValid( U8Ascii.TYPENAME ) )
 			map( base+9, getLibrary().getId( U8Ascii.TYPENAME ));
@@ -235,13 +235,13 @@ public class TypeMap
 		return _library.getName( getSystemId( id ) );
 	}
 
-	public void setReader( int id, TypeReader reader ) throws TypeException
+	public void setReader( int id, TypeLibraryReader reader ) throws TypeException
 	{
 		TypeMapItem item = (TypeMapItem) _map.getObjectFromKey( id );
 		item.reader = reader;
 	}
 	
-	public void setWriter( int id, TypeWriter writer ) throws TypeException
+	public void setWriter( int id, TypeLibraryWriter writer ) throws TypeException
 	{
 		TypeMapItem item = (TypeMapItem) _map.getObjectFromKey( id );		
 		item.writer = writer;
@@ -257,25 +257,70 @@ public class TypeMap
 			
 			// try again.
 			item = (TypeMapItem) _map.getObjectFromKey( id );
-			//return _library.getReader( getSystemId( id ) ).getReader(this);
 		}
-			
+
+		if ( item.builtReader != null )
+		{
+			return item.builtReader;
+		}
 		
 		if ( item.reader == null )
-			item.reader = _library.getReader( getSystemId( id )).getReader(this);
+		{
+			item.reader = _library.getReader( getSystemId( id ));
+			item.readerBound = true;
+		}
+				
+		if ( !item.readerBound )
+		{
+			if ( item.reader instanceof TypeBound )
+			{
+				TypeBound bind = (TypeBound) item.reader;
+				int systemId = this.getSystemId(id);
+				bind.bind( _library, _library.getStructure(systemId), _library.getName(systemId), systemId);
+				item.readerBound = true;
+			}			
+		}
 		
-		return item.reader;
+		item.builtReader = item.reader.getReader(this);
+		return item.builtReader;
 	}
 
 	public TypeWriter getWriter(int id) throws TypeException
 	{	
 		TypeMapItem item = (TypeMapItem) _map.getObjectFromKey( id );
 		if ( item == null )
-			return _library.getWriter( getSystemId( id ) ).getWriter(this);
+		{
+			// chance that this isn't mapped yet.  Calling getSystemId will force dynamic mapping if required.
+			getSystemId( id );
+			
+			// try again.
+			item = (TypeMapItem) _map.getObjectFromKey( id );
+		}
+		
+		if ( item.builtWriter != null )
+		{
+			return item.builtWriter;
+		}
 		
 		if ( item.writer == null )
-			item.writer = _library.getWriter( getSystemId( id )).getWriter(this);		
-		return item.writer;
+		{
+			item.writer = _library.getWriter( getSystemId( id ));
+			item.writerBound = true;
+		}
+		
+		if ( !item.writerBound )
+		{
+			if ( item.writer instanceof TypeBound )
+			{
+				TypeBound bind = (TypeBound) item.writer;
+				int systemId = this.getSystemId(id);
+				bind.bind( _library, _library.getStructure(systemId), _library.getName(systemId), systemId);
+				item.writerBound = true;
+			}						
+		}
+		
+		item.builtWriter = item.writer.getWriter(this);
+		return item.builtWriter;
 	}
 	
 	public TypeElement getStructure(int id) throws TypeException
@@ -366,9 +411,19 @@ public class TypeMap
 		return true;	
 	}
 	
+	public boolean isSimpleType( int id )
+	throws TypeException
+	{
+		return _library.isSimpleType( getSystemId(id) );		
+	}
+	
 	public class TypeMapItem
 	{
-		public TypeReader reader;
-		public TypeWriter writer;
+		public TypeReader builtReader;
+		public TypeLibraryReader reader;
+		public boolean readerBound;
+		public TypeWriter builtWriter;
+		public TypeLibraryWriter writer;
+		public boolean writerBound;
 	}
 }

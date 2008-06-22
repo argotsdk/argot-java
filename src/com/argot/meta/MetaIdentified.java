@@ -31,8 +31,7 @@ import com.argot.TypeWriter;
  * to be written.
  */
 public class MetaIdentified
-extends MetaBase
-implements MetaExpression
+extends MetaExpression
 {
 	public static String TYPENAME = "meta.identified";
 

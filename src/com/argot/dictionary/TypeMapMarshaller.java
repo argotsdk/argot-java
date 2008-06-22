@@ -24,6 +24,7 @@ import com.argot.TypeLibraryWriter;
 import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeWriter;
+import com.argot.common.UInt16;
 
 public class TypeMapMarshaller
 implements TypeLibraryWriter, TypeWriter
@@ -34,18 +35,18 @@ implements TypeLibraryWriter, TypeWriter
 		
 		
 		// write the length out first.
-		out.writeObject( "U16", new Integer( map.size() ));
+		out.writeObject( UInt16.TYPENAME, new Integer( map.size() ));
 				
-		Iterator i = map.getIterator();
+		Iterator i = map.getIdList().iterator();
 		while (i.hasNext() )
 		{
 			int id = ((Integer) i.next()).intValue();	
 			String name = map.getName( id );
 			TypeElement elem = map.getStructure( id );
 
-			out.writeObject( "U16", new Integer(id));
+			out.writeObject( UInt16.TYPENAME, new Integer(id));
 			out.writeObject( "meta.name", name );
-			out.writeObject( "dictionary.definition", elem );			
+			out.writeObject( "meta.definition.envelop", elem );			
 		}
 
     }

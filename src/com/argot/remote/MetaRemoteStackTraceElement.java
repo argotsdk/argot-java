@@ -23,7 +23,7 @@ import com.argot.TypeLibraryWriter;
 import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeWriter;
-import com.argot.common.BigEndianSignedInteger;
+import com.argot.common.Int32;
 import com.argot.common.U8Ascii;
 
 public class MetaRemoteStackTraceElement
@@ -78,7 +78,7 @@ public class MetaRemoteStackTraceElement
 			out.writeObject( U8Ascii.TYPENAME, e.getClassName() );
 			out.writeObject( U8Ascii.TYPENAME, e.getMethodName() );
 			out.writeObject( U8Ascii.TYPENAME, e.getFileName() );
-			out.writeObject( BigEndianSignedInteger.TYPENAME, new Integer( e.getLineNumber() ));
+			out.writeObject( Int32.TYPENAME, new Integer( e.getLineNumber() ));
 		}
 		
 		public TypeWriter getWriter(TypeMap map) 

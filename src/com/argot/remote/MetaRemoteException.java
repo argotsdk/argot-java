@@ -31,7 +31,7 @@ import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeReaderAuto;
 import com.argot.TypeWriter;
-import com.argot.common.BigEndianUnsignedShort;
+import com.argot.common.UInt16;
 import com.argot.common.U8Ascii;
 import com.argot.meta.MetaAbstract;
 import com.argot.meta.MetaSequence;
@@ -56,7 +56,7 @@ public class MetaRemoteException
 			_autoConstructor = new TypeConstructorAuto(clazz);
 		}
 		
-		public Object construct(MetaSequence sequence, Object[] parameters) 
+		public Object construct(TypeElement sequence, Object[] parameters) 
 		throws TypeException 
 		{
 			// the elements are wrapped in a sequence array.
@@ -166,7 +166,7 @@ public class MetaRemoteException
 			
 			// write out the stack trace array.
 			StackTraceElement[] elements = e.getStackTrace();
-			out.writeObject( BigEndianUnsignedShort.TYPENAME, new Integer( elements.length ));			
+			out.writeObject( UInt16.TYPENAME, new Integer( elements.length ));			
 			for ( int x = 0 ; x < elements.length ; x++ )
 			{
 				MetaRemoteStackTraceElement trace = new MetaRemoteStackTraceElement( elements[x].getClassName(), elements[x].getMethodName(), elements[x].getFileName(), elements[x].getLineNumber());

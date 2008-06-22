@@ -16,14 +16,22 @@ import com.argot.TypeReader;
 import com.argot.TypeWriter;
 import com.argot.meta.MetaArray;
 import com.argot.meta.MetaExpression;
+import com.argot.meta.MetaExpressionLibraryResolver;
+import com.argot.meta.MetaExpressionResolver;
 import com.argot.meta.MetaSequence;
 
 public class TypeArrayMarshaller
 implements TypeLibraryWriter, TypeLibraryReader, TypeBound
 {	
+	private MetaExpressionResolver _resolver;
 	private Class _typeClass;
 	private MetaExpression _sizeExpression;
 	private MetaExpression _dataExpression;
+	
+	public TypeArrayMarshaller()
+	{
+		_resolver = new MetaExpressionLibraryResolver();
+	}
 	
 	public void bind(TypeLibrary library, TypeElement definition, String typeName, int typeId) 
 	throws TypeException 
@@ -98,7 +106,7 @@ implements TypeLibraryWriter, TypeLibraryReader, TypeBound
 	public TypeReader getReader(TypeMap map) 
 	throws TypeException 
 	{
-		return new TypeArrayMarshallerReader( _typeClass, _sizeExpression.getReader(map), _dataExpression.getReader(map));
+		return new TypeArrayMarshallerReader( _typeClass, _resolver.getExpressionReader(map, _sizeExpression), _resolver.getExpressionReader(map,_dataExpression));
 	}
 	
 	
@@ -138,7 +146,7 @@ implements TypeLibraryWriter, TypeLibraryReader, TypeBound
 	public TypeWriter getWriter(TypeMap map) 
 	throws TypeException 
 	{
-		return new TypeArrayMarshallerWriter(_sizeExpression.getWriter(map), _dataExpression.getWriter(map));
+		return new TypeArrayMarshallerWriter(_resolver.getExpressionWriter(map, _sizeExpression), _resolver.getExpressionWriter(map, _dataExpression));
 	}
 	
 }

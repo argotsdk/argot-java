@@ -16,68 +16,142 @@
 package com.argot.meta;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
+import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
+import com.argot.TypeLibraryReader;
+import com.argot.TypeLibraryWriter;
 import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
+import com.argot.common.UInt16;
 
 public class MetaAbstract
-extends MetaBase
-implements MetaExpression, MetaDefinition
+extends MetaExpression
+implements MetaDefinition
 {
     public static final String TYPENAME = "meta.abstract";
     
 	private Map _concreteToMap;
 	private Map _mapToConcrete;
 	
+	// This keeps a list of any abstract types we've mapped.
+	private List _abstractParentMap;
+	
 	public MetaAbstract()
 	{
 		_concreteToMap = new HashMap();
 		_mapToConcrete = new HashMap();
+		_abstractParentMap = new ArrayList();
 	}
 	
     public String getTypeName()
     {
         return TYPENAME;
     }
+    
+    public Map getConcreteToMap()
+    {
+    	return _concreteToMap;
+    }
+    
+    public Map getMapToConcrete()
+    {
+    	return _mapToConcrete;
+    }
 	
+    public void addAbstractMap( MetaAbstract parent )
+    {
+    	_abstractParentMap.add( parent );
+    	
+    	Iterator i = _concreteToMap.keySet().iterator();
+    	while( i.hasNext())
+    	{
+    		Integer c = (Integer) i.next();
+    		Integer m = (Integer) _concreteToMap.get(c);
+    		
+    		parent.addMap( c.intValue(), m.intValue());
+    	}
+    	
+    }
+    
 	public void addMap( int concreteType, int mapType )
 	{
 		_concreteToMap.put( new Integer( concreteType ), new Integer(mapType));
 		_mapToConcrete.put( new Integer( mapType ), new Integer(concreteType));
+		
+    	Iterator i = _abstractParentMap.iterator();
+    	while( i.hasNext())
+    	{
+    		MetaAbstract p = (MetaAbstract) i.next();
+    		
+    		p.addMap( concreteType, mapType);
+    	}		
 	}
 	
 	public static class MetaAbstractTypeReader
-	implements TypeReader
+	implements TypeReader, TypeLibraryReader, MetaExpressionReader
 	{
-	    public Object read(TypeInputStream in) throws TypeException, IOException
+	    public Object read(TypeInputStream in) 
+	    throws TypeException, IOException
 	    {
 			return new MetaAbstract();
 	    }
+
+		public TypeReader getReader(TypeMap map) 
+		throws TypeException 
+		{
+			return this;
+		}
+
+		public TypeReader getExpressionReader(TypeMap map, MetaExpressionResolver resolver, TypeElement element)
+		throws TypeException 
+		{
+			MetaAbstract metaAbstract = (MetaAbstract) element;
+			return new MetaAbstractReader(metaAbstract,map.getReader(map.getId(UInt16.TYPENAME)));
+		}
 	}
 
 	public static class MetaAbstractTypeWriter
-	implements TypeWriter
+	implements TypeWriter, TypeLibraryWriter, MetaExpressionWriter
 	{
-	    public void write(TypeOutputStream out, Object o) throws TypeException, IOException
+	    public void write(TypeOutputStream out, Object o) 
+	    throws TypeException, IOException
 	    {
 	    	// do nothing.
 	    }
+
+		public TypeWriter getWriter(TypeMap map) 
+		throws TypeException 
+		{
+			return this;
+		}
+
+		public TypeWriter getExpressionWriter(TypeMap map, MetaExpressionResolver resolver, TypeElement element)
+		throws TypeException 
+		{
+			MetaAbstract metaAbstract = (MetaAbstract) element;
+			return new MetaAbstractWriter(metaAbstract,map.getWriter(map.getId(UInt16.TYPENAME)));
+		}
 	}
 
-	private class MetaAbstractReader
+	private static class MetaAbstractReader
 	implements TypeReader
 	{
+		private MetaAbstract _metaAbstract;
 		private TypeReader _uint16;
 		private Map _mapCache;
 		
-		public MetaAbstractReader(TypeReader uint16)
+		public MetaAbstractReader(MetaAbstract metaAbstract, TypeReader uint16)
 		{
+			_metaAbstract = metaAbstract;
 			_uint16 = uint16;
 			_mapCache = new HashMap();
 		}
@@ -100,21 +174,15 @@ implements MetaExpression, MetaDefinition
 		throws TypeException
 		{
 	        int mapId = map.getSystemId( type.intValue() );
-			Integer concrete = (Integer) _mapToConcrete.get( new Integer( mapId ));
+			Integer concrete = (Integer) _metaAbstract._concreteToMap.get( new Integer( mapId ));
 	        if ( concrete == null )
 	        {
 	        	throw new TypeException("type not mapped:" + type.intValue() + " " + map.getName( type.intValue() ) ); 
 	        }
-			return map.getId( concrete.intValue());
+			return map.getId( mapId );
 		}
 		
 	}
-
-    public TypeReader getReader(TypeMap map) 
-    throws TypeException
-    {
-    	return new MetaAbstractReader(map.getReader(map.getId("u16")));
-    }
 
 	private static class CacheEntry
 	{
@@ -122,14 +190,16 @@ implements MetaExpression, MetaDefinition
 		TypeWriter idWriter;
 	}
 	
-    private class MetaAbstractWriter
+    private static class MetaAbstractWriter
     implements TypeWriter
     {
+    	private MetaAbstract _metaAbstract;
     	private TypeWriter _uint16;
 		private Map _mapCache;
 		
-    	public MetaAbstractWriter(TypeWriter uint16)
+    	public MetaAbstractWriter(MetaAbstract metaAbstract, TypeWriter uint16)
     	{
+    		_metaAbstract = metaAbstract;
     		_uint16 = uint16;
     		_mapCache = new HashMap();
     	}
@@ -152,26 +222,30 @@ implements MetaExpression, MetaDefinition
 		throws TypeException
 		{
 			int id = map.getLibrary().getId(clss);
-			Integer mapId = (Integer) _concreteToMap.get( new Integer( id ));
+			Integer mapId = (Integer) _metaAbstract._concreteToMap.get( new Integer( id ));
 	        if ( mapId == null )
 	        {
 				throw new TypeException( "can't write abstract type directly.:" + clss.getName() );
 			}
 	        
 	        CacheEntry entry = new CacheEntry();
-	        entry.mapId = new Integer(map.getId(mapId.intValue()));
+	        
+	        // This is very important.  When working as a remote client we must ensure
+	        // that the server also has the mapping from concrete to map value.  By 
+	        // getting the System Id of the MapId it will automatically resolve if the
+	        // server has the correct value.
+	        map.getId(mapId.intValue());
+	        
+	        // The Id written to file is the mapped concrete id.
+	        entry.mapId = new Integer(map.getId(id));
+	        
+	        // Cache the writer function.
 	        entry.idWriter = map.getWriter(map.getId( id ));
 			return entry;
 		}
 		
     }
-    
-    public TypeWriter getWriter(TypeMap map) 
-    throws TypeException
-    {
-    	return new MetaAbstractWriter(map.getWriter(map.getId("u16")));
-    }
-    
+ 
 	public boolean isMapped( int id )
 	{
 		return _concreteToMap.get( new Integer(id))==null?false:true;

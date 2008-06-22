@@ -62,6 +62,6 @@ implements TypeLibraryReader, TypeLibraryWriter
 	public TypeWriter getWriter(TypeMap map) 
 	throws TypeException 
 	{
-		return new DateS64Writer(map.getWriter(map.getId(BigEndianSignedLong.TYPENAME)));
+		return new DateS64Writer(map.getWriter(map.getId(Int64.TYPENAME)));
 	}
 }

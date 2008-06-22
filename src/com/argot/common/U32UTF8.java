@@ -36,7 +36,7 @@ implements TypeReader, TypeWriter
 	public Object read(TypeInputStream in)
 	throws TypeException, IOException
 	{
-		Long id = (Long) in.readObject( BigEndianUnsignedInteger.TYPENAME );
+		Long id = (Long) in.readObject( UInt32.TYPENAME );
 		
 		if ( id.intValue() > 0 )
 		{
@@ -55,7 +55,7 @@ implements TypeReader, TypeWriter
 		{
 			if ( o == null )
 			{
-				out.writeObject( BigEndianUnsignedInteger.TYPENAME, new Long( 0 ) );
+				out.writeObject( UInt32.TYPENAME, new Long( 0 ) );
 				return;
 			}
 			throw new TypeException( "StringType: can only write objects of type String");
@@ -65,7 +65,7 @@ implements TypeReader, TypeWriter
 		byte[] bytes = s.getBytes();
 		int len = bytes.length;
 
-		out.writeObject( BigEndianUnsignedInteger.TYPENAME, new Long( len  ) );
+		out.writeObject( UInt32.TYPENAME, new Long( len  ) );
 		out.getStream().write( bytes, 0,  len );
 	}
 }

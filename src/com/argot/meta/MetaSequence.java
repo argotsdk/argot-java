@@ -26,10 +26,11 @@ import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
+import com.argot.common.UInt8;
 
 public class MetaSequence
-extends MetaBase
-implements MetaExpression, MetaDefinition
+extends MetaExpression
+implements MetaDefinition
 {
 	public static String TYPENAME  = "meta.sequence";
 	
@@ -65,12 +66,61 @@ implements MetaExpression, MetaDefinition
     }
 	public MetaExpression getElement( int x )
 	{
-		return (MetaExpression) _objects[x];
+		return _objects[x];
 	}
 	
 	public int size()
 	{
 		return _objects.length;
+	}
+	
+	public static class MetaSequenceTypeReader
+	extends MetaExpressionReaderAuto
+	implements MetaExpressionReader
+	{	
+		public MetaSequenceTypeReader()
+		{
+			super(MetaSequence.class);
+		}
+		
+		public TypeReader getExpressionReader(TypeMap map, MetaExpressionResolver resolver, TypeElement element)
+		throws TypeException 
+		{
+			MetaSequence sequence = (MetaSequence) element;
+			
+			TypeReader[] readers = new TypeReader[ sequence.size() ];
+			for ( int x=0; x < sequence.size() ; x++ )
+			{	
+				//readers[x] = sequence.getElementReader(map,sequence.getElement(x));
+				readers[x] = resolver.getExpressionReader(map, sequence.getElement(x));
+			}		
+			return new MetaSequenceReader(readers);
+		}
+	}
+
+	private static class MetaSequenceReader
+	implements TypeReader
+	{
+		private TypeReader[] _readers;
+		
+		public MetaSequenceReader( TypeReader[] readers )
+		{
+			_readers = readers;
+		}
+
+		public Object read(TypeInputStream in)
+		throws TypeException, IOException 
+		{
+			Object[] objects = new Object[ _readers.length ];
+			
+			for ( int x=0; x < _readers.length ; x++ )
+			{
+				
+				objects[x] = _readers[x].read(in);
+			}			
+			return objects;
+		}
+		
 	}
 	
 	public static class MetaSequenceTypeWriter
@@ -81,7 +131,7 @@ implements MetaExpression, MetaDefinition
 		{
 			MetaSequence ts = (MetaSequence) obj;
 	
-			out.writeObject(  "u8", new Integer( ts._objects.length ));
+			out.writeObject(  UInt8.TYPENAME, new Integer( ts._objects.length ));
 	
 			for ( int x=0 ; x < ts._objects.length ; x++ )
 			{
@@ -98,43 +148,14 @@ implements MetaExpression, MetaDefinition
 		
 	}
 	
-	private class MetaSequenceReader
-	implements TypeReader
+	public static class MetaSequenceReaderWalker
 	{
-		private TypeReader[] _readers;
-		
-		public MetaSequenceReader( TypeReader[] readers )
+		TypeReader getReader(TypeMap map, MetaSequence sequence)
 		{
-			_readers = readers;
+			return null;
 		}
-
-		public Object read(TypeInputStream in)
-		throws TypeException, IOException 
-		{
-			Object[] objects = new Object[ size() ];
-			
-			for ( int x=0; x < size() ; x++ )
-			{
-				
-				objects[x] = _readers[x].read(in);
-			}			
-			return objects;
-		}
-		
 	}
 	
-	public TypeReader getReader(TypeMap map)
-	throws TypeException 
-	{
-		TypeReader[] readers = new TypeReader[ size() ];
-		
-		for ( int x=0; x < size() ; x++ )
-		{
-			readers[x] = getElement(x).getReader(map);
-		}		
-		return new MetaSequenceReader(readers);
-	}
-
 	public TypeWriter getWriter(TypeMap map)
 	throws TypeException 
 	{

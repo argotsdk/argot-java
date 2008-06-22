@@ -17,16 +17,20 @@ package com.argot;
 
 import java.io.IOException;
 
+import com.argot.meta.MetaExpressionLibraryResolver;
+import com.argot.meta.MetaExpressionResolver;
 import com.argot.meta.MetaSequence;
 
 public class TypeReaderAuto
 implements TypeBound,TypeLibraryReader
 {
+	private MetaExpressionResolver _resolver;
 	private TypeConstructor _constructor;
 	private MetaSequence _metaSequence;
 	
 	public TypeReaderAuto( Class clss )
 	{
+		_resolver = new MetaExpressionLibraryResolver();
 		_constructor = new TypeConstructorAuto( clss );
 		_metaSequence = null;
 	}
@@ -41,7 +45,7 @@ implements TypeBound,TypeLibraryReader
 	{
 		if ( !( definition instanceof MetaSequence))
 		{
-			throw new TypeException( "TypeReaderAuto: required MetaSequence to read data.");
+			throw new TypeException( "TypeReaderAuto: required MetaSequence to read data." + typeName );
 		}
 		_metaSequence = (MetaSequence) definition;
 	}	
@@ -69,7 +73,7 @@ implements TypeBound,TypeLibraryReader
 	public TypeReader getReader(TypeMap map) 
 	throws TypeException 
 	{
-		return new TypeAutoReader( _metaSequence.getReader(map), _metaSequence );
+		return new TypeAutoReader( _resolver.getExpressionReader(map, _metaSequence), _metaSequence );
 	}
 
 

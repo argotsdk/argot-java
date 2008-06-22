@@ -23,20 +23,26 @@ import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
 
-/**
- */
-public class BigEndianSignedLong
+public class UInt64
 implements TypeReader, TypeWriter
 {
-	public static final String TYPENAME = "s64";
+	public static final String TYPENAME = "uint64";
 	
 	public Object read(TypeInputStream in ) 
 	throws TypeException, IOException
 	{
-		byte bytes[] = new byte[8];
-		in.read(bytes,0,8);
-
-		long value = (((bytes[0] & 0xffL) << 56) | ((bytes[1] & 0xffL) << 48) | ((bytes[2] & 0xffL) << 40) | ((bytes[3] & 0xffL) << 32) | ((bytes[4] & 0xffL) << 24) | ((bytes[5] & 0xffL) << 16) | ((bytes[6] & 0xffL) << 8) | (bytes[7] & 0xffL ));		
+		int a,b,c,d,e,f,g,h;
+		
+		a = in.getStream().read(); //56  
+		b = in.getStream().read(); //48
+		c = in.getStream().read(); //40
+		d = in.getStream().read(); //32
+		e = in.getStream().read(); //24
+		f = in.getStream().read(); //16
+		g = in.getStream().read(); //8
+		h = in.getStream().read(); //0
+			
+		long value = (((long)a << 56) + ((long)b << 48) + ((long)c << 40) + ((long)d << 32) + ((long)e << 24) + ((long)f << 16) + ((long)g<<8) + (long)h);
 
 		// need to return a long value here because an unsigned
 		// integer can be bigger than the java int.
@@ -54,7 +60,7 @@ implements TypeReader, TypeWriter
 		long s = ((Long) o).longValue();
 
 		if ( s < MIN || s > MAX )
-			throw new TypeException( "U16B: value out of range");
+			throw new TypeException( "U16B: value out of range: " + s );
 		
 		a = (int)((s >> 56) & 0xff);
 		b = (int)((s >> 48) & 0xff);
@@ -75,12 +81,12 @@ implements TypeReader, TypeWriter
 		out.getStream().write( h );
 
 	}
-	
+
 	// NOTE: As java can not store anything bigger than
 	//       a long.  It means that the max value is one
-	//       bit short of the max of 2^64-1.
-	public final long MIN = -9223372036854775808l; //-2^63;
-	public final long MAX =  9223372036854775807l; //2^63-1;
+	//       bit short of the max of 2^64.
+	public final long MIN = 0;
+	public final long MAX = 9223372036854775807l; //2^63-1;
 	
 
 }

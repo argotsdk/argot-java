@@ -30,27 +30,28 @@ public class MetaMarshaller
 implements TypeBound,TypeLibraryReader, TypeLibraryWriter
 {
 	private MetaExpression _expression;
+	private MetaExpressionResolver _resolver;
 	
+	public MetaMarshaller()
+	{
+		_resolver = new MetaExpressionLibraryResolver();
+	}
 	public void bind(TypeLibrary library, TypeElement definition, String typeName, int typeId) 
 	throws TypeException 
 	{
-		if ( !(definition instanceof MetaExpression))
-		{
-			throw new TypeException("MetaMarshaller: requires MetaExpression type for TypeElement");
-		}
 		_expression = (MetaExpression) definition;
 	}
 
 	public TypeReader getReader(TypeMap map) 
 	throws TypeException 
 	{
-		return _expression.getReader(map);
+		return _resolver.getExpressionReader(map, _expression);
 	}
 
 	public TypeWriter getWriter(TypeMap map) 
 	throws TypeException 
 	{
-		return _expression.getWriter(map);
+		return _resolver.getExpressionWriter(map, _expression);
 	}
  
 }

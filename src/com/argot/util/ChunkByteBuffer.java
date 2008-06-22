@@ -34,11 +34,14 @@ import java.nio.ByteBuffer;
 
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
+import com.argot.TypeLibraryReader;
+import com.argot.TypeLibraryWriter;
+import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
 
-import com.argot.common.BigEndianUnsignedInteger;
+import com.argot.common.UInt32;
 
 
 /**
@@ -390,12 +393,12 @@ public class ChunkByteBuffer
 	private static final int SIZE = 2048;
 	
 	public static class ChunkByteBufferReader
-	implements TypeReader
+	implements TypeReader, TypeLibraryReader
 	{
 		public Object read(TypeInputStream in)
 		throws TypeException, IOException
 		{
-			Long id = (Long) in.readObject( BigEndianUnsignedInteger.TYPENAME );
+			Long id = (Long) in.readObject( UInt32.TYPENAME );
 			
 			
 			ChunkByteBuffer buffer = new ChunkByteBuffer();
@@ -437,10 +440,16 @@ public class ChunkByteBuffer
 			
 			return buffer;
 		}
+
+		public TypeReader getReader(TypeMap map) 
+		throws TypeException 
+		{
+			return this;
+		}
 	}
 
 	public static class ChunkByteBufferWriter
-	implements TypeWriter
+	implements TypeWriter, TypeLibraryWriter
 	{
 		public void write(TypeOutputStream out, Object o)
 		throws TypeException, IOException
@@ -463,6 +472,12 @@ public class ChunkByteBuffer
 				out.getStream().write( bytes, 0, read );
 			
 	
+		}
+
+		public TypeWriter getWriter(TypeMap map) 
+		throws TypeException 
+		{
+			return this;
 		}
 	}
 

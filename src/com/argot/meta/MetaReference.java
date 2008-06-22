@@ -23,25 +23,26 @@ import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
 import com.argot.TypeLibrary;
+import com.argot.TypeLibraryReader;
+import com.argot.TypeLibraryWriter;
 import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeReaderAuto;
 import com.argot.TypeWriter;
+import com.argot.common.UInt16;
 
 public class MetaReference
-extends MetaBase
-implements MetaExpression
+extends MetaExpression
+implements MetaDefinition
 {
     public static String TYPENAME  = "meta.reference";
 	
 	private int _type;
-	private String _description;
 
-	public MetaReference( int type, String description )
+	public MetaReference( int type )
 	{
 		_type = type;
-		_description = description;
 	}
 
     public String getTypeName()
@@ -58,15 +59,9 @@ implements MetaExpression
 	{
 		_type = type;
 	}
-	
-	public String getMethod()
-	{
-		return _description;
-	}
-	
 
 	public static class MetaReferenceTypeReader
-	implements TypeReader,TypeBound
+	implements TypeReader,TypeBound,TypeLibraryReader, MetaExpressionReader
 	{
 		TypeReaderAuto _reader = new TypeReaderAuto( MetaReference.class );
 		
@@ -74,6 +69,12 @@ implements MetaExpression
 		throws TypeException 
 		{
 			_reader.bind(library, definition, typeName, typeId);
+		}
+		
+		public TypeReader getReader(TypeMap map) 
+		throws TypeException 
+		{
+			return this;
 		}
 		
 	    public Object read(TypeInputStream in) throws TypeException, IOException
@@ -94,31 +95,37 @@ implements MetaExpression
 
 			return ref;
 	    }
+
+		public TypeReader getExpressionReader(TypeMap map, MetaExpressionResolver resolver, TypeElement element)
+		throws TypeException 
+		{
+			MetaReference metaReference = (MetaReference) element;
+			return map.getReader( map.getId(metaReference._type));
+		}
 	}
 	
 	public static class MetaReferenceTypeWriter
-	implements TypeWriter
+	implements TypeWriter, TypeLibraryWriter, MetaExpressionWriter
 	{
 	    public void write(TypeOutputStream out, Object o) throws TypeException, IOException
 	    {
 			MetaReference tr = (MetaReference) o;
 			ReferenceTypeMap mapCore = (ReferenceTypeMap) out.getTypeMap();
 			int id = mapCore.referenceMap().getId( tr._type );
-			out.writeObject( "u16", new Integer( id ));
-			out.writeObject( "meta.name", tr._description );
-	    } 
+			out.writeObject( UInt16.TYPENAME, new Integer( id ));
+	    }
+
+		public TypeWriter getExpressionWriter(TypeMap map, MetaExpressionResolver resolver, TypeElement element)
+		throws TypeException 
+		{
+			MetaReference metaReference = (MetaReference) element;
+			return map.getWriter( map.getId(metaReference._type));
+		}
+
+		public TypeWriter getWriter(TypeMap map) 
+		throws TypeException 
+		{
+			return this;
+		} 
 	}
-	
-    public TypeWriter getWriter(TypeMap map) 
-    throws TypeException
-    {
-    	return map.getWriter( map.getId(_type));
-    }
-
-    public TypeReader getReader(TypeMap map) 
-    throws TypeException
-    {
-    	return map.getReader( map.getId(_type));
-    }
-
 }

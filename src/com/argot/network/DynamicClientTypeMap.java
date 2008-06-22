@@ -66,13 +66,8 @@ extends ReferenceTypeMap
 				// The base types must be the same as the MetaDictionary core.
 				// Wait until first request before mapping.  Stops ghosting.
 				TypeMapCore.mapMeta( this, library );
-				map( 22, library.getId("dictionary.map"));
-				map( 23, library.getId("dictionary.words"));
-				map( 24, library.getId("dictionary.definition"));
-				map( 25, library.getId("dictionary.entry"));	
-				map( 26, library.getId("meta.envelop"));
-				map( 27, library.getId("meta.definition#envelop"));		
-
+				map( 42, library.getId("dictionary.words"));
+				
 				byte[] localMetaDictionary = Dictionary.writeCore( this );
 				_metaDictionaryOk = _typeClient.checkMetaDictionary( localMetaDictionary );
 				_metaDictionaryChecked = true;				

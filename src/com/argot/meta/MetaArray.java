@@ -28,8 +28,8 @@ import com.argot.TypeReader;
 import com.argot.TypeWriter;
 
 public class MetaArray
-extends MetaBase
-implements MetaExpression
+extends MetaExpression
+implements MetaDefinition
 {
 	public static final String TYPENAME = "meta.array";
 	
@@ -69,15 +69,32 @@ implements MetaExpression
 	    return library.getId( TYPENAME );
 	}
 
+	public static class MetaArrayTypeReader
+	extends MetaExpressionReaderAuto
+	implements MetaExpressionReader
+	{
+		public MetaArrayTypeReader() 
+		{
+			super(MetaArray.class);
+		}
+
+		public TypeReader getExpressionReader(TypeMap map, MetaExpressionResolver resolver, TypeElement element)
+		throws TypeException 
+		{
+			MetaArray metaArray = (MetaArray) element;
+			return new MetaArrayReader( resolver.getExpressionReader(map, metaArray._size), resolver.getExpressionReader(map, metaArray._type));
+		}	
+	}    
+	
 	public static class MetaArrayTypeWriter
-	implements TypeLibraryWriter,TypeWriter
+	implements TypeLibraryWriter,TypeWriter,MetaExpressionWriter
 	{
 		public void write(TypeOutputStream out, Object o )
 		throws TypeException, IOException
 		{
 			MetaArray ma = (MetaArray) o;
-			out.writeObject( "meta.expression", ma._size );
-			out.writeObject( "meta.expression", ma._type );
+			out.writeObject( MetaExpression.TYPENAME, ma._size );
+			out.writeObject( MetaExpression.TYPENAME, ma._type );
 					
 		}
 		
@@ -85,6 +102,12 @@ implements MetaExpression
 		throws TypeException 
 		{
 			return this;
+		}
+
+		public TypeWriter getExpressionWriter(TypeMap map, MetaExpressionResolver resolver, TypeElement element)
+		throws TypeException 
+		{
+			throw new TypeException("not implemented");
 		}		
 	}
 	
@@ -138,17 +161,4 @@ implements MetaExpression
 		}
 		
 	}
-	
-	public TypeReader getReader(TypeMap map)
-	throws TypeException 
-	{
-		return new MetaArrayReader( _size.getReader(map), _type.getReader(map));
-	}
-
-	public TypeWriter getWriter(TypeMap map)
-	throws TypeException 
-	{
-		throw new TypeException("not implemented");
-	}
-
 }

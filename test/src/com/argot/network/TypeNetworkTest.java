@@ -24,6 +24,9 @@ import com.argot.TypeMapCore;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
 import com.argot.common.CommonLoader;
+import com.argot.common.Int32;
+import com.argot.common.UInt32;
+import com.argot.common.UInt8;
 import com.argot.dictionary.DictionaryLoader;
 import com.argot.meta.MetaLoader;
 
@@ -48,13 +51,8 @@ extends TestCase
     {
     	DynamicTypeMap serverMap = new DynamicTypeMap( _library );
 		TypeMapCore.mapMeta( serverMap, _library );
-		serverMap.map( 22, _library.getId("dictionary.map"));
-		serverMap.map( 23, _library.getId("dictionary.words"));
-		serverMap.map( 24, _library.getId("dictionary.definition"));
-		serverMap.map( 25, _library.getId("dictionary.entry"));	
-		serverMap.map( 26, _library.getId("meta.envelop"));
-		serverMap.map( 27, _library.getId("meta.definition#envelop"));		
-
+		serverMap.map( 42, _library.getId("dictionary.words"));
+		
     	TypeServer typeServer = new TypeServer( _library, serverMap );
     	// client will write to server and expect a response.
     	// server will need to operate on different thread.
@@ -62,8 +60,8 @@ extends TestCase
     	TypeClient typeClient = new TypeClient( _library, transport );
     	DynamicClientTypeMap clientMap = new DynamicClientTypeMap( _library, typeClient );
     	
-    	int cid = clientMap.getId( "u8" );
-    	int sid = serverMap.getId( "u8" );
+    	int cid = clientMap.getId( UInt8.TYPENAME );
+    	int sid = serverMap.getId( UInt8.TYPENAME );
     	assertEquals( sid, cid );
     	
     	// If we used the meta dictionary.  We should only
@@ -75,13 +73,8 @@ extends TestCase
     {
     	DynamicTypeMap serverMap = new DynamicTypeMap( _library );
 		TypeMapCore.mapMeta( serverMap, _library );
-		serverMap.map( 22, _library.getId("dictionary.map"));
-		serverMap.map( 23, _library.getId("dictionary.words"));
-		serverMap.map( 24, _library.getId("dictionary.definition"));
-		serverMap.map( 25, _library.getId("dictionary.entry"));	
-		serverMap.map( 26, _library.getId("meta.envelop"));
-		serverMap.map( 27, _library.getId("meta.definition#envelop"));		
-    	
+		serverMap.map( 42, _library.getId("dictionary.words"));
+		
     	TypeServer typeServer = new TypeServer( _library, serverMap );
     	// client will write to server and expect a response.
     	// server will need to operate on different thread.
@@ -89,8 +82,8 @@ extends TestCase
     	TypeClient typeClient = new TypeClient( _library, transport );
     	DynamicClientTypeMap clientMap = new DynamicClientTypeMap( _library, typeClient );
     	
-    	int cid = clientMap.getId( "u8" );
-    	int sid = serverMap.getId( "u8" );
+    	int cid = clientMap.getId( UInt8.TYPENAME );
+    	int sid = serverMap.getId( UInt8.TYPENAME );
     	assertEquals( sid, cid ); 	
     }
 
@@ -98,21 +91,16 @@ extends TestCase
     {
     	DynamicTypeMap serverMap = new DynamicTypeMap( _library );
 		TypeMapCore.mapMeta( serverMap, _library );
-		serverMap.map( 22, _library.getId("dictionary.map"));
-		serverMap.map( 23, _library.getId("dictionary.words"));
-		serverMap.map( 24, _library.getId("dictionary.definition"));
-		serverMap.map( 25, _library.getId("dictionary.entry"));	
-		serverMap.map( 26, _library.getId("meta.envelop"));
-		serverMap.map( 27, _library.getId("meta.definition#envelop"));		
-    	
+		serverMap.map( 42, _library.getId("dictionary.words"));
+		
     	TypeServer typeServer = new TypeServer( _library, serverMap );
     	TestTypeTransport transport = new TestTypeTransport( typeServer );
     	TypeClient typeClient = new TypeClient( _library, transport );
     	DynamicClientTypeMap clientMap = new DynamicClientTypeMap( _library, typeClient );
     	
-    	serverMap.map( 54, _library.getId( "s32" ));
+    	serverMap.map( 54, _library.getId( Int32.TYPENAME ));
     	int cid = clientMap.getSystemId( 54 );
-    	int sid = _library.getId( "s32" );
+    	int sid = _library.getId( Int32.TYPENAME );
     	assertEquals( sid, cid );
     }
 
@@ -120,20 +108,15 @@ extends TestCase
     {
     	DynamicTypeMap serverMap = new DynamicTypeMap( _library );
 		TypeMapCore.mapMeta( serverMap, _library );
-		serverMap.map( 22, _library.getId("dictionary.map"));
-		serverMap.map( 23, _library.getId("dictionary.words"));
-		serverMap.map( 24, _library.getId("dictionary.definition"));
-		serverMap.map( 25, _library.getId("dictionary.entry"));	
-		serverMap.map( 26, _library.getId("meta.envelop"));
-		serverMap.map( 27, _library.getId("meta.definition#envelop"));		
+		serverMap.map( 42, _library.getId("dictionary.words"));
     	
     	TypeServer typeServer = new TypeServer( _library, serverMap );
     	TestTypeTransport transport = new TestTypeTransport( typeServer );
     	TypeClient typeClient = new TypeClient( _library, transport );
     	DynamicClientTypeMap clientMap = new DynamicClientTypeMap( _library, typeClient );
     	
-    	int cid = clientMap.getId( _library.getId( "u32"));
-    	int sid = serverMap.getId( "u32" );
+    	int cid = clientMap.getId( _library.getId( UInt32.TYPENAME));
+    	int sid = serverMap.getId( UInt32.TYPENAME );
     	assertEquals( sid, cid );    	
     }
 
@@ -141,20 +124,15 @@ extends TestCase
     {
     	DynamicTypeMap serverMap = new DynamicTypeMap( _library );
 		TypeMapCore.mapMeta( serverMap, _library );
-		serverMap.map( 22, _library.getId("dictionary.map"));
-		serverMap.map( 23, _library.getId("dictionary.words"));
-		serverMap.map( 24, _library.getId("dictionary.definition"));
-		serverMap.map( 25, _library.getId("dictionary.entry"));	
-		serverMap.map( 26, _library.getId("meta.envelop"));
-		serverMap.map( 27, _library.getId("meta.definition#envelop"));		
+		serverMap.map( 42, _library.getId("dictionary.words"));
     	
     	TypeServer typeServer = new TypeServer( _library, serverMap );
     	TestTypeTransport transport = new TestTypeTransport( typeServer );
     	TypeClient typeClient = new TypeClient( _library, transport );
     	DynamicClientTypeMap clientMap = new DynamicClientTypeMap( _library, typeClient );
     	
-    	TypeReader cReader = clientMap.getReader( clientMap.getId( "u8" ) );
-    	TypeReader sReader = serverMap.getReader( serverMap.getId( "u8" ) );
+    	TypeReader cReader = clientMap.getReader( clientMap.getId( UInt8.TYPENAME ) );
+    	TypeReader sReader = serverMap.getReader( serverMap.getId( UInt8.TYPENAME ) );
     	assertEquals( cReader, sReader );    	
     }
 
@@ -162,20 +140,15 @@ extends TestCase
     {
     	DynamicTypeMap serverMap = new DynamicTypeMap( _library );
 		TypeMapCore.mapMeta( serverMap, _library );
-		serverMap.map( 22, _library.getId("dictionary.map"));
-		serverMap.map( 23, _library.getId("dictionary.words"));
-		serverMap.map( 24, _library.getId("dictionary.definition"));
-		serverMap.map( 25, _library.getId("dictionary.entry"));	
-		serverMap.map( 26, _library.getId("meta.envelop"));
-		serverMap.map( 27, _library.getId("meta.definition#envelop"));		
+		serverMap.map( 42, _library.getId("dictionary.words"));
     	
     	TypeServer typeServer = new TypeServer( _library, serverMap );
     	TestTypeTransport transport = new TestTypeTransport( typeServer );
     	TypeClient typeClient = new TypeClient( _library, transport );
     	DynamicClientTypeMap clientMap = new DynamicClientTypeMap( _library, typeClient );
     	
-    	TypeWriter cWriter = clientMap.getWriter( clientMap.getId( "u8" ) );
-    	TypeWriter sWriter = serverMap.getWriter( serverMap.getId( "u8" ) );
+    	TypeWriter cWriter = clientMap.getWriter( clientMap.getId( UInt8.TYPENAME ) );
+    	TypeWriter sWriter = serverMap.getWriter( serverMap.getId( UInt8.TYPENAME ) );
     	assertEquals( cWriter, sWriter );    	    	
     }
     

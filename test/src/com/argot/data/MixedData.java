@@ -28,15 +28,16 @@ import com.argot.TypeWriter;
 import com.argot.meta.MetaExpression;
 import com.argot.meta.MetaReference;
 import com.argot.meta.MetaSequence;
+import com.argot.meta.MetaTag;
 
 
 /*
  * A simple mixed data used for testing purposes.
  * 
  * mixeddata: meta.sequence([
- * 		meta.reference( #s32, "s32" );
- * 		meta.reference( #s16, "s16" );
- * 		meta.reference( #u8ascii, "u8ascii" );
+ * 		meta.tag( "int32", meta.reference( #s32 ));
+ * 		meta.tag( "int16", meta.reference( #s16 ));
+ * 		meta.tag( "u8ascii", meta.reference( #u8ascii ));
  * 
  */
 public class MixedData 
@@ -75,8 +76,8 @@ public class MixedData
 		throws TypeException, IOException 
 		{
 			MixedData data = (MixedData) o;
-			out.writeObject("s32", new Integer( data._anInt ));
-			out.writeObject("s16", new Short( data._aShort ));
+			out.writeObject("int32", new Integer( data._anInt ));
+			out.writeObject("int16", new Short( data._aShort ));
 			out.writeObject("u8ascii", data._anAscii );
 		}
 		
@@ -97,9 +98,9 @@ public class MixedData
 		library.register( MixedData.TYPENAME, 
 				new MetaSequence(
 					new MetaExpression[]{
-					    new MetaReference( library.getId("s32"), "s32"),
-					    new MetaReference( library.getId("s16"), "s16"),
-					    new MetaReference( library.getId("u8ascii"), "u8ascii")
+					    new MetaTag( "int32", new MetaReference( library.getId("int32"))),
+					    new MetaTag( "int16", new MetaReference( library.getId("int16"))),
+					    new MetaTag( "u8ascii", new MetaReference( library.getId("u8ascii")))
 					}
 				),
 			new TypeReaderAuto( MixedData.class ),

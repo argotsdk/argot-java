@@ -51,6 +51,42 @@ Please view the example .argot files to see how argot is specified.
 Version History
 ---------------
 
+1.3.alpha - 22 June 2008
+
+- This is the alpha version of Argot 1.3.  The meta dictionary is incompatible with 
+  Argot 1.2.
+- Changed TypeConstructor to use TypeElement instead of MetaSequence.  Allows
+  it to be used more generally.
+- Added isSimple and setSimpleType methods to TypeLibrary to support model data structures.
+- Changed TypeMap setReader and setWriter to receive TypeLibraryReader and TypeLibraryWriter.
+  This allows the same readers/writers to be set through the TypeLibrary or TypeMap.
+- Addition of MetaExpressionResolver to support building the correct TypeReaders and TypeWriters
+  for building mixtures of data models and DOM style models.
+- Changed simple type names to Int8, Int16, Int32, Int64, UInt8, UInt16, Uint32, Uint64
+  Many changes throughout code to support this change.  Name changes are in-line with C-language
+  names.  All types are big endian.
+- Changed MetaAbstract to allow mapping to other abstract data types.
+- Removed MetaBasic and added MetaFixedWidth to provide more flexible way of describing
+  fixed width data types.
+- Added MetaFixedWidthAttribute and various sub-classes to support definitions of
+  Integer types.
+- Combined MetaBase with MetaExpression.
+- Changed the way MetaMarshaller builds TypeReader and TypeWriter function trees.  Each type
+  now uses the MetaExpressionResolver to create the correct function.  Now binds the 
+  factory to the TypeLibraryReader instead of the MetaExpression instance.  This allows
+  a lot more flexibility to achieved when building function trees.  Change required
+  to support document object model style of reading data.
+- Added MetaTag (meta.tag) to the meta dictionary.  meta.reference now only includes
+  the reference type and no description.  meta.tag is used to add a description to any
+  sequence element.  This meta.tag description is also used for the
+  Bean Marshaller to match up method getter and setter names.
+- Added dictionary types to the core meta dictionary to better reflect the required
+  types.
+- Updated the Argot compiler to use S-Expression style syntax and updated to
+  ANTLR v3 to support changes.
+- Updated the meta dictionnary and MetaLoader in support of all the changes above.
+  
+
 1.2.2 - 17 January 2008
 
 - Many changes to improve performance

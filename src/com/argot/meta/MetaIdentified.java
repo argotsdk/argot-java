@@ -24,6 +24,7 @@ import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
+import com.argot.common.UInt16;
 
 /**
  * An Identified object uses a Short to write out the type of the object
@@ -87,7 +88,7 @@ extends MetaExpression
 	public TypeReader getReader(TypeMap map )
 	throws TypeException 
 	{
-		return new MetaIdentifiedReader( map.getReader(map.getId("u16")));  
+		return new MetaIdentifiedReader( map.getReader(map.getId(UInt16.TYPENAME)));  
 	}
 	
 	private class MetaIdentifiedWriter
@@ -114,7 +115,7 @@ extends MetaExpression
 	public TypeWriter getWriter(TypeMap map)
 	throws TypeException 
 	{
-		return new MetaIdentifiedWriter(map.getWriter(map.getId("u16")));
+		return new MetaIdentifiedWriter(map.getWriter(map.getId(UInt16.TYPENAME)));
 	}
 
 }

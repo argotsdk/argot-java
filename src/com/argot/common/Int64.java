@@ -28,7 +28,7 @@ import com.argot.TypeWriter;
 public class Int64
 implements TypeReader, TypeWriter
 {
-	public static final String TYPENAME = "sint64";
+	public static final String TYPENAME = "int64";
 	
 	public Object read(TypeInputStream in ) 
 	throws TypeException, IOException

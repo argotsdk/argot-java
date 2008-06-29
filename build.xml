@@ -17,7 +17,7 @@
 <project name="argot" default="package" basedir=".">
 
 	<description>Argot build</description>
-    <property name="version" value="1.2.2"/>
+    <property name="version" value="1.3.a"/>
 	
 	<!-- set global properties for this build -->
 	<property name="src" location="src" />
@@ -158,7 +158,8 @@
 	<target name="argot-compiler-config" description="setup argot compiler task definition">
 		<path id="argotc.lib">
 			<pathelement location="${build.bin}"/>
-			<pathelement location="lib/argot-compiler-1.2.2.jar"/>
+			<pathelement location="lib/argot-compiler-1.3.a.jar"/>
+			<pathelement location="lib/antlr-runtime-3.0.1.jar"/>
 		</path>
 		<taskdef name="argotc" classname="com.argot.compiler.ant.AntArgotCompiler" classpathref="argotc.lib"/>		
 	</target>
@@ -177,7 +178,20 @@
 		<argotc input="argot/netargot.argot" output="${build.bin}/netargot.dictionary" loadRemote="false"/>
 	</target>
 
-	<target name="buildjar" depends="compile,argot-copy,argot-compile">
+	<target name="buildjar" depends="compile,argot-copy">
+		<!-- Put everything in ${build.bin} into the jar file -->
+		<copy file="LICENSE.TXT" tofile="${build.bin}/LICENSE.TXT" />
+		<copy todir="${build.bin}">
+			<fileset dir="argot">
+				<include name="*.dictionary"/>
+			</fileset>
+		</copy>
+
+		<mkdir dir="${release}/lib" />
+		<jar jarfile="${release}/lib/argot-${version}.jar" basedir="${build.bin}" />			
+	</target>
+
+	<target name="buildjar-with-dictionary" depends="compile,argot-copy">
 		<!-- Put everything in ${build.bin} into the jar file -->
 		<copy file="LICENSE.TXT" tofile="${build.bin}/LICENSE.TXT" />
 		<copy todir="${build.bin}">
@@ -212,7 +226,7 @@
 		<copy file="../doc/ArgotProgrammersGuide.pdf" tofile="doc/ArgotProgrammersGuide.pdf" />
 	</target>	
 	
-	<target name="package" depends="clean,emma,compile,buildjar,get-argot-compiler,get-argot-doc,argot-compile,junit-tests" description="generate the distribution release">
+	<target name="package" depends="clean,emma,compile,get-argot-compiler,get-argot-doc,argot-compile,junit-tests,buildjar-with-dictionary" description="generate the distribution release">
 
 		<copy file="LICENSE.TXT" tofile="${release}/LICENSE.TXT" />
 		<copy file="README.TXT" tofile="${release}/README.TXT" />

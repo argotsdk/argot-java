@@ -25,11 +25,10 @@ import com.argot.TypeException;
 import com.argot.TypeHelper;
 import com.argot.TypeInputStream;
 import com.argot.TypeLibrary;
-import com.argot.TypeMapCore;
 import com.argot.TypeOutputStream;
 import com.argot.common.Int32;
-import com.argot.common.UInt8;
 import com.argot.common.U8Boolean;
+import com.argot.common.UInt8;
 import com.argot.dictionary.Dictionary;
 import com.argot.remote.MetaObject;
 

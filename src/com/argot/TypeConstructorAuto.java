@@ -18,8 +18,6 @@ package com.argot;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-import com.argot.meta.MetaSequence;
-
 public class TypeConstructorAuto 
 implements TypeConstructor
 {

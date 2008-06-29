@@ -15,7 +15,6 @@
  */
 package com.argot;
 
-import com.argot.meta.MetaSequence;
 
 public interface TypeConstructor
 {

@@ -161,7 +161,7 @@ public class MetaRemoteException
 				WrappedRemoteException wrapped = new WrappedRemoteException(cause);
 				out.writeObject("remote.exception", wrapped);
 			} else {
-				out.writeObject( "remote.exception#empty", null);
+				out.writeObject( "uint16", new Integer( out.getTypeMap().getId("empty")));
 			}
 			
 			// write out the stack trace array.

@@ -18,7 +18,6 @@ import com.argot.TypeWriter;
 import com.argot.meta.MetaExpression;
 import com.argot.meta.MetaExpressionLibraryResolver;
 import com.argot.meta.MetaExpressionResolver;
-import com.argot.meta.MetaReference;
 import com.argot.meta.MetaSequence;
 import com.argot.meta.MetaTag;
 
@@ -200,7 +199,7 @@ implements TypeLibraryReader, TypeLibraryWriter, TypeBound
 			{
 				try 
 				{
-					_sequenceWriters[x].write(out, _getMethods[x].invoke(o, null));
+					_sequenceWriters[x].write(out, _getMethods[x].invoke(o, (Object[]) null));
 				} 
 				catch (IllegalArgumentException e) 
 				{

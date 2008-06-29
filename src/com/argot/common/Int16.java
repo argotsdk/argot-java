@@ -31,7 +31,7 @@ import com.argot.TypeWriter;
 public class Int16
 implements TypeReader, TypeWriter
 {
-	public static final String TYPENAME = "sint16";
+	public static final String TYPENAME = "int16";
 
 	public Object read(TypeInputStream in ) 
 	throws TypeException, IOException

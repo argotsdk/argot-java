@@ -188,7 +188,14 @@ implements MetaDefinition
 		// Pop the args back into the Arrays from the Request.
 		for ( int x = 0 ; x < metaMethod.getRequestTypes().length ; x++ )
 		{
-			args[x] = library.getClass( requestTypes[x].getParamType() );
+			try
+			{
+				args[x] = library.getClass( requestTypes[x].getParamType() );
+			}
+			catch( TypeException e)
+			{
+				throw new TypeException("Failed to bind method: " + metaMethod.getMethodName() + " arg: " + (x+1), e);
+			}
 		}
 		
 		Method method = null;		

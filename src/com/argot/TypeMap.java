@@ -195,7 +195,7 @@ public class TypeMap
 		TypeElement localStruct = _library.getStructure( i );
 		if (!TypeHelper.structureMatches( coreMap, definition, localStruct ))
 		{
-			throw new TypeException("Type mismatch: structures do not match");
+			throw new TypeException("Type mismatch: structures do not match: " + name);
 		}
 	}
 

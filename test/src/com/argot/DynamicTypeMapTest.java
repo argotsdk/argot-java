@@ -47,20 +47,20 @@ extends TestCase
 	public void testMap()
 	throws Exception
 	{
-		_typeMap.map( 1, _library.getId( "u8" ));
+		_typeMap.map( 1, _library.getId( "uint8" ));
 	}
 	
 	public void testGetIdName()
 	throws Exception
 	{
-		int id = _typeMap.getId( "u8" );
+		int id = _typeMap.getId( "uint8" );
 		assertTrue( id != TypeMap.NOTYPE );
 	}
 	
 	public void testGetIdSystemId()
 	throws Exception
 	{
-		int id = _typeMap.getId( _library.getId("u8") );
+		int id = _typeMap.getId( _library.getId("uint8") );
 		assertTrue( id != TypeMap.NOTYPE );
 	}
 	
@@ -74,14 +74,14 @@ extends TestCase
 	public void testGetReader()
 	throws Exception
 	{
-		TypeReader reader = _typeMap.getReader( _typeMap.getId("u8"));
+		TypeReader reader = _typeMap.getReader( _typeMap.getId("uint8"));
 		assertNotNull( reader );
 	}
 	
 	public void testGetWriter()
 	throws Exception
 	{
-		TypeWriter writer = _typeMap.getWriter( _typeMap.getId("u8"));
+		TypeWriter writer = _typeMap.getWriter( _typeMap.getId("uint8"));
 		assertNotNull(writer);
 	}
 /*

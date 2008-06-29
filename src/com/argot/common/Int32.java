@@ -31,7 +31,7 @@ public class Int32
 implements TypeReader, TypeWriter
 {
 	
-	public static final String TYPENAME = "sint32";
+	public static final String TYPENAME = "int32";
 
 	public Object read(TypeInputStream in ) 
 	throws TypeException, IOException

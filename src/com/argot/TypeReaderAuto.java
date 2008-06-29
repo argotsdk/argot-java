@@ -37,6 +37,7 @@ implements TypeBound,TypeLibraryReader
 	
 	public TypeReaderAuto( TypeConstructor constructor )
 	{
+		_resolver = new MetaExpressionLibraryResolver();
 		_constructor = constructor;
 	}
 

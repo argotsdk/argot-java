@@ -39,7 +39,7 @@ extends TestCase
     public void testGetIdByName() throws Exception
     {
         int id = _map.getId( MetaReference.TYPENAME );
-        assertEquals( id, TypeMapCore.REFERENCEID );
+        assertEquals( id, TypeMapCore.REFERENCE_ID );
     }
 
     public void testGetSystemId() throws Exception
@@ -52,14 +52,14 @@ extends TestCase
     
     public void testGetName() throws Exception
     {
-        String name = _map.getName( TypeMapCore.REFERENCEID );
+        String name = _map.getName( TypeMapCore.REFERENCE_ID );
         assertEquals( MetaReference.TYPENAME, name );
     }
     
     public void testGetIdBySystemId() throws Exception
     {
         int id = _map.getId( _library.getId( MetaReference.TYPENAME ));
-        assertEquals( TypeMapCore.REFERENCEID, id );
+        assertEquals( TypeMapCore.REFERENCE_ID, id );
     }
     
     public void testIterator() throws Exception
@@ -69,7 +69,7 @@ extends TestCase
     	_map.map( 20, 10);
     	_map.map( 45, 1);
     	
-    	Iterator iter = _map.getIterator();
+    	Iterator iter = _map.getIdList().iterator();
     	
     	Integer i = (Integer) iter.next();
     	assertEquals( 20, i.intValue() );

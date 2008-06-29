@@ -69,7 +69,7 @@ extends TestCase
     {
 		int i = -(int)(Math.PI*100000000l);
 	
-		BigEndianSignedInteger besi = new BigEndianSignedInteger();
+		Int32 besi = new Int32();
 		besi.write( out, new Integer( i ) );
 
 		TypeInputStream tmis = getInputStream();
@@ -82,7 +82,7 @@ extends TestCase
     {
 		long l = -(long)(Math.PI*1000000000000000000l);
 		
-		BigEndianSignedLong besl = new BigEndianSignedLong();
+		Int64 besl = new Int64();
 		besl.write( out, new Long( l) );
 		
 		TypeInputStream tmis = getInputStream();
@@ -95,7 +95,7 @@ extends TestCase
     {
 		short s = -(short)(Math.PI*10000l);
 			
-		BigEndianSignedShort bess = new BigEndianSignedShort();
+		Int16 bess = new Int16();
 		bess.write( out, new Integer( s ) );
 		
 		TypeInputStream tmis = getInputStream();
@@ -108,7 +108,7 @@ extends TestCase
     {
 		short bs = (240);
         
-		BigEndianUnsignedByte beub = new BigEndianUnsignedByte();
+		UInt8 beub = new UInt8();
 		beub.write( out, new Short( bs ) );
 
 		TypeInputStream tmis = getInputStream();
@@ -121,7 +121,7 @@ extends TestCase
     {
 		short s = (short)(Math.PI*10000l);
 		
-		BigEndianUnsignedShort beus = new BigEndianUnsignedShort();
+		UInt16 beus = new UInt16();
 		beus.write( out, new Integer( s ) );
 
 		TypeInputStream tmis = getInputStream();
@@ -134,7 +134,7 @@ extends TestCase
     {
 		int i = (int)(Math.PI*100000000l);
         
-		BigEndianUnsignedInteger beui = new BigEndianUnsignedInteger();
+		UInt32 beui = new UInt32();
 		beui.write( out, new Long( i )); 
 		TypeInputStream tmis = getInputStream();
 
@@ -146,7 +146,7 @@ extends TestCase
     {
 		long l = (long)(Math.PI*1000000000000000000l);
 
-		BigEndianUnsignedLong beul = new BigEndianUnsignedLong();
+		UInt64 beul = new UInt64();
 		beul.write( out, new Long( l ));
 		
 		TypeInputStream tmis = getInputStream();        

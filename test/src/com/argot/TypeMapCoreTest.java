@@ -15,7 +15,7 @@
  */
 package com.argot;
 
-import com.argot.meta.MetaBasic;
+import com.argot.meta.MetaFixedWidth;
 import com.argot.meta.MetaLoader;
 
 import junit.framework.TestCase;
@@ -41,8 +41,8 @@ extends TestCase
     {
         TypeMap map = TypeMapCore.getCoreTypeMap( _library );
         
-        int id = map.getId( MetaBasic.class );
-        assertEquals( id, map.getId( MetaBasic.TYPENAME ));
+        int id = map.getId( MetaFixedWidth.class );
+        assertEquals( id, map.getId( MetaFixedWidth.TYPENAME ));
     }
 
 }

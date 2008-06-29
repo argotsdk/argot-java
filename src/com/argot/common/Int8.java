@@ -32,7 +32,7 @@ public class Int8
 implements TypeReader, TypeWriter
 {
 
-	public static String TYPENAME = "sint8";
+	public static String TYPENAME = "int8";
 	
 	public Object read(TypeInputStream in ) 
 	throws TypeException, IOException

@@ -38,7 +38,7 @@ extends TypeMap
 		
 		map( 1, library.getId( "uint8" ));
 		map( 2, library.getId( "u8ascii" ));
-		map( 3, library.getId( "sint32" ));
+		map( 3, library.getId( "int32" ));
 		map( 4, library.getId( "u16binary" ));
 		map( 5, library.getId( "uint16" ));
 		map( 6, library.getId( "uint32" ));

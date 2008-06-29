@@ -24,7 +24,7 @@ extends CommonTest
     {
 		byte b = -114;
         
-		BigEndianSignedByte besb = new BigEndianSignedByte();
+		Int8 besb = new Int8();
 		besb.write( out, new Byte(b));
 
 		TypeInputStream tmis = getInputStream();

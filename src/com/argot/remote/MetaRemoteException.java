@@ -31,10 +31,9 @@ import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeReaderAuto;
 import com.argot.TypeWriter;
-import com.argot.common.UInt16;
 import com.argot.common.U8Ascii;
+import com.argot.common.UInt16;
 import com.argot.meta.MetaAbstract;
-import com.argot.meta.MetaSequence;
 
 /**
  * This is a remote exception with stack trace.  It allows an exception and full stack

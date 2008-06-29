@@ -19,18 +19,11 @@ package com.argot.dictionary;
 import com.argot.TypeException;
 import com.argot.TypeLibrary;
 import com.argot.TypeLibraryLoader;
-import com.argot.TypeMap;
-import com.argot.TypeReaderAuto;
 import com.argot.common.UInt16;
-import com.argot.meta.MetaArray;
 import com.argot.meta.MetaDefinition;
 import com.argot.meta.MetaEnvelop;
-import com.argot.meta.MetaExpression;
-import com.argot.meta.MetaMap;
 import com.argot.meta.MetaMarshaller;
 import com.argot.meta.MetaReference;
-import com.argot.meta.MetaSequence;
-import com.argot.meta.MetaTag;
 
 public class DictionaryLoader
 implements TypeLibraryLoader

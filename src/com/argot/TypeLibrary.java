@@ -51,7 +51,7 @@ public class TypeLibrary
 	
 	public TypeLibrary()
 	{
-		System.out.println("\nArgot Version 1.3.0");
+		System.out.println("\nArgot Version 1.3.a");
 		System.out.println("Copyright 2003-2008 (C) Live Media Pty Ltd.");
 		System.out.println("www.einet.com.au\n");
 		

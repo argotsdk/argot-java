@@ -52,9 +52,9 @@ implements TypeLibraryLoader
 		    
 			Empty te = new Empty();
 			
-			MetaDefinition emptyDef = new MetaFixedWidth( (byte)0,
+			MetaDefinition emptyDef = new MetaFixedWidth( 0,
 				new MetaFixedWidthAttribute[] {
-					new MetaFixedWidthAttributeSize((short)0)
+					new MetaFixedWidthAttributeSize(0)
 			});
 			
 			id = library.register( Empty.TYPENAME, emptyDef, te,te,te.getClass() );
@@ -66,9 +66,9 @@ implements TypeLibraryLoader
 		{
 			UInt8 bbe = new UInt8();
 			
-			MetaDefinition u8def = new MetaFixedWidth((byte)8,
+			MetaDefinition u8def = new MetaFixedWidth(8,
 				new MetaFixedWidthAttribute[] {
-					new MetaFixedWidthAttributeSize((short)8),
+					new MetaFixedWidthAttributeSize(8),
 					new MetaFixedWidthAttributeInteger(),
 					new MetaFixedWidthAttributeUnsigned(),
 					new MetaFixedWidthAttributeBigEndian()
@@ -83,9 +83,9 @@ implements TypeLibraryLoader
 		{
 			UInt16 bbs = new UInt16();
 			
-			MetaDefinition u16def = new MetaFixedWidth( (byte)16,
+			MetaDefinition u16def = new MetaFixedWidth( 16,
 				new MetaFixedWidthAttribute[] {
-					new MetaFixedWidthAttributeSize((short)16),
+					new MetaFixedWidthAttributeSize(16),
 					new MetaFixedWidthAttributeInteger(),
 					new MetaFixedWidthAttributeUnsigned(),
 					new MetaFixedWidthAttributeBigEndian()
@@ -115,7 +115,7 @@ implements TypeLibraryLoader
 					new MetaTag( "abstract", new MetaReference( library.getId( "meta.id" ))),
 					new MetaTag( "concrete", new MetaReference( library.getId( "meta.id" )))
 				});
-		library.register( MetaMap.TYPENAME, metaMapDef, new MetaMap.MetaMapTypeReader(), new MetaMap.MetaMapTypeWriter(), MetaMap.class );
+		library.register( MetaAbstractMap.TYPENAME, metaMapDef, new MetaAbstractMap.MetaMapTypeReader(), new MetaAbstractMap.MetaMapTypeWriter(), MetaAbstractMap.class );
 
 			
 	    library.reserve( MetaEncoding.TYPENAME );
@@ -133,7 +133,7 @@ implements TypeLibraryLoader
 				)
 			}
 		);
-		id = library.register( U8Ascii.TYPENAME, u8asciiDef, u8Ascii, u8Ascii, null );
+		id = library.register( U8Ascii.TYPENAME, u8asciiDef, u8Ascii, u8Ascii, String.class );
 		library.setSimpleType(id,true);
 		
 		// meta.name 8
@@ -194,7 +194,7 @@ implements TypeLibraryLoader
 	    // meta.fixed_width 16
 		MetaDefinition basicDef = new MetaSequence(
 			new MetaExpression[] {
-				new MetaTag( "size", new MetaReference( library.getId( UInt8.TYPENAME ))),
+				new MetaTag( "size", new MetaReference( library.getId( UInt16.TYPENAME ))),
 				new MetaTag( "flags",
 					new MetaArray(
 						new MetaReference( library.getId( UInt8.TYPENAME )),
@@ -210,7 +210,7 @@ implements TypeLibraryLoader
 	    library.register( MetaFixedWidthAttribute.TYPENAME, fwAttribute, new MetaMarshaller(),new MetaMarshaller(), null );
 		
 	    // meta.fixed_width.attribute.size 18
-	    MetaDefinition fwaSize = new MetaSequence( new MetaExpression[] { new MetaTag( "size", new MetaReference( library.getId( UInt8.TYPENAME ))) });
+	    MetaDefinition fwaSize = new MetaSequence( new MetaExpression[] { new MetaTag( "size", new MetaReference( library.getId( UInt16.TYPENAME ))) });
 	    library.register( MetaFixedWidthAttributeSize.TYPENAME, fwaSize, new TypeReaderAuto(MetaFixedWidthAttributeSize.class), new TypeBeanMarshaller(), MetaFixedWidthAttributeSize.class );	    
 
 	    // meta.fixed_width.attribute.signed 19
@@ -230,47 +230,47 @@ implements TypeLibraryLoader
 	    library.register( MetaFixedWidthAttributeBigEndian.TYPENAME, fwaBigEndian, new TypeReaderAuto(MetaFixedWidthAttributeBigEndian.class), new TypeBeanMarshaller(), MetaFixedWidthAttributeBigEndian.class );	    
 
 	    // meta.fixed_width.attribute#meta.fixed_width.attribute.size 23
-		MetaMap fwaSizeMap = new MetaMap(library.getId( MetaFixedWidthAttribute.TYPENAME), library.getId(MetaFixedWidthAttributeSize.TYPENAME));
+		MetaAbstractMap fwaSizeMap = new MetaAbstractMap(library.getId( MetaFixedWidthAttribute.TYPENAME), library.getId(MetaFixedWidthAttributeSize.TYPENAME));
 		library.register( fwaSizeMap.getMapTypeName(library), fwaSizeMap, new MetaMarshaller(),new MetaMarshaller(), null );
 		
 		// meta.fixed_width.attribute#meta.fixed_width.attribute.signed 24
-		MetaMap fwaSignedMap = new MetaMap(library.getId( MetaFixedWidthAttribute.TYPENAME), library.getId(MetaFixedWidthAttributeSigned.TYPENAME));
+		MetaAbstractMap fwaSignedMap = new MetaAbstractMap(library.getId( MetaFixedWidthAttribute.TYPENAME), library.getId(MetaFixedWidthAttributeSigned.TYPENAME));
 		library.register( fwaSignedMap.getMapTypeName(library), fwaSignedMap, new MetaMarshaller(),new MetaMarshaller(), null );
 
 		// meta.fixed_width.attribute#meta.fixed_width.attribute.unsigned 25
-		MetaMap fwaUnsignedMap = new MetaMap(library.getId( MetaFixedWidthAttribute.TYPENAME), library.getId(MetaFixedWidthAttributeUnsigned.TYPENAME));
+		MetaAbstractMap fwaUnsignedMap = new MetaAbstractMap(library.getId( MetaFixedWidthAttribute.TYPENAME), library.getId(MetaFixedWidthAttributeUnsigned.TYPENAME));
 		library.register( fwaUnsignedMap.getMapTypeName(library), fwaUnsignedMap, new MetaMarshaller(),new MetaMarshaller(), null );
 
 		// meta.fixed_width.attribute#meta.fixed_width.attribute.integer 26
-		MetaMap fwaIntegerMap = new MetaMap(library.getId( MetaFixedWidthAttribute.TYPENAME), library.getId(MetaFixedWidthAttributeInteger.TYPENAME));
+		MetaAbstractMap fwaIntegerMap = new MetaAbstractMap(library.getId( MetaFixedWidthAttribute.TYPENAME), library.getId(MetaFixedWidthAttributeInteger.TYPENAME));
 		library.register( fwaIntegerMap.getMapTypeName(library), fwaIntegerMap, new MetaMarshaller(),new MetaMarshaller(), null );
 
 		// meta.fixed_width.attribute#meta.fixed_width.attribute.bigendian 27
-		MetaMap fwaBigEndianMap = new MetaMap(library.getId( MetaFixedWidthAttribute.TYPENAME), library.getId(MetaFixedWidthAttributeBigEndian.TYPENAME));
+		MetaAbstractMap fwaBigEndianMap = new MetaAbstractMap(library.getId( MetaFixedWidthAttribute.TYPENAME), library.getId(MetaFixedWidthAttributeBigEndian.TYPENAME));
 		library.register( fwaBigEndianMap.getMapTypeName(library), fwaBigEndianMap, new MetaMarshaller(),new MetaMarshaller(), null );
 		
 		// meta.expression#meta.reference 28
-		MetaMap exprRefDef = new MetaMap( library.getId(MetaExpression.TYPENAME), library.getId(MetaReference.TYPENAME));
+		MetaAbstractMap exprRefDef = new MetaAbstractMap( library.getId(MetaExpression.TYPENAME), library.getId(MetaReference.TYPENAME));
 		library.register( exprRefDef.getMapTypeName(library), exprRefDef, new MetaMarshaller(),new MetaMarshaller(), null );
 
 		// meta.expression#meta.tag 29
-		MetaMap exprTagDef = new MetaMap( library.getId(MetaExpression.TYPENAME), library.getId(MetaTag.TYPENAME));
+		MetaAbstractMap exprTagDef = new MetaAbstractMap( library.getId(MetaExpression.TYPENAME), library.getId(MetaTag.TYPENAME));
 		library.register( exprTagDef.getMapTypeName(library), exprTagDef, new MetaMarshaller(),new MetaMarshaller(), null );
 		
 		// meta.expression#meta.sequence 30
-		MetaMap exprExpSeq = new MetaMap( library.getId(MetaExpression.TYPENAME), library.getId(MetaSequence.TYPENAME));		
+		MetaAbstractMap exprExpSeq = new MetaAbstractMap( library.getId(MetaExpression.TYPENAME), library.getId(MetaSequence.TYPENAME));		
 		library.register( exprExpSeq.getMapTypeName(library), exprExpSeq, new MetaMarshaller(),new MetaMarshaller(), null );
 
 		// meta.expression#meta.array 31
-		MetaMap exprDefArr = new MetaMap( library.getId(MetaExpression.TYPENAME), library.getId(MetaArray.TYPENAME));		
+		MetaAbstractMap exprDefArr = new MetaAbstractMap( library.getId(MetaExpression.TYPENAME), library.getId(MetaArray.TYPENAME));		
 		library.register( exprDefArr.getMapTypeName(library), exprDefArr, new MetaMarshaller(),new MetaMarshaller(), null );
 
 		// meta.expression#meta.envelop 32
-		MetaMap exprEnvDef = new MetaMap( library.getId(MetaExpression.TYPENAME), library.getId(MetaEnvelop.TYPENAME));		
+		MetaAbstractMap exprEnvDef = new MetaAbstractMap( library.getId(MetaExpression.TYPENAME), library.getId(MetaEnvelop.TYPENAME));		
 		library.register( exprEnvDef.getMapTypeName(library), exprEnvDef, new MetaMarshaller(),new MetaMarshaller(), null );
 		
 		// meta.expression#meta.encoding 33
-		MetaMap exprDefEnc = new MetaMap( library.getId(MetaExpression.TYPENAME), library.getId(MetaEncoding.TYPENAME));		
+		MetaAbstractMap exprDefEnc = new MetaAbstractMap( library.getId(MetaExpression.TYPENAME), library.getId(MetaEncoding.TYPENAME));		
 		library.register( exprDefEnc.getMapTypeName(library), exprDefEnc, new MetaMarshaller(),new MetaMarshaller(), null );
 
 		// meta.definition 34
@@ -278,19 +278,19 @@ implements TypeLibraryLoader
 		library.register( MetaDefinition.TYPENAME, mm, new MetaMarshaller(), new MetaMarshaller(), null );
 		
 		// meta.definition#meta.fixed_width 35
-		MetaMap mmbasic = new MetaMap(library.getId(MetaDefinition.TYPENAME), library.getId(MetaFixedWidth.TYPENAME));
+		MetaAbstractMap mmbasic = new MetaAbstractMap(library.getId(MetaDefinition.TYPENAME), library.getId(MetaFixedWidth.TYPENAME));
 		library.register( mmbasic.getMapTypeName(library), mmbasic, new MetaMarshaller(),new MetaMarshaller(), null );
 		
 		// meta.definition#meta.map 36
-		MetaMap exprDefMap = new MetaMap( library.getId(MetaDefinition.TYPENAME), library.getId(MetaMap.TYPENAME));		
+		MetaAbstractMap exprDefMap = new MetaAbstractMap( library.getId(MetaDefinition.TYPENAME), library.getId(MetaAbstractMap.TYPENAME));		
 		library.register( exprDefMap.getMapTypeName(library), exprDefMap, new MetaMarshaller(),new MetaMarshaller(), null );
 		
 		// meta.definition#meta.abstract 37
-		MetaMap exprDefAbs = new MetaMap( library.getId(MetaDefinition.TYPENAME), library.getId(MetaAbstract.TYPENAME));		
+		MetaAbstractMap exprDefAbs = new MetaAbstractMap( library.getId(MetaDefinition.TYPENAME), library.getId(MetaAbstract.TYPENAME));		
 		library.register( exprDefAbs.getMapTypeName(library), exprDefAbs, new MetaMarshaller(),new MetaMarshaller(), null );
 
 		// meta.definition#meta.expression 38
-		MetaMap exprDefSeq = new MetaMap( library.getId(MetaDefinition.TYPENAME), library.getId(MetaExpression.TYPENAME));		
+		MetaAbstractMap exprDefSeq = new MetaAbstractMap( library.getId(MetaDefinition.TYPENAME), library.getId(MetaExpression.TYPENAME));		
 		library.register( exprDefSeq.getMapTypeName(library), exprDefSeq, new MetaMarshaller(),new MetaMarshaller(), null );
 		
 		// meta.definition.envelop 39

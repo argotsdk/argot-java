@@ -22,6 +22,7 @@ import com.argot.TypeLibraryWriter;
 import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeWriter;
+import com.argot.common.UInt16;
 import com.argot.common.UInt8;
 
 public class MetaFixedWidth
@@ -30,16 +31,16 @@ implements MetaDefinition
 {
 	public static String TYPENAME = "meta.fixed_width";
 		
-	private short _width;
+	private int _width;
 	private MetaFixedWidthAttribute[] _attributes;
 	
-	public MetaFixedWidth( short width, MetaFixedWidthAttribute[] attributes )
+	public MetaFixedWidth( int width, MetaFixedWidthAttribute[] attributes )
 	{
 		_width = width;
 		_attributes = attributes;
 	}
 
-	public MetaFixedWidth( short width, Object[] attributes )
+	public MetaFixedWidth( int width, Object[] attributes )
 	{
 		_width = width;
 		_attributes = new MetaFixedWidthAttribute[attributes.length];
@@ -62,7 +63,7 @@ implements MetaDefinition
 		{
 			MetaFixedWidth tb = (MetaFixedWidth) o;
 			
-			out.writeObject( UInt8.TYPENAME, new Short( tb._width ));
+			out.writeObject( UInt16.TYPENAME, new Integer( tb._width ));
 			
 			// This could be replaced with an array marshaller.
 			out.writeObject( UInt8.TYPENAME, new Short( (short) tb._attributes.length ));

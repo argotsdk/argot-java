@@ -66,6 +66,7 @@ Version History
   Many changes throughout code to support this change.  Name changes are in-line with C-language
   names.  All types are big endian.
 - Changed MetaAbstract to allow mapping to other abstract data types.
+- Changed MetaMap to MetaAbstractMap to better describe relationship with MetaAbstract
 - Removed MetaBasic and added MetaFixedWidth to provide more flexible way of describing
   fixed width data types.
 - Added MetaFixedWidthAttribute and various sub-classes to support definitions of

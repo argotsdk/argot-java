@@ -87,7 +87,7 @@ implements IBookstore
 		map.map( 1, library.getId( "book" ) );
 		map.map( 2, library.getId( "booklist" ));
 		map.map( 3, library.getId( "u8ascii"));
-		map.map( 4, library.getId( "u8"));
+		map.map( 4, library.getId( "uint8"));
 		return map;    	
 	}
 

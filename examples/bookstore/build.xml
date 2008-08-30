@@ -11,7 +11,7 @@
 	<target name="argot-compile" description="compile argot dictionary files">
 		<taskdef name="argotc" classname="com.argot.compiler.ant.AntArgotCompiler" classpathref="compile.classpath" />
 
-		<argotc input="argot/bookstore.argot" output="./bookstore.dictionary" path="../../lib/colony-1.2.1.jar"/>
+		<argotc input="argot/bookstore.argot" output="./bookstore.dictionary"/>
 	</target>
 
 	<target name="compile" depends="argot-compile" description="compile the source">

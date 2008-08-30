@@ -34,7 +34,7 @@ import com.argot.meta.MetaFixedWidthAttributeInteger;
 import com.argot.meta.MetaFixedWidthAttributeSigned;
 import com.argot.meta.MetaFixedWidthAttributeSize;
 import com.argot.meta.MetaFixedWidthAttributeUnsigned;
-import com.argot.meta.MetaMap;
+import com.argot.meta.MetaAbstractMap;
 import com.argot.meta.MetaReference;
 import com.argot.meta.MetaSequence;
 import com.argot.meta.MetaTag;
@@ -74,7 +74,7 @@ extends ReferenceTypeMap
 		
 		map.map( META_ID, library.getId( "meta.id" ));
 		map.map( ABSTRACT_ID, library.getId( MetaAbstract.TYPENAME ));
-		map.map( MAP_ID, library.getId( MetaMap.TYPENAME ));
+		map.map( MAP_ID, library.getId( MetaAbstractMap.TYPENAME ));
 		map.map( U8ASCII_ID, library.getId( U8Ascii.TYPENAME ));
 		map.map( NAME_ID, library.getId( "meta.name" ));
 		
@@ -110,7 +110,7 @@ extends ReferenceTypeMap
 				
 		map.map( DEFINITION_ID, library.getId( "meta.definition"));
 		map.map( DEFINITION_TO_FIXED_WIDTH_ID, library.getId( "meta.definition#meta.fixed_width"));
-		map.map( DEFINITION_TO_MAP_ID, library.getId( "meta.definition#meta.map"));
+		map.map( DEFINITION_TO_MAP_ID, library.getId( "meta.definition#meta.abstract.map"));
 		map.map( DEFINITION_TO_ABSTRACT_ID, library.getId( "meta.definition#meta.abstract"));
 		map.map( DEFINITION_TO_EXPRESSION_ID, library.getId( "meta.definition#meta.expression"));				
 

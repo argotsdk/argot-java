@@ -30,11 +30,11 @@ import com.argot.TypeReaderAuto;
 import com.argot.TypeWriter;
 import com.argot.common.UInt16;
 
-public class MetaMap
+public class MetaAbstractMap
 extends MetaExpression
 implements MetaDefinition
 {
-    public static final String TYPENAME = "meta.map";
+    public static final String TYPENAME = "meta.abstract.map";
     
 	private TypeLibrary _library;
 	
@@ -43,7 +43,7 @@ implements MetaDefinition
 	
 	private MetaAbstract _metaAbstract;
 	
-	public MetaMap( int abstractType, int concreteType ) throws TypeException
+	public MetaAbstractMap( int abstractType, int concreteType ) throws TypeException
 	{
 		_abstractType = abstractType;
 		_concreteType = concreteType;
@@ -128,7 +128,7 @@ implements MetaDefinition
 	public static class MetaMapTypeReader
 	implements TypeReader,TypeBound
 	{
-		TypeReaderAuto _reader = new TypeReaderAuto( MetaMap.class );
+		TypeReaderAuto _reader = new TypeReaderAuto( MetaAbstractMap.class );
 		
 		public void bind(TypeLibrary library, TypeElement definition, String typeName, int typeId) 
 		throws TypeException 
@@ -139,7 +139,7 @@ implements MetaDefinition
 	    public Object read(TypeInputStream in) throws TypeException, IOException
 	    {
 	    	TypeReader reader = _reader.getReader(in.getTypeMap());
-			MetaMap map = (MetaMap) reader.read( in );
+			MetaAbstractMap map = (MetaAbstractMap) reader.read( in );
 			// before we return this we need to change the
 			// values from the mapped to the internal values.
 			
@@ -171,7 +171,7 @@ implements MetaDefinition
 	{
 	    public void write(TypeOutputStream out, Object o) throws TypeException, IOException
 	    {
-			MetaMap tr = (MetaMap) o;
+			MetaAbstractMap tr = (MetaAbstractMap) o;
 			ReferenceTypeMap mapCore = (ReferenceTypeMap) out.getTypeMap();
 			int abstractId = mapCore.referenceMap().getId( tr._abstractType );
 			out.writeObject( UInt16.TYPENAME, new Integer( abstractId ));

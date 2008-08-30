@@ -36,11 +36,11 @@ extends MetaExpression
 {
 	public static String TYPENAME = "meta.identified";
 
-	private String _description;
+	//private String _description;
 
-	public MetaIdentified( String description )
+	public MetaIdentified( /*String description*/ )
 	{
-		_description = description;
+		//_description = description;
 	}
 	
     public String getTypeName()
@@ -56,7 +56,7 @@ extends MetaExpression
 		{
 			MetaIdentified ti = (MetaIdentified) o;
 			
-			out.writeObject( "meta.name", ti._description );
+			//out.writeObject( "meta.name", ti._description );
 		}
 
 		public TypeWriter getWriter(TypeMap map) 

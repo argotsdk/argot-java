@@ -5,19 +5,19 @@ extends MetaFixedWidthAttribute
 {
 	public static final String TYPENAME = "meta.fixed_width.attribute.size";
 	
-	private short _size;
+	private int _size; // uint16
 	
-	public MetaFixedWidthAttributeSize( short size )
+	public MetaFixedWidthAttributeSize( int size )
 	{
 		_size = size;
 	}
 	
-	public short getSize()
+	public int getSize()
 	{
 		return _size;
 	}
 	
-	public void setSize( short size )
+	public void setSize( int size )
 	{
 		_size = size;
 	}

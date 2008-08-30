@@ -1,33 +1,37 @@
 
-import u8ascii;
-import meta.array;
-import meta.reference;
-import meta.sequence;
-import u16;
-import u8;
-import meta.expression;
-import meta.name;
+!import u8ascii;
+!import meta.array;
+!import meta.reference;
+!import meta.sequence;
+!import uint16;
+!import uint8;
+!import meta.expression;
+!import meta.name;
 
 /*
  *  A very simple book description.
  */
 
-book: 
-	{
-		@u8ascii["ISBN"],
-		@u8ascii["title"],
-		@u8ascii["description"],
-		@u8ascii["author"]
-	};
-	
+(dictionary.source [
+
+(meta.structure meta.name:"book" 
+	(meta.sequence [
+		(meta.tag u8ascii:"ISBN" (meta.reference #u8ascii))
+		(meta.tag u8ascii:"title" (meta.reference #u8ascii))
+		(meta.tag u8ascii:"description" (meta.reference #u8ascii))
+		(meta.tag u8ascii:"author" (meta.reference #u8ascii))
+	])
+)
+
 /*
  *  A list of books.
  */
- 
-booklist: 
-	{
-		meta.array( 
-			@u8["size"],
-			@book["book"]
-		)
-	};
+
+(meta.structure meta.name:"booklist" (meta.sequence [
+	(meta.array
+		(meta.reference #uint8)
+		(meta.reference #book)
+	)
+]))
+
+])

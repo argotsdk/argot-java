@@ -26,6 +26,7 @@ package com.argot.remote;
 public interface MetaLocation 
 {
 	public static final String TYPENAME = "remote.location";
+	public static final String VERSION = "1.3";
 
 	public void setHost( String host );
 	public String getHost();

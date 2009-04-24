@@ -26,7 +26,7 @@ extends ResourceDictionaryLoader
 	public void bind( TypeLibrary library ) 
 	throws TypeException
 	{
-		library.bind( "book", new TypeBeanMarshaller(), new TypeBeanMarshaller(), Book.class );
-		library.bind( "booklist", new TypeArrayMarshaller(), new TypeArrayMarshaller(), Book[].class );
+		library.bind( library.getTypeId("book", "1.0"), new TypeBeanMarshaller(), new TypeBeanMarshaller(), Book.class );
+		library.bind( library.getTypeId("booklist", "1.0"), new TypeArrayMarshaller(), new TypeArrayMarshaller(), Book[].class );
 	}
 }

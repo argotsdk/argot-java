@@ -16,6 +16,7 @@ import java.util.Map;
 import com.argot.TypeException;
 import com.argot.TypeMap;
 import com.argot.TypeInputStream;
+import com.argot.TypeMapperLibrary;
 import com.argot.TypeOutputStream;
 import com.argot.TypeLibrary;
 
@@ -83,11 +84,11 @@ implements IBookstore
 	private TypeMap getDataFileTypeMap() 
 	throws TypeException
 	{
-		TypeMap map = new TypeMap( library );
-		map.map( 1, library.getId( "book" ) );
-		map.map( 2, library.getId( "booklist" ));
-		map.map( 3, library.getId( "u8ascii"));
-		map.map( 4, library.getId( "uint8"));
+		TypeMap map = new TypeMap( library, new TypeMapperLibrary() );
+		map.map( 1, library.getDefinitionId( "book", "1.0" ) );
+		map.map( 2, library.getDefinitionId( "booklist", "1.0" ));
+		map.map( 3, library.getDefinitionId( "u8ascii", "1.0"));
+		map.map( 4, library.getDefinitionId( "uint8", "1.0"));
 		return map;    	
 	}
 

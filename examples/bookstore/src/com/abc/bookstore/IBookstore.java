@@ -8,6 +8,7 @@ import com.argot.TypeException;
 
 public interface IBookstore
 {
+	public static final String TYPENAME = "bookstore";
 
     public boolean addBook(Book book);
     

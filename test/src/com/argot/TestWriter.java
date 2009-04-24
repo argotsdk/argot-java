@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -17,11 +17,20 @@ package com.argot;
 
 import java.io.IOException;
 
-public class TestWriter 
+import com.argot.auto.TypeSimpleWriter;
+
+public class TestWriter
+extends TypeSimpleWriter
 implements TypeWriter
 {
 
-    /* (non-Javadoc)
+    public TestWriter() 
+    {
+		super();
+		this.setWriter(this);
+	}
+
+	/* (non-Javadoc)
      * @see com.argot.TypeWriter#write(com.argot.TypeOutputStream, java.lang.Object, com.argot.TypeElement)
      */
     public void write(TypeOutputStream out, Object o)

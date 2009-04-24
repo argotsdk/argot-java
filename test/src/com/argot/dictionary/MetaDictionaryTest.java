@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -23,8 +23,10 @@ import junit.framework.TestCase;
 
 import com.argot.TypeLibraryLoader;
 import com.argot.TypeMap;
-import com.argot.TypeMapCore;
+
 import com.argot.TypeLibrary;
+import com.argot.TypeMapperCore;
+import com.argot.TypeMapperLibrary;
 import com.argot.dictionary.Dictionary;
 import com.argot.meta.MetaLoader;
 
@@ -48,7 +50,8 @@ extends TestCase
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         
-        TypeMap map = TypeMapCore.getCoreTypeMap( _library );
+		TypeMap map = new TypeMap( _library, new TypeMapperCore(new TypeMapperLibrary()));
+
 		Dictionary.writeDictionary( baos, map );
 		
 		byte[] coreMapBytes = baos.toByteArray();
@@ -62,8 +65,8 @@ extends TestCase
 		{			
 		    Integer id = (Integer) iter1.next();
 		    
-		    int o1 = mapRead.getSystemId( id.intValue() );
-		    int o2 = map.getSystemId( id.intValue() );
+		    int o1 = mapRead.getDefinitionId( id.intValue() );
+		    int o2 = map.getDefinitionId( id.intValue() );
 		    
 		    assertEquals( o1, o2 );
 		    

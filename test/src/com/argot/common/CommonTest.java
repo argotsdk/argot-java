@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -23,6 +23,9 @@ import junit.framework.TestCase;
 import com.argot.TypeLibraryLoader;
 import com.argot.TypeMap;
 import com.argot.TypeInputStream;
+import com.argot.TypeMapperCore;
+import com.argot.TypeMapperDynamic;
+import com.argot.TypeMapperLibrary;
 import com.argot.TypeOutputStream;
 import com.argot.TypeLibrary;
 import com.argot.dictionary.DictionaryLoader;
@@ -48,7 +51,7 @@ extends TestCase
         
 		baos = new ByteArrayOutputStream();
         TypeLibrary library = new TypeLibrary( libraryLoaders );
-		map = new TypeMap( library );
+		map = new TypeMap( library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperLibrary())) );
         out = new TypeOutputStream( baos, map );        
     }
 

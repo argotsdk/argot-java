@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -17,11 +17,20 @@ package com.argot;
 
 import java.io.IOException;
 
+import com.argot.auto.TypeSimpleReader;
+
 public class TestReader 
+extends TypeSimpleReader
 implements TypeReader
 {
 
-    /* (non-Javadoc)
+    public TestReader() 
+    {
+		super(null);
+		this.setReader( this );
+	}
+
+	/* (non-Javadoc)
      * @see com.argot.TypeReader#read(com.argot.TypeInputStream, com.argot.TypeElement)
      */
     public Object read(TypeInputStream in)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -27,6 +27,7 @@ public class UInt32
 implements TypeReader, TypeWriter
 {
 	public static final String TYPENAME = "uint32";
+	public static final String VERSION = "1.3";
 
 	public Object read(TypeInputStream in ) 
 	throws TypeException, IOException

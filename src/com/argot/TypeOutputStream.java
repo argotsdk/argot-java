@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -53,9 +53,10 @@ public class TypeOutputStream
 	public void writeObject( String name, Object o )
 	throws TypeException, IOException
 	{
-		int id = this.getTypeMap().getId( name );
+		int id = this.getTypeMap().getStreamId( name );
 		if ( id == TypeLibrary.NOTYPE )
 			throw new TypeException( "not found: " + name);
+		
 		TypeWriter writer = _map.getWriter( id );
 		writer.write( this, o );
 	}

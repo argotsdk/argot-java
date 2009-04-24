@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -48,10 +48,10 @@ public class TypeInputStream
 		_map = map;
 	}
 
-	public Object readObject( int id )
+	public Object readObject( int streamId )
 	throws TypeException, IOException
 	{		
-		TypeReader reader = _map.getReader( id );
+		TypeReader reader = _map.getReader( streamId );
 		
 		try
 		{
@@ -59,22 +59,22 @@ public class TypeInputStream
 		}
 		catch (TypeStreamException readEx)
 		{
-			readEx.addTypeName( _map.getName( id ));
+			readEx.addTypeName( _map.getName( streamId ).toString());
 			throw readEx;
 		}
 		catch (IOException ioEx )
 		{
-			throw new TypeStreamException( _map.getName(id), ioEx );
+			throw new TypeStreamException( _map.getName(streamId).toString(), ioEx );
 		}
 	}
-	
+
 	public Object readObject( String name )
 	throws TypeException, IOException
 	{
-		int id = _map.getId( name );
-		if ( id == TypeMap.NOTYPE )
+		int id = _map.getStreamId( name );
+		if ( id == TypeLibrary.NOTYPE )
 			throw new TypeException( "type not registered");
-			
+		
 		TypeReader reader = _map.getReader( id );
 		
 		try
@@ -83,15 +83,15 @@ public class TypeInputStream
 		}
 		catch (TypeStreamException readEx)
 		{
-			readEx.addTypeName( _map.getName( id ));
+			readEx.addTypeName( _map.getName( id ).toString());
 			throw readEx;
 		}
 		catch (IOException ioEx)
 		{
-			throw new TypeStreamException( _map.getName(id), ioEx );			
+			throw new TypeStreamException( _map.getName(id).toString(), ioEx );			
 		}
 	}
-	
+
 	/**
 	 * Helper method that will throw an exception if the input stream closes.
 	 * @return

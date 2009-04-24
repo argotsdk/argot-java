@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -22,6 +22,7 @@ import com.argot.TypeException;
 import com.argot.TypeInputStream;
 import com.argot.TypeLibrary;
 import com.argot.TypeLibraryWriter;
+import com.argot.TypeLocation;
 import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
@@ -32,7 +33,8 @@ public class MetaSequence
 extends MetaExpression
 implements MetaDefinition
 {
-	public static String TYPENAME  = "meta.sequence";
+	public static final String TYPENAME  = "meta.sequence";
+	public static final String VERSION = "1.3";
 	
 	private MetaExpression[] _objects;
 	
@@ -56,12 +58,12 @@ implements MetaDefinition
         return TYPENAME;
     }
     
-    public void bind(TypeLibrary library, TypeElement definition, String typeName, int typeId) throws TypeException
+    public void bind(TypeLibrary library, int definitionId, TypeLocation location, TypeElement definition) throws TypeException
     {
-        super.bind(library, definition, typeName, typeId);
+        super.bind(library, definitionId, location, definition);
         for ( int x=0; x< _objects.length; x++ )
         {
-            _objects[x].bind( library, definition, typeName, typeId );
+            _objects[x].bind( library, definitionId, null, definition );
         }     
     }
 	public MetaExpression getElement( int x )
@@ -91,7 +93,6 @@ implements MetaDefinition
 			TypeReader[] readers = new TypeReader[ sequence.size() ];
 			for ( int x=0; x < sequence.size() ; x++ )
 			{	
-				//readers[x] = sequence.getElementReader(map,sequence.getElement(x));
 				readers[x] = resolver.getExpressionReader(map, sequence.getElement(x));
 			}		
 			return new MetaSequenceReader(readers);

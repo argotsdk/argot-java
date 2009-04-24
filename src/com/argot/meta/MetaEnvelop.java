@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -23,6 +23,7 @@ import com.argot.TypeException;
 import com.argot.TypeInputStream;
 import com.argot.TypeLibrary;
 import com.argot.TypeLibraryWriter;
+import com.argot.TypeLocation;
 import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
@@ -39,6 +40,7 @@ extends MetaExpression
 implements MetaDefinition
 {
 	public static final String TYPENAME = "meta.envelop";
+	public static final String VERSION = "1.3";
 	
 	private MetaExpression _size;
 	private MetaExpression _type;
@@ -54,11 +56,11 @@ implements MetaDefinition
         return TYPENAME;
     }
     
-    public void bind(TypeLibrary library, TypeElement definition, String typeName, int typeId) throws TypeException
+    public void bind(TypeLibrary library, int definitionId, TypeLocation location, TypeElement definition) throws TypeException
     {
-        super.bind(library, definition, typeName, typeId);
-        _size.bind(library, definition, typeName, typeId);
-        _type.bind(library, definition, typeName, typeId);
+        super.bind(library, definitionId, location, definition);
+        _size.bind(library, definitionId, null, definition);
+        _type.bind(library, definitionId, null, definition);
     }
     
     public MetaExpression getSizeExpression()

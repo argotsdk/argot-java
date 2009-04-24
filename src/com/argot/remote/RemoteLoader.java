@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -19,7 +19,9 @@ package com.argot.remote;
 import com.argot.ResourceDictionaryLoader;
 import com.argot.TypeException;
 import com.argot.TypeLibrary;
-import com.argot.TypeReaderAuto;
+import com.argot.auto.TypeReaderAuto;
+import com.argot.auto.TypeSimpleReader;
+import com.argot.auto.TypeSimpleWriter;
 import com.argot.meta.MetaMarshaller;
 
 public class RemoteLoader
@@ -40,37 +42,39 @@ extends ResourceDictionaryLoader
 	public void bind( TypeLibrary library ) 
 	throws TypeException
 	{
-		if ( library.getTypeState( MetaParameter.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
+		int typeId = library.getTypeId( MetaParameter.TYPENAME, MetaParameter.VERSION );
+		if ( library.getTypeState( typeId ) == TypeLibrary.TYPE_REGISTERED )
 		{
-			library.bind( MetaParameter.TYPENAME, new MetaParameter.MetaParameterReader(), new MetaParameter.MetaParameterWriter(), MetaParameter.class );
+			library.bind( typeId, new TypeSimpleReader( new MetaParameter.MetaParameterReader()), new TypeSimpleWriter( new MetaParameter.MetaParameterWriter()), MetaParameter.class );
 		}
 
-		if ( library.getTypeState( MetaMethod.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
+		typeId = library.getTypeId( MetaMethod.TYPENAME, MetaMethod.VERSION );
+		if ( library.getTypeState( typeId ) == TypeLibrary.TYPE_REGISTERED )
 		{
-			library.bind( MetaMethod.TYPENAME, new MetaMethod.MetaMethodReader(), new MetaMethod.MetaMethodWriter(), MetaMethod.class );
+			library.bind( typeId, new TypeSimpleReader(new MetaMethod.MetaMethodReader()), new TypeSimpleWriter(new MetaMethod.MetaMethodWriter()), MetaMethod.class );
 		}
 
-		if ( library.getTypeState( MetaInterface.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
+		typeId = library.getTypeId( MetaInterface.TYPENAME, MetaInterface.VERSION );
+		if ( library.getTypeState( typeId ) == TypeLibrary.TYPE_REGISTERED )
 		{		
-			library.bind( MetaInterface.TYPENAME, new MetaInterface.MetaInterfaceReader(), new MetaInterface.MetaInterfaceWriter(),MetaInterface.class );
+			library.bind( typeId, new TypeSimpleReader(new MetaInterface.MetaInterfaceReader()), new TypeSimpleWriter(new MetaInterface.MetaInterfaceWriter()),MetaInterface.class );
 		}
 
-		if ( library.getTypeState( MetaObject.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
+		typeId = library.getTypeId( MetaParameter.TYPENAME, MetaParameter.VERSION );
+		if ( library.getTypeState( typeId ) == TypeLibrary.TYPE_REGISTERED )
 		{
-			library.bind( MetaObject.TYPENAME, new MetaObject.MetaObjectReader(), new MetaObject.MetaObjectWriter(), MetaObject.class );
+			library.bind( typeId, new TypeSimpleReader(new MetaObject.MetaObjectReader()), new TypeSimpleWriter(new MetaObject.MetaObjectWriter()), MetaObject.class );
 		}
 		
-		if ( library.getTypeState( MetaLocation.TYPENAME ) == TypeLibrary.TYPE_REGISTERED )
+		typeId = library.getTypeId( MetaParameter.TYPENAME, MetaParameter.VERSION );
+		if ( library.getTypeState( typeId ) == TypeLibrary.TYPE_REGISTERED )
 		{
-			library.bind( MetaLocation.TYPENAME,new MetaMarshaller(),new MetaMarshaller(), MetaLocation.class );
+			library.bind( typeId,new MetaMarshaller(),new MetaMarshaller(), MetaLocation.class );
 		}
 
-		library.bind( "remote.exception", new MetaMarshaller(), new MetaMarshaller(), null );
-		library.bind( "remote.exception#empty", new MetaMarshaller(),new MetaMarshaller(), null );
-		library.bind( "remote.exception.basic", new MetaMarshaller(),new MetaMarshaller(), null );
-		library.bind( "remote.stack_trace_element", new TypeReaderAuto( MetaRemoteStackTraceElement.class ),new MetaRemoteStackTraceElement.MetaRemoteStackTraceElementWriter(), MetaRemoteStackTraceElement.class );
-		library.bind( "remote.exception.wrapped", new MetaRemoteException.Reader(WrappedRemoteException.class), new MetaRemoteException.Writer(), WrappedRemoteException.class );
-		library.bind( "remote.exception#remote.exception.wrapped", new MetaMarshaller(),new MetaMarshaller(), null );
+		library.bind( library.getTypeId("remote.exception.basic", "1.3"), new MetaMarshaller(),new MetaMarshaller(), null );
+		library.bind( library.getTypeId("remote.stack_trace_element", "1.3"), new TypeReaderAuto( MetaRemoteStackTraceElement.class ),new MetaRemoteStackTraceElement.MetaRemoteStackTraceElementWriter(), MetaRemoteStackTraceElement.class );
+		library.bind( library.getTypeId("remote.exception.wrapped", "1.3"), new MetaRemoteException.Reader(WrappedRemoteException.class), new MetaRemoteException.Writer(), WrappedRemoteException.class );
 	}
 
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -21,7 +21,8 @@ package com.argot;
  */
 public interface TypeElement
 {
-    public void bind( TypeLibrary library, TypeElement definition, String typeName, int typeId ) throws TypeException;
+    public void bind( TypeLibrary library, int definitionId, TypeLocation location, TypeElement definition ) 
+    throws TypeException;
     
 	public TypeLibrary getLibrary();
 	public TypeElement getTypeDefinition();

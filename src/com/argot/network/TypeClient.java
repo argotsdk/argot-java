@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -19,8 +19,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import com.argot.ReferenceTypeMap;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
+import com.argot.TypeLocation;
 import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeLibrary;
@@ -28,6 +30,7 @@ import com.argot.TypeWriter;
 import com.argot.common.Int32;
 import com.argot.common.UInt8;
 import com.argot.common.U8Boolean;
+import com.argot.meta.DictionaryLocation;
 import com.argot.remote.MetaObject;
 import com.argot.util.ChunkByteBuffer;
 
@@ -35,17 +38,24 @@ public class TypeClient
 implements TypeTransport
 {
 	private TypeTransport _link;
-	private ProtocolTypeMap _typeMap;
+	private ReferenceTypeMap _typeMap;
+	private TypeMap _linkMap;
 	private TypeWriter _uint8;
 
 	public TypeClient( TypeLibrary library, TypeTransport link )
 	throws TypeException
 	{
 		_link = link;
-		_typeMap = new ProtocolTypeMap( library );
-		_uint8 = library.getWriter(library.getId("uint8")).getWriter(_typeMap);
+		_typeMap = new ReferenceTypeMap( library, new ProtocolTypeMapper() );
+		_uint8 = library.getWriter(library.getDefinitionId("uint8","1.3")).getWriter(_typeMap);
 	}
 
+	public void initialise(TypeMap map)
+	{
+		_typeMap.setReferenceMap(map);
+		_linkMap = map;
+	}
+	
 	/*
 	 * The idea behind TypeClient implementing TypeTransport is to allow
 	 * higher level user protocols running on the stack.  This protocol
@@ -64,7 +74,7 @@ implements TypeTransport
 		
 		try {
 			TypeOutputStream tmos = new TypeOutputStream( ep.getOutputStream(), _typeMap );
-			_uint8.write(tmos, new Short(ProtocolTypeMap.MSG));
+			_uint8.write(tmos, new Short(ProtocolTypeMapper.MSG));
 		} catch (TypeException e) {
 			// Java 1.4 only has simple IOException constructors.
 			throw new IOException(e.toString());
@@ -132,13 +142,13 @@ implements TypeTransport
 				_buffer.close();
 				OutputStream out = _transport.getOutputStream();
 				TypeOutputStream tmos = new TypeOutputStream( out, _typeMap );
-				tmos.writeObject( "u8", new Short(ProtocolTypeMap.MSG) );
+				tmos.writeObject( "u8", new Short(ProtocolTypeMapper.MSG) );
 				tmos.writeObject( "u32binary", _buffer );		
 				
 				InputStream in = _transport.getInputStream();
 				TypeInputStream tmis = new TypeInputStream( in, _typeMap );
 				Short type = (Short) tmis.readObject( UInt8.TYPENAME );
-				if ( type.intValue() != ProtocolTypeMap.MSG )throw new IOException("Bad Protocol Error"); 
+				if ( type.intValue() != ProtocolTypeMapper.MSG )throw new IOException("Bad Protocol Error"); 
 				_buffer = (ChunkByteBuffer) tmis.readObject( "u32binary" );
 				_stream = _buffer.getInputStream();
 			}
@@ -169,14 +179,14 @@ implements TypeTransport
 			// Write the name and definition to the request body.	
 			OutputStream out = endPoint.getOutputStream();
 			TypeOutputStream tmos = new TypeOutputStream( out, _typeMap );
-			tmos.writeObject( "uint8", new Short(ProtocolTypeMap.CHECK_CORE ) );
+			tmos.writeObject( "uint8", new Short(ProtocolTypeMapper.CHECK_CORE ) );
 			tmos.writeObject( "u16binary", metaDictionary );		
 			tmos.getStream().flush();
 			
 			InputStream in = endPoint.getInputStream();
 			TypeInputStream tmis = new TypeInputStream( in, _typeMap );
 			Short type = (Short) tmis.readObject( UInt8.TYPENAME );
-			if ( type.intValue() != ProtocolTypeMap.CHECK_CORE )throw new TypeException("Bad Protocol Error"); 
+			if ( type.intValue() != ProtocolTypeMapper.CHECK_CORE )throw new TypeException("Bad Protocol Error"); 
 			Boolean value = (Boolean) tmis.readObject( U8Boolean.TYPENAME );
 
 			return value.booleanValue();
@@ -188,7 +198,7 @@ implements TypeTransport
 		
 	}
 	
-	public int resolveType( String name, byte[] definition )
+	public int resolveType( TypeLocation location, byte[] definition )
 	throws IOException, TypeException
 	{
 		TypeEndPoint endPoint = _link.openLink();
@@ -198,15 +208,15 @@ implements TypeTransport
 			// Write the name and definition to the request body.	
 			OutputStream out = endPoint.getOutputStream();
 			TypeOutputStream tmos = new TypeOutputStream( out, _typeMap );
-			tmos.writeObject( "uint8", new Short(ProtocolTypeMap.MAP) );
-			tmos.writeObject( "u8ascii", name );
+			tmos.writeObject( "uint8", new Short(ProtocolTypeMapper.MAP) );
+			tmos.writeObject( DictionaryLocation.TYPENAME, location );
 			tmos.writeObject( "u16binary", definition );		
 			tmos.getStream().flush();
 			
 			InputStream in = endPoint.getInputStream();
 			TypeInputStream tmis = new TypeInputStream( in, _typeMap );
 			Short type = (Short) tmis.readObject( UInt8.TYPENAME );
-			if ( type.intValue() != ProtocolTypeMap.MAP )throw new TypeException("Bad Protocol Error"); 
+			if ( type.intValue() != ProtocolTypeMapper.MAP )throw new TypeException("Bad Protocol Error"); 
 			Integer value = (Integer) tmis.readObject( Int32.TYPENAME );
 
 			return value.intValue();
@@ -216,8 +226,10 @@ implements TypeTransport
 			_link.closeLink( endPoint );
 		}
 	}
-
-	public int reserveType( String name )
+	
+	
+	// This is for TypeLocationNamed types.
+	public TypeTriple resolveDefault( TypeLocation location )
 	throws IOException, TypeException
 	{		
 		TypeEndPoint endPoint = _link.openLink();
@@ -226,13 +238,43 @@ implements TypeTransport
 		{
 			// Write the name and definition to the request body.	
 			TypeOutputStream tmos = new TypeOutputStream( endPoint.getOutputStream(), _typeMap );
-			tmos.writeObject( "uint8", new Short(ProtocolTypeMap.MAPRES) );		
-			tmos.writeObject( "u8ascii", name );
+			tmos.writeObject( "uint8", new Short(ProtocolTypeMapper.MAPDEF) );		
+			tmos.writeObject( DictionaryLocation.TYPENAME, location );
 			tmos.getStream().flush();
 			
 			TypeInputStream tmis = new TypeInputStream( endPoint.getInputStream(), _typeMap );
 			Short type = (Short) tmis.readObject( UInt8.TYPENAME );
-			if ( type.intValue() != ProtocolTypeMap.MAPRES )throw new TypeException("Bad Protocol Error");		
+			if ( type.intValue() != ProtocolTypeMapper.MAPDEF )throw new TypeException("Bad Protocol Error");		
+			Integer mapId = (Integer) tmis.readObject( Int32.TYPENAME );
+			//Integer definitionId = (Integer) tmis.readObject( Int32.TYPENAME );
+			TypeLocation locationDefinition = (TypeLocation) tmis.readObject( DictionaryLocation.TYPENAME );
+			byte[] definition = (byte[]) tmis.readObject( "u16binary" );
+			
+			return new TypeTriple( mapId, TypeTriple.fixLocation(locationDefinition, _linkMap), definition );
+		}
+		finally
+		{
+			_link.closeLink( endPoint );
+		}
+	}
+	
+
+	public int reserveType( TypeLocation location )
+	throws IOException, TypeException
+	{		
+		TypeEndPoint endPoint = _link.openLink();
+		
+		try
+		{
+			// Write the name and definition to the request body.	
+			TypeOutputStream tmos = new TypeOutputStream( endPoint.getOutputStream(), _typeMap );
+			tmos.writeObject( "uint8", new Short(ProtocolTypeMapper.MAPRES) );		
+			tmos.writeObject( DictionaryLocation.TYPENAME, location );
+			tmos.getStream().flush();
+			
+			TypeInputStream tmis = new TypeInputStream( endPoint.getInputStream(), _typeMap );
+			Short type = (Short) tmis.readObject( UInt8.TYPENAME );
+			if ( type.intValue() != ProtocolTypeMapper.MAPRES )throw new TypeException("Bad Protocol Error");		
 			Integer value = (Integer) tmis.readObject( Int32.TYPENAME );
 	
 			return value.intValue();
@@ -243,6 +285,8 @@ implements TypeTransport
 		}
 	}
 
+	
+	
 	public TypeTriple resolveReverse( int id )
 	throws IOException, TypeException
 	{		
@@ -252,17 +296,17 @@ implements TypeTransport
 		{
 			// Write the name and definition to the request body.
 			TypeOutputStream tmos = new TypeOutputStream( endPoint.getOutputStream(), _typeMap );
-			tmos.writeObject( "uint8", new Short(ProtocolTypeMap.MAPREV) );		
+			tmos.writeObject( "uint8", new Short(ProtocolTypeMapper.MAPREV) );		
 			tmos.writeObject( Int32.TYPENAME, new Integer( id ) );
 			tmos.getStream().flush();
 			
 			TypeInputStream tmis = new TypeInputStream( endPoint.getInputStream(), _typeMap );
 			Short type = (Short) tmis.readObject( UInt8.TYPENAME );
-			if ( type.intValue() != ProtocolTypeMap.MAPREV )throw new TypeException("Unable to resolve reverse id: " + id);		
-			String name = (String) tmis.readObject( "u8ascii" );
+			if ( type.intValue() != ProtocolTypeMapper.MAPREV )throw new TypeException("Unable to resolve reverse id: " + id);		
+			TypeLocation location = (TypeLocation) tmis.readObject( DictionaryLocation.TYPENAME );
 			byte[] definition = (byte[]) tmis.readObject( "u16binary" );
 			
-			return new TypeTriple( id, name, definition );
+			return new TypeTriple( id, TypeTriple.fixLocation(location, _linkMap), definition );
 		}
 		finally
 		{
@@ -279,12 +323,12 @@ implements TypeTransport
 		{
 			// Write the name and definition to the request body.
 			TypeOutputStream tmos = new TypeOutputStream( endPoint.getOutputStream(), _typeMap );
-			tmos.writeObject( "uint8", new Short(ProtocolTypeMap.BASE) );		
+			tmos.writeObject( "uint8", new Short(ProtocolTypeMapper.BASE) );		
 			tmos.getStream().flush();
 			
 			TypeInputStream tmis = new TypeInputStream( endPoint.getInputStream(), map );
 			Short type = (Short) tmis.readObject( UInt8.TYPENAME );
-			if ( type.intValue() != ProtocolTypeMap.BASE )throw new TypeException("Bad Protocol Error");		
+			if ( type.intValue() != ProtocolTypeMapper.BASE )throw new TypeException("Bad Protocol Error");		
 			Boolean value = (Boolean) tmis.readObject( U8Boolean.TYPENAME );
 			if ( !value.booleanValue() )
 			{

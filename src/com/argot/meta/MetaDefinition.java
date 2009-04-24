@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -21,4 +21,5 @@ public interface MetaDefinition
 extends TypeElement
 {
     public static String TYPENAME = "meta.definition";
+	public static String VERSION = "1.3";
 }

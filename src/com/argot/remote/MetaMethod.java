@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -24,10 +24,12 @@ import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
 import com.argot.TypeLibrary;
+import com.argot.TypeLocation;
+import com.argot.TypeLocationRelation;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
-import com.argot.TypeReaderAuto;
 import com.argot.TypeWriter;
+import com.argot.auto.TypeReaderAuto;
 import com.argot.common.U8Ascii;
 import com.argot.common.UInt16;
 import com.argot.common.UInt8;
@@ -50,10 +52,10 @@ implements MetaDefinition
 	
 	
 	public static final String TYPENAME = "remote.method";
+	public static final String VERSION = "1.3";
 
-	public MetaMethod( int interfaceId, String name, Object[] requestTypes, Object[] responseTypes, Object[] errorTypes )
+	public MetaMethod( String name, Object[] requestTypes, Object[] responseTypes, Object[] errorTypes )
 	{
-		_interfaceId = interfaceId;
 		_name = name;
 		
 		if ( requestTypes != null )
@@ -97,14 +99,13 @@ implements MetaDefinition
 				
 	}
 	
-	public MetaMethod( Integer interfaceType, String name, List requestList, List responseList, List errorTypes )
+	public MetaMethod( String name, List requestList, List responseList, List errorTypes )
 	{
-		this( interfaceType.intValue(), name, requestList.toArray(), responseList.toArray(), errorTypes.toArray() );
+		this( name, requestList.toArray(), responseList.toArray(), errorTypes.toArray() );
 	}
 	
-	public MetaMethod( int interfaceId, String name, MetaParameter[] requestTypes, MetaParameter[] responseTypes, int[] errorTypes )
+	public MetaMethod( String name, MetaParameter[] requestTypes, MetaParameter[] responseTypes, int[] errorTypes )
 	{
-		_interfaceId = interfaceId;
 		_name = name;
 		_requestTypes = requestTypes;
 		_responseTypes = responseTypes;
@@ -112,10 +113,12 @@ implements MetaDefinition
 	}
 	
 
-	public void bind(TypeLibrary library, TypeElement definition, String memberTypeName, int memberTypeId) 
+	public void bind(TypeLibrary library, int memberTypeId, TypeLocation location, TypeElement definition) 
 	throws TypeException 
 	{
-		super.bind(library, definition, memberTypeName, memberTypeId);
+		super.bind(library, memberTypeId, location, definition);
+		
+		_interfaceId = ((TypeLocationRelation)location).getId();
 		
 		TypeElement structure = library.getStructure( _interfaceId );
 		if ( !(structure instanceof MetaInterface))
@@ -207,10 +210,10 @@ implements MetaDefinition
 	{
 		TypeReaderAuto _reader = new TypeReaderAuto( MetaMethod.class );
 		
-		public void bind(TypeLibrary library, TypeElement definition, String typeName, int typeId) 
+		public void bind(TypeLibrary library, int definitionId, TypeElement definition) 
 		throws TypeException 
 		{
-			_reader.bind(library, definition, typeName, typeId);
+			_reader.bind(library, definitionId, definition);
 		}
 		
 		public Object read(TypeInputStream in) 
@@ -218,10 +221,10 @@ implements MetaDefinition
 		{
 			TypeReader reader = _reader.getReader(in.getTypeMap());
 			MetaMethod mm = (MetaMethod) reader.read( in );
-			mm._interfaceId = in.getTypeMap().getSystemId( mm._interfaceId );
+			mm._interfaceId = in.getTypeMap().getDefinitionId( mm._interfaceId );
 			for ( int x=0 ; x< mm._errorTypes.length ; x++ )
 			{
-				mm._errorTypes[x] = in.getTypeMap().getSystemId( mm._errorTypes[x] );
+				mm._errorTypes[x] = in.getTypeMap().getDefinitionId( mm._errorTypes[x] );
 			}
 			return mm;
 		}
@@ -237,8 +240,8 @@ implements MetaDefinition
 			int x;
 			
 			// write interface id.
-			int id = out.getTypeMap().getId( mm.getInterfaceType() );
-			out.writeObject( UInt16.TYPENAME, new Integer(id) );
+			int id = out.getTypeMap().getStreamId( mm.getInterfaceType() );
+			//out.writeObject( UInt16.TYPENAME, new Integer(id) );
 			out.writeObject( U8Ascii.TYPENAME, mm.getMethodName() );
 			
 			if ( mm.getRequestTypes() != null )
@@ -274,7 +277,7 @@ implements MetaDefinition
 				out.writeObject( UInt8.TYPENAME, new Integer( mm.getErrorTypes().length ));
 				for( x=0 ;x < mm.getErrorTypes().length; x++ )
 				{
-					id = out.getTypeMap().getId( mm.getErrorTypes()[x]);
+					id = out.getTypeMap().getStreamId( mm.getErrorTypes()[x]);
 					out.writeObject( UInt16.TYPENAME, new Integer(id) );
 				}
 			}

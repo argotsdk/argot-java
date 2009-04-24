@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -19,48 +19,44 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
 
-import com.argot.DynamicTypeMap;
+import com.argot.ReferenceTypeMap;
 import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeHelper;
 import com.argot.TypeInputStream;
 import com.argot.TypeLibrary;
+import com.argot.TypeLocation;
+import com.argot.TypeMap;
+import com.argot.TypeMapperDynamic;
 import com.argot.TypeOutputStream;
 import com.argot.common.Int32;
 import com.argot.common.U8Boolean;
 import com.argot.common.UInt8;
 import com.argot.dictionary.Dictionary;
+import com.argot.meta.DictionaryLocation;
 import com.argot.remote.MetaObject;
 
 public class TypeServer
 implements TypeLink
 {
-	private ProtocolTypeMap _typeMap;
-	private DynamicTypeMap _refMap;
+	private ReferenceTypeMap _typeMap;
+	private ReferenceTypeMap _refMap;
 	private TypeLibrary _library;
 	private MetaObject _object;
 	private TypeLink _service;
 	
 
-	public TypeServer( TypeLibrary library, DynamicTypeMap refMap, TypeLink service )
+	public TypeServer( TypeLibrary library, ReferenceTypeMap refMap, TypeLink service )
 	throws TypeException
 	{
-		_typeMap = new ProtocolTypeMap( library );
+		_typeMap = new ReferenceTypeMap( library, new ProtocolTypeMapper() );
 		_refMap = refMap;
+		_typeMap.setReferenceMap(_refMap);
 		_library = library;
 		_service = service;
-		/*
-		TypeMapCore.mapMeta( refMap, library );
-		refMap.map( 22, library.getId("dictionary.map"));
-		refMap.map( 23, library.getId("dictionary.words"));
-		refMap.map( 24, library.getId("dictionary.definition"));
-		refMap.map( 25, library.getId("dictionary.entry"));	
-		refMap.map( 26, library.getId("meta.envelop"));
-		refMap.map( 27, library.getId("meta.definition#envelop"));		
-		*/
 	}
 
-	public TypeServer( TypeLibrary library, DynamicTypeMap refMap )
+	public TypeServer( TypeLibrary library, ReferenceTypeMap refMap )
 	throws TypeException
 	{
 		this( library, refMap, null );
@@ -82,32 +78,37 @@ implements TypeLink
 			Object o = in.readObject( UInt8.TYPENAME );
 			int action = ((Short) o).intValue();
 					
-			if ( action == ProtocolTypeMap.MAP )
+			if ( action == ProtocolTypeMapper.MAP )
 			{
 				processMap( in, out );
 				return;
 			}
-			else if ( action == ProtocolTypeMap.MAPRES )
+			else if ( action == ProtocolTypeMapper.MAPDEF )
+			{
+				processMapDefault( in, out );
+				return;
+			}
+			else if ( action == ProtocolTypeMapper.MAPRES )
 			{
 				processMapReserve( in, out );
 				return;
 			}
-			else if ( action == ProtocolTypeMap.MAPREV )
+			else if ( action == ProtocolTypeMapper.MAPREV )
 			{
 				processMapReverse( in, out );
 				return;
 			}
-			else if ( action == ProtocolTypeMap.BASE )
+			else if ( action == ProtocolTypeMapper.BASE )
 			{
 				processGetBaseObject( in, out );
 				return;
 			}
-			else if ( action == ProtocolTypeMap.MSG )
+			else if ( action == ProtocolTypeMapper.MSG )
 			{
 				processUserMessage( in, out );
 				return;
 			}
-			else if ( action == ProtocolTypeMap.CHECK_CORE )
+			else if ( action == ProtocolTypeMapper.CHECK_CORE )
 			{
 				processCheckCore( in, out );
 				return;
@@ -115,7 +116,7 @@ implements TypeLink
 			
 			// return an error array.
 			TypeOutputStream sout = new TypeOutputStream( connection.getOutputStream(), _typeMap );
-			sout.writeObject( "uint8", new Short( ProtocolTypeMap.ERROR ) );
+			sout.writeObject( "uint8", new Short( ProtocolTypeMapper.ERROR ) );
 			sout.getStream().flush();
 		}	
 		catch (TypeException e)
@@ -138,14 +139,14 @@ implements TypeLink
 
 		TypeOutputStream sout = new TypeOutputStream( out, _typeMap );
 
-		String name;
+		TypeLocation location;
 		try
 		{
-			name = _refMap.getName( id.intValue() );
+			location = _refMap.getLocation( id.intValue() );
 		}
 		catch (TypeException e)
 		{
-			sout.writeObject( "uint8", new Short( ProtocolTypeMap.ERROR ) );
+			sout.writeObject( "uint8", new Short( ProtocolTypeMapper.ERROR ) );
 			sout.getStream().flush();
 			return;
 		}
@@ -153,8 +154,8 @@ implements TypeLink
 
 		byte[] definition = TypeHelper.toByteArray( _refMap, struct );
 		
-		sout.writeObject( "uint8", new Short( ProtocolTypeMap.MAPREV ) );
-		sout.writeObject( "u8ascii", name );
+		sout.writeObject( "uint8", new Short( ProtocolTypeMapper.MAPREV ) );
+		sout.writeObject( DictionaryLocation.TYPENAME, location );
 		sout.writeObject( "u16binary", definition );
 
 		out.flush();
@@ -170,14 +171,15 @@ implements TypeLink
 	private void processMapReserve( TypeInputStream in, OutputStream out )
 	throws TypeException, IOException
 	{	
-		String name = (String) in.readObject( "u8ascii" );
-
+		TypeLocation location = (TypeLocation) in.readObject(DictionaryLocation.TYPENAME);
+		location = TypeTriple.fixLocation(location, _refMap);
+		
 		TypeOutputStream sout = new TypeOutputStream( out, _typeMap );
 
-		sout.writeObject( "uint8", new Short( ProtocolTypeMap.MAPRES ) );			
+		sout.writeObject( "uint8", new Short( ProtocolTypeMapper.MAPRES ) );			
 		
 		// First see if we have a type of the same name.
-		int systemId = _library.getId( name );
+		int systemId = _library.getTypeId( location );
 		if ( systemId == TypeLibrary.NOTYPE )
 		{
 			sout.writeObject( Int32.TYPENAME, new Integer(-1));
@@ -188,7 +190,7 @@ implements TypeLink
 			
 			// This will find the id and it is is not yet 
 			// mapped it will
-			id = _refMap.getId( name );
+			id = _refMap.getStreamId( systemId );
 			
 			sout.writeObject( Int32.TYPENAME, new Integer(id));
 			
@@ -196,11 +198,58 @@ implements TypeLink
 		
 		out.flush();
 	}
+	
+	private void processMapDefault( TypeInputStream in, OutputStream out )
+	throws TypeException, IOException
+	{
+		TypeLocation location = (TypeLocation) in.readObject( DictionaryLocation.TYPENAME );
+		location = TypeTriple.fixLocation(location, _refMap);
+
+		TypeOutputStream sout = new TypeOutputStream( out, _typeMap );
+
+		int definitionId;
+		int mapId;
+		try
+		{
+			definitionId = _refMap.getLibrary().getTypeId(location);
+		}
+		catch (TypeException e)
+		{
+			sout.writeObject( "uint8", new Short( ProtocolTypeMapper.ERROR ) );
+			sout.getStream().flush();
+			return;			
+		}
+		
+		try
+		{
+			mapId = _refMap.getStreamId(definitionId);
+		}
+		catch (TypeException e)
+		{
+			sout.writeObject( "uint8", new Short( ProtocolTypeMapper.ERROR ) );
+			sout.getStream().flush();
+			return;
+		}
+		TypeElement struct = _refMap.getStructure( mapId );
+
+		TypeLocation defLocation = _refMap.getLocation(mapId);
+		byte[] definition = TypeHelper.toByteArray( _refMap, struct );
+		
+		sout.writeObject( "uint8", new Short( ProtocolTypeMapper.MAPDEF ) );
+		sout.writeObject( Int32.TYPENAME, new Integer(mapId));
+		sout.writeObject( DictionaryLocation.TYPENAME, defLocation );
+		sout.writeObject( "u16binary", definition );
+
+		out.flush();
+		
+	}
 
 	private void processMap( TypeInputStream in, OutputStream out )
 	throws TypeException, IOException
 	{
-		String name = (String) in.readObject( "u8ascii" );
+		TypeLocation location = (TypeLocation) in.readObject( DictionaryLocation.TYPENAME );
+		location = TypeTriple.fixLocation(location, _refMap);
+		
 		byte[] def = (byte[]) in.readObject( "u16binary" );
 		
 		// Use the type name to compare the definition that was sent.
@@ -209,10 +258,10 @@ implements TypeLink
 		// and will return an invalid id.
 		
 		TypeOutputStream sout = new TypeOutputStream( out, _typeMap );
-		sout.writeObject( "uint8", new Short( ProtocolTypeMap.MAP ) );			
+		sout.writeObject( "uint8", new Short( ProtocolTypeMapper.MAP ) );			
 		
 		// First see if we have a type of the same name.
-		int systemId = _library.getId( name );
+		int systemId = _library.getTypeId( location );
 		if ( systemId == TypeLibrary.NOTYPE )
 		{
 			sout.writeObject( Int32.TYPENAME, new Integer(-1));
@@ -226,7 +275,7 @@ implements TypeLink
 			{
 				int id;
 				
-				id = _refMap.getId( name );
+				id = _refMap.getStreamId( systemId );
 
 				sout.writeObject( Int32.TYPENAME, new Integer(id));
 				
@@ -245,7 +294,7 @@ implements TypeLink
 	throws TypeException, IOException
 	{		
 		TypeOutputStream sout = new TypeOutputStream( out, _refMap );
-		sout.writeObject( "uint8", new Short( ProtocolTypeMap.BASE ) );			
+		sout.writeObject( "uint8", new Short( ProtocolTypeMapper.BASE ) );			
 		
 		// Check base name.
 		if ( _object == null )
@@ -285,7 +334,7 @@ implements TypeLink
 		boolean metaEqual = Arrays.equals( clientMetaDictionary, serverMetaDictionary );
 		
 		TypeOutputStream sout = new TypeOutputStream( out, _typeMap );
-		sout.writeObject( UInt8.TYPENAME, new Short( ProtocolTypeMap.CHECK_CORE ) );			
+		sout.writeObject( UInt8.TYPENAME, new Short( ProtocolTypeMapper.CHECK_CORE ) );			
 		sout.writeObject( U8Boolean.TYPENAME, new Boolean( metaEqual ) );
 
 		out.flush();

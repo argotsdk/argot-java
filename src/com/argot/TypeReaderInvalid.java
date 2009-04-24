@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -17,13 +17,29 @@ package com.argot;
 
 import java.io.IOException;
 
-public class TypeReaderInvalid
-implements TypeReader
-{
+import com.argot.meta.MetaName;
 
-    public Object read(TypeInputStream in) throws TypeException, IOException
+public class TypeReaderInvalid
+implements TypeLibraryReader, TypeBound
+{
+	MetaName _name;
+	
+    public Object read(TypeInputStream in) 
+    throws TypeException, IOException
     {
-        throw new TypeException("TypeReader invalid");
+        throw new TypeException("TypeReader invalid - No valid reader for " + _name );
     }
+
+	public TypeReader getReader(TypeMap map) 
+	throws TypeException 
+	{
+        throw new TypeException("TypeReader invalid - No valid reader for " + _name );
+	}
+
+	public void bind(TypeLibrary library, int definitionId, TypeElement definition) 
+	throws TypeException 
+	{
+		_name = library.getName(definitionId);
+	}
 
 }

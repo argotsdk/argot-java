@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -20,12 +20,20 @@ extends TypeMap
 {
 	private TypeMap _refMap;
 	
-    public ReferenceTypeMap(TypeLibrary library, TypeMap map)
+    public ReferenceTypeMap(TypeLibrary library, TypeMapper mapper, TypeMap map) 
+    throws TypeException
     {
-        super(library);
+        super(library, mapper);
         _refMap = map;
     }
 
+    public ReferenceTypeMap(TypeLibrary library, TypeMapper mapper) 
+    throws TypeException
+    {
+        super(library, mapper);
+        _refMap = this;
+    }    
+    
     public TypeMap referenceMap() throws TypeException
 	{
         if ( _refMap == null )

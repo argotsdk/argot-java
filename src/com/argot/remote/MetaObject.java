@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -34,6 +34,7 @@ import com.argot.common.UInt16;
 public class MetaObject 
 {
 	public static final String TYPENAME = "remote.object";
+	public static final String VERSION = "1.3";
 
 	private MetaLocation _location;
 	private int _type;
@@ -62,7 +63,7 @@ public class MetaObject
 		{
 			MetaLocation location = (MetaLocation) in.readObject(MetaLocation.TYPENAME);
 			Integer id = (Integer) in.readObject(UInt16.TYPENAME );
-			int sysId = in.getTypeMap().getSystemId( id.intValue() );
+			int sysId = in.getTypeMap().getDefinitionId( id.intValue() );
 			return new MetaObject( location, sysId );
 		}
 	}
@@ -76,7 +77,7 @@ public class MetaObject
 			MetaObject obj = (MetaObject) o;
 			
 			out.writeObject( MetaLocation.TYPENAME, obj.getLocation() );
-			int mapId = out.getTypeMap().getId( obj.getType() );
+			int mapId = out.getTypeMap().getStreamId( obj.getType() );
 			out.writeObject(  UInt16.TYPENAME, new Integer( mapId ) );
 		}
 	}

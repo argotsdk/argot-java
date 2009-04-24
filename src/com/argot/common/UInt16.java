@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -31,6 +31,7 @@ public class UInt16
 implements TypeReader, TypeWriter
 {
 	public static final String TYPENAME = "uint16";
+	public static final String VERSION = "1.3";
 	
 	public Object read(TypeInputStream in ) 
 	throws TypeException, IOException
@@ -68,5 +69,4 @@ implements TypeReader, TypeWriter
 	
 	public static final int MIN = 0;
 	public static final int MAX = 65536; //2^16-1; 
-
 }

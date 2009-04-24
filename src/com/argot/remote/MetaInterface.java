@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -25,8 +25,10 @@ import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
 import com.argot.TypeLibrary;
+import com.argot.TypeLocation;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
+import com.argot.TypeRelation;
 import com.argot.TypeWriter;
 import com.argot.common.UInt8;
 import com.argot.common.UInt16;
@@ -37,15 +39,18 @@ import com.argot.meta.MetaExpression;
 
 public class MetaInterface 
 extends MetaExpression
-implements MetaDefinition
+implements MetaDefinition, TypeRelation
 {
 	public static final String TYPENAME = "remote.interface";
+	public static final String VERSION = "1.3";
 	
 	// TODO Need a two way map here.
 	private HashMap _methodToMetaMethod;
 	private HashMap _metaMethodToMethod;
 	
 	private HashMap _nameToMetaMethod;
+	
+	private HashMap _relations;
 
 	private int[] _parentInterfaceTypes;
 	private MetaInterface[] _parentInterfaces;
@@ -57,7 +62,8 @@ implements MetaDefinition
 		_nameToMetaMethod = new HashMap();
 		_methodToMetaMethod = new HashMap();
 		_metaMethodToMethod = new HashMap();
-	}
+		_relations = new HashMap();
+	}	
 	
 	public MetaInterface( Object[] interfaces )
 	{
@@ -90,10 +96,10 @@ implements MetaDefinition
 		return TYPENAME;
 	}
 	
-	public void bind(TypeLibrary library, TypeElement definition, String memberTypeName, int memberTypeId) 
+	public void bind(TypeLibrary library, int memberTypeId, TypeLocation location, TypeElement definition) 
 	throws TypeException 
 	{
-		super.bind(library, definition, memberTypeName, memberTypeId);
+		super.bind(library, memberTypeId, location, definition);
 
 		// bind and check the parent interfaces.
 		for ( int x=0; x < _parentInterfaceTypes.length; x++ )
@@ -118,6 +124,21 @@ implements MetaDefinition
 			return;
 		}
 		bindMethods( library, clss );
+	}
+
+	public int getRelation(String tag) 
+	{
+		Integer i = (Integer) _relations.get(tag);
+		if (i==null)
+		{
+			return TypeLibrary.NOTYPE;
+		}
+		return i.intValue();
+	}
+
+	public void setRelation(String tag, int id) 
+	{
+		_relations.put(tag, new Integer(id));
 	}
 
 	public MetaMethod getMetaMethod(Method method) 
@@ -307,7 +328,7 @@ implements MetaDefinition
 			for ( int x=0; x<size.intValue(); x++ )
 			{
 				Integer id = (Integer) in.readObject( UInt16.TYPENAME );
-				interfaces[x] = in.getTypeMap().getSystemId( id.intValue() );
+				interfaces[x] = in.getTypeMap().getDefinitionId( id.intValue() );
 			}
 			
 			return new MetaInterface( interfaces );
@@ -327,7 +348,7 @@ implements MetaDefinition
 				out.writeObject( UInt8.TYPENAME, new Integer( mc.getInterfaces().length ));
 				for( int x=0 ;x < mc.getInterfaces().length; x++ )
 				{
-					int id = out.getTypeMap().getId( mc.getInterfaces()[x]);
+					int id = out.getTypeMap().getStreamId( mc.getInterfaces()[x]);
 					out.writeObject( UInt16.TYPENAME, new Integer(id) );
 				}
 			}
@@ -337,4 +358,5 @@ implements MetaDefinition
 			}
 		}
 	}
+
 }

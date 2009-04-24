@@ -15,13 +15,13 @@
  */
 package com.argot;
 
-public class TypeNameDefinedException 
+public class TypeDefinedException 
 extends TypeException
 {
 
 	private static final long serialVersionUID = -9082367944489759576L;
 
-	public TypeNameDefinedException(String reason)
+	public TypeDefinedException(String reason)
     {
         super(reason);
     }

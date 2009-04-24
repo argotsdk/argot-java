@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -29,7 +29,8 @@ import com.argot.TypeWriter;
 public class MetaOptional
 extends MetaExpression
 {
-	public static String TYPENAME = "meta.optional";
+	public static final String TYPENAME = "meta.optional";
+    public static final String VERSION = "1.3";
 
 	private MetaExpression _option;
 
@@ -61,7 +62,7 @@ extends MetaExpression
 		throws TypeException 
 		{
 			MetaOptional metaOptional = (MetaOptional) element;
-			return new MetaOptionalReader(map.getReader(map.getId("bool")),resolver.getExpressionReader(map, metaOptional._option));		
+			return new MetaOptionalReader(map.getReader(map.getStreamId("bool")),resolver.getExpressionReader(map, metaOptional._option));		
 		}	
 	}    
     
@@ -86,7 +87,7 @@ extends MetaExpression
 		throws TypeException 
 		{
 			MetaOptional metaOptional = (MetaOptional) element;
-			return new MetaOptionalWriter(map.getWriter(map.getId("bool")), resolver.getExpressionWriter(map, metaOptional._option));		
+			return new MetaOptionalWriter(map.getWriter(map.getStreamId("bool")), resolver.getExpressionWriter(map, metaOptional._option));		
 		}
     }
     

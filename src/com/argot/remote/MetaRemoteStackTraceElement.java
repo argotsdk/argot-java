@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -29,7 +29,8 @@ import com.argot.common.U8Ascii;
 public class MetaRemoteStackTraceElement
 {
 	public static final String TYPENAME = "remote.stack_trace_element";
-
+	public static final String VERSION = "1.3";
+	
 	private String _class;
 	private String _method;
 	private String _file;

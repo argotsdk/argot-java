@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -18,26 +18,26 @@ package com.argot.meta;
 import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeLibrary;
+import com.argot.TypeLocation;
 
 public abstract class MetaExpression
 implements TypeElement
 {
 	public static final String TYPENAME = "meta.expression";
+	public static final String VERSION = "1.3";
 	
     private TypeLibrary _library;
     private TypeElement _definition;
-    private String _memberTypeName;
     private int _memberTypeId;
     private int _typeId;
  
-    public void bind(TypeLibrary library, TypeElement definition, String memberTypeName, int memberTypeId) 
+    public void bind(TypeLibrary library, int memberTypeId, TypeLocation location, TypeElement definition) 
     throws TypeException
     {
         _library = library;
         _definition = definition;
-        _memberTypeName = memberTypeName;
         _memberTypeId = memberTypeId;
-        _typeId = _library.getId( getTypeName() );
+        _typeId = _library.getTypeId( getTypeName() );
     }
     
     public TypeLibrary getLibrary()
@@ -48,11 +48,6 @@ implements TypeElement
     public TypeElement getTypeDefinition()
     {
         return _definition;
-    }
-
-    public String getMemberTypeName()
-    {
-        return _memberTypeName;
     }
     
     public int getMemberTypeId()

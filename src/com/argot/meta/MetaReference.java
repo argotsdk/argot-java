@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -28,15 +28,16 @@ import com.argot.TypeLibraryWriter;
 import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
-import com.argot.TypeReaderAuto;
 import com.argot.TypeWriter;
+import com.argot.auto.TypeReaderAuto;
 import com.argot.common.UInt16;
 
 public class MetaReference
 extends MetaExpression
 implements MetaDefinition
 {
-    public static String TYPENAME  = "meta.reference";
+	public static final String TYPENAME  = "meta.reference";
+	public static final String VERSION = "1.3";
 	
 	private int _type;
 
@@ -65,10 +66,10 @@ implements MetaDefinition
 	{
 		TypeReaderAuto _reader = new TypeReaderAuto( MetaReference.class );
 		
-		public void bind(TypeLibrary library, TypeElement definition, String typeName, int typeId) 
+		public void bind(TypeLibrary library, int definitionId, TypeElement definition) 
 		throws TypeException 
 		{
-			_reader.bind(library, definition, typeName, typeId);
+			_reader.bind(library, definitionId, definition);
 		}
 		
 		public TypeReader getReader(TypeMap map) 
@@ -89,7 +90,7 @@ implements MetaDefinition
 			ReferenceTypeMap mapCore = (ReferenceTypeMap) in.getTypeMap();
 						
 			if (  mapCore.referenceMap().isValid( ref.getType() ) )
-				ref.setType( mapCore.referenceMap().getSystemId( ref.getType () ));
+				ref.setType( mapCore.referenceMap().getNameId( ref.getType() ));
 			else
 				throw new TypeException( "TypeReference: invalid id " + ref.getType() );
 
@@ -100,7 +101,8 @@ implements MetaDefinition
 		throws TypeException 
 		{
 			MetaReference metaReference = (MetaReference) element;
-			return map.getReader( map.getId(metaReference._type));
+			int refNameId = map.getStreamId(metaReference._type);
+			return map.getReader( refNameId );
 		}
 	}
 	
@@ -111,7 +113,7 @@ implements MetaDefinition
 	    {
 			MetaReference tr = (MetaReference) o;
 			ReferenceTypeMap mapCore = (ReferenceTypeMap) out.getTypeMap();
-			int id = mapCore.referenceMap().getId( tr._type );
+			int id = mapCore.referenceMap().getStreamId( tr._type );
 			out.writeObject( UInt16.TYPENAME, new Integer( id ));
 	    }
 
@@ -119,7 +121,11 @@ implements MetaDefinition
 		throws TypeException 
 		{
 			MetaReference metaReference = (MetaReference) element;
-			return map.getWriter( map.getId(metaReference._type));
+			// First map the name type.
+			int refNameId = map.getStreamId(metaReference._type);
+			
+			// Next map the defaultId.
+			return map.getWriter( refNameId );
 		}
 
 		public TypeWriter getWriter(TypeMap map) 

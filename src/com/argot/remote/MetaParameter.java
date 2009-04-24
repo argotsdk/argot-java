@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -24,8 +24,8 @@ import com.argot.TypeInputStream;
 import com.argot.TypeLibrary;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
-import com.argot.TypeReaderAuto;
 import com.argot.TypeWriter;
+import com.argot.auto.TypeReaderAuto;
 import com.argot.common.U8Ascii;
 import com.argot.common.UInt16;
 import com.argot.meta.MetaExpression;
@@ -34,6 +34,7 @@ public class MetaParameter
 extends MetaExpression
 {
 	public static final String TYPENAME = "remote.parameter";
+	public static final String VERSION = "1.3";
 
 	private int _typeId;
 	private String _name;
@@ -64,10 +65,10 @@ extends MetaExpression
 	{
 		TypeReaderAuto _reader = new TypeReaderAuto( MetaParameter.class );
 		
-		public void bind(TypeLibrary library, TypeElement definition, String typeName, int typeId) 
+		public void bind(TypeLibrary library, int definitionId, TypeElement definition) 
 		throws TypeException 
 		{
-			_reader.bind(library, definition, typeName, typeId);
+			_reader.bind(library, definitionId, definition);
 		}
 		
 		public Object read(TypeInputStream in) 
@@ -75,7 +76,7 @@ extends MetaExpression
 		{
 			TypeReader reader = _reader.getReader(in.getTypeMap());
 			MetaParameter mp = (MetaParameter) reader.read( in );
-			mp._typeId = in.getTypeMap().getSystemId( mp._typeId );
+			mp._typeId = in.getTypeMap().getDefinitionId( mp._typeId );
 			return mp;
 		}
 	}
@@ -87,7 +88,7 @@ extends MetaExpression
 		throws TypeException, IOException 
 		{
 			MetaParameter mp = (MetaParameter) o;
-			int id = out.getTypeMap().getId( mp._typeId );
+			int id = out.getTypeMap().getStreamId( mp._typeId );
 			out.writeObject( UInt16.TYPENAME, new Integer(id));
 			out.writeObject( U8Ascii.TYPENAME, mp._name );
 		}

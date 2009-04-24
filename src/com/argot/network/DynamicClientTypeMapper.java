@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -23,14 +23,21 @@ import com.argot.ReferenceTypeMap;
 import com.argot.TypeException;
 import com.argot.TypeHelper;
 import com.argot.TypeLibrary;
-import com.argot.TypeMapCore;
+import com.argot.TypeLocation;
+import com.argot.TypeLocationDefinition;
+import com.argot.TypeMap;
+import com.argot.TypeMapper;
 import com.argot.dictionary.Dictionary;
+import com.argot.meta.DictionaryDefinition;
+import com.argot.meta.DictionaryRelation;
 
 
-public class DynamicClientTypeMap 
-extends ReferenceTypeMap
+public class DynamicClientTypeMapper 
+implements TypeMapper
 {
 	private TypeClient _typeClient;
+	private ReferenceTypeMap _map;
+	private TypeLibrary _library;
 	
 	// This resolveStack is used to look for ensuring that we don't
 	// end up in an endless loop trying to resolve self referenced
@@ -41,17 +48,22 @@ extends ReferenceTypeMap
 	private boolean _metaDictionaryChecked;
 	private boolean _metaDictionaryOk;
 
-	public DynamicClientTypeMap( TypeLibrary library, TypeClient client ) 
+	public DynamicClientTypeMapper( TypeClient client ) 
 	throws TypeException, IOException
 	{
-		super( library, null );
-		setReferenceMap( this );
-
 		_typeClient = client;
 		_resolveStack = new Stack();		
 
 		_metaDictionaryChecked = false;
 		_metaDictionaryOk = false;
+	}
+
+	public void initialise(TypeMap map) 
+	throws TypeException 
+	{
+		_map = (ReferenceTypeMap) map;
+		_library = map.getLibrary();
+		_typeClient.initialise(map);
 	}
 	
 	private void checkMetaDictionary() 
@@ -60,15 +72,11 @@ extends ReferenceTypeMap
 		if ( !_metaDictionaryChecked )
 		{
 			try
-			{
-				TypeLibrary library = getLibrary();
-				
+			{				
 				// The base types must be the same as the MetaDictionary core.
 				// Wait until first request before mapping.  Stops ghosting.
-				TypeMapCore.mapMeta( this, library );
-				map( 42, library.getId("dictionary.words"));
 				
-				byte[] localMetaDictionary = Dictionary.writeCore( this );
+				byte[] localMetaDictionary = Dictionary.writeCore( _map );
 				_metaDictionaryOk = _typeClient.checkMetaDictionary( localMetaDictionary );
 				_metaDictionaryChecked = true;				
 			}
@@ -90,29 +98,16 @@ extends ReferenceTypeMap
 	{
 		checkMetaDictionary();
 		
-		// See if the type has already been mapped.
 		int x;
-		
-		try
-		{ 
-			x = super.getId( systemId );
-		}
-		catch( TypeException ex )
-		{
-			x = NOTYPE;
-		}
-		
-		if ( x != NOTYPE )
-			return x;
-			
+				
 		// No mapping..  Map this type.
 		// Requires the Name and structure.
 		// The server has the definative map.  So we send
 		// the details over and expect a response of the id
 		// to use.
-		String name = getLibrary().getName( systemId );
+		TypeLocation location = _library.getLocation( systemId );
 		
-		if ( _resolveStack.contains( name ))
+		if ( _resolveStack.contains( location ))
 		{
 			// If we have a self referenced type we first need to get
 			// and ID for the Dynamic type map.  From that we can then
@@ -120,7 +115,7 @@ extends ReferenceTypeMap
 
 			try 
 			{
-				x = _typeClient.reserveType( name );
+				x = _typeClient.reserveType( location );
 			} 
 			catch (IOException e) 
 			{
@@ -132,17 +127,17 @@ extends ReferenceTypeMap
 		{
 			// We haven't resolved the type yet so put it on the stack
 			// and resolve it.
-			_resolveStack.push( name );
+			_resolveStack.push( location );
 		
 			// As we write out the definition of this type we may
 			// come accross other types that must be resolved.  This
 			// will recurively resolve each type.
 
-			byte[] definition = TypeHelper.toByteArray( this, getLibrary().getStructure( systemId ));
+			byte[] definition = TypeHelper.toByteArray( _map, _library.getStructure( systemId ));
 			
 			try 
 			{
-				x = _typeClient.resolveType( name, definition );
+				x = _typeClient.resolveType( location, definition );
 			} 
 			catch (IOException e) 
 			{
@@ -152,17 +147,44 @@ extends ReferenceTypeMap
 			_resolveStack.pop();
 		}
 		
-		if ( x == NOTYPE )
+		if ( x == TypeMap.NOTYPE )
 		{
-			throw new TypeException( "unknown type on server" + name );
+			throw new TypeException( "unknown type on server" );
 		}
-
-		map( x, systemId );
 
 		return x;
 	}
 	
-	private void resolveReverse( int id )
+	private TypeTriple resolveDefault( TypeLocation location )
+	throws TypeException
+	{
+		checkMetaDictionary();
+		
+		TypeTriple typeInfo;
+		try 
+		{
+			typeInfo = _typeClient.resolveDefault(location);
+		} 
+		catch (IOException e) 
+		{
+			throw new TypeException("resolve default failed", e);
+		}
+
+		int systemid = _library.getTypeId( typeInfo.getLocation() );
+
+		byte[] definition = TypeHelper.toByteArray( _map, _library.getStructure( systemid ) );
+
+		if ( Arrays.equals( definition, typeInfo.getDefinition() ) )
+		{
+			// The definition matches..  so it is ok.  Map it.
+			return typeInfo;
+		}
+		
+		throw new TypeException( "definition do not match");
+
+	}
+	
+	private int resolveReverse( int id )
 	throws TypeException
 	{
 		checkMetaDictionary();
@@ -177,71 +199,62 @@ extends ReferenceTypeMap
 			throw new TypeException( e.getMessage() );	
 		} 
 		
-		int systemid = getLibrary().getId( typeInfo.getName() );
+		
+		int systemid = _library.getTypeId( typeInfo.getLocation() );
 
-		byte[] definition = TypeHelper.toByteArray( this, getLibrary().getStructure( systemid ) );
+		byte[] definition = TypeHelper.toByteArray( _map, _library.getStructure( systemid ) );
 
 		if ( Arrays.equals( definition, typeInfo.getDefinition() ) )
 		{
 			// The definition matches..  so it is ok.  Map it.
-			map( id, systemid );
-			return;
+			return systemid;
 		}
 		
 		throw new TypeException( "definition do not match");
 	}
 	
 
-	public int getId(int systemId) 
-	throws TypeException 
-	{
-		try
-		{
-			return super.getId( systemId );
-		}
-		catch( TypeException ex )
-		{
-			return resolveType( systemId );
-		}
-		
-	}
-
-	public int getId(String name) 
+	public int map(TypeLocation location) 
 	throws TypeException
 	{
 		try
 		{
-			return super.getId( name );
+			int id = resolveType( _library.getTypeId( location ) );
+			if ( id == TypeMap.NOTYPE)
+				throw new TypeException("not mapped");
+			return id;
 		}
-		catch( TypeException ex )
+		catch( TypeException ex2 )
 		{
-			try
-			{
-				int id = resolveType( getLibrary().getId( name ) );
-				if ( id == NOTYPE)
-					throw new TypeException("not mapped");
-				return id;
-			}
-			catch( TypeException ex2 )
-			{
-				throw ex2;
-			}
+			throw ex2;
 		}
 	}
 
-	public int getSystemId(int id) 
+
+	public int map(int definitionId) 
 	throws TypeException 
 	{
-		try
-		{
-			// if successful it will just return.
-			return  super.getSystemId( id );
-		}
-		catch( TypeException ex )
-		{
-			resolveReverse( id );
-			return getSystemId( id );
-		}		
+		int id = resolveType(definitionId);
+		_map.map(id, definitionId);
+		//System.err.println("client mapping: " + id + " to " + definitionId + "(" + _library.getName(definitionId)+")");
+		return id;
+	}
+
+	public int mapReverse(int streamId) 
+	throws TypeException 
+	{
+		int id = resolveReverse(streamId);
+		_map.map(streamId, id);
+		return id;
+	}
+
+	public int mapDefault(int nameId) 
+	throws TypeException 
+	{
+		TypeTriple typeInfo = resolveDefault(_library.getLocation(nameId));
+		int definitionId = _library.getTypeId(typeInfo.getLocation());
+		_map.map((int)typeInfo.getId(), definitionId);
+		return (int) typeInfo.getId();
 	}
 
 }

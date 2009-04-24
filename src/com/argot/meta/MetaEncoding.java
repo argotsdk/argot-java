@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -22,16 +22,19 @@ import com.argot.TypeException;
 import com.argot.TypeInputStream;
 import com.argot.TypeLibrary;
 import com.argot.TypeLibraryWriter;
+import com.argot.TypeLocation;
 import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
+import com.argot.common.U8Utf8;
 
 public class MetaEncoding
 extends MetaExpression
 implements MetaDefinition
 {
     public static final String TYPENAME = "meta.encoding";
+	public static final String VERSION = "1.3";
     
 	private MetaExpression _expression;
 	private String _encoding;
@@ -47,10 +50,10 @@ implements MetaDefinition
         return TYPENAME;
     }
     
-    public void bind(TypeLibrary library, TypeElement definition, String typeName, int typeId) throws TypeException
+    public void bind(TypeLibrary library, int definitionId, TypeLocation location, TypeElement definition) throws TypeException
     {
-        super.bind(library, definition, typeName, typeId);
-        _expression.bind( library, definition, typeName, typeId );
+        super.bind(library, definitionId, location, definition);
+        _expression.bind( library, definitionId, null, definition );
     }	
 
 	public static class MetaEncodingTypeReader
@@ -78,7 +81,7 @@ implements MetaDefinition
 	    	MetaEncoding enc = (MetaEncoding) o;
 	
 	 		out.writeObject( MetaExpression.TYPENAME, enc._expression );
-			out.writeObject( "meta.name", enc._encoding );	
+			out.writeObject( U8Utf8.TYPENAME, enc._encoding );	
 	    }
 
 		public TypeWriter getWriter(TypeMap map) 

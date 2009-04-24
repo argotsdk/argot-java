@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -20,7 +20,6 @@ import java.io.IOException;
 
 import com.argot.TypeBound;
 import com.argot.TypeConstructor;
-import com.argot.TypeConstructorAuto;
 import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeLibrary;
@@ -29,8 +28,9 @@ import com.argot.TypeLibraryWriter;
 import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
-import com.argot.TypeReaderAuto;
 import com.argot.TypeWriter;
+import com.argot.auto.TypeConstructorAuto;
+import com.argot.auto.TypeReaderAuto;
 import com.argot.common.U8Ascii;
 import com.argot.common.UInt16;
 import com.argot.meta.MetaAbstract;
@@ -43,6 +43,7 @@ import com.argot.meta.MetaAbstract;
 public class MetaRemoteException
 {
 	public static final String TYPENAME = "remote.exception";
+	public static final String VERSION = "1.3";
 
 	public static class ExceptionConstructor
 	implements TypeConstructor
@@ -98,10 +99,10 @@ public class MetaRemoteException
 			_autoReader = new TypeReaderAuto(new ExceptionConstructor(clazz));
 		}
 
-		public void bind(TypeLibrary library, TypeElement definition, String typeName, int typeId) 
+		public void bind(TypeLibrary library, int definitionId, TypeElement definition) 
 		throws TypeException 
 		{
-			_autoReader.bind(library, definition, typeName, typeId);
+			_autoReader.bind(library, definitionId, definition);
 		}
 		
 		public TypeReader getReader(TypeMap map) 
@@ -115,7 +116,7 @@ public class MetaRemoteException
 	{
 		try {
 			int id = library.getId(cause.getClass());
-			MetaAbstract metaAbstract = (MetaAbstract) library.getStructure( library.getId("remote.exception"));
+			MetaAbstract metaAbstract = (MetaAbstract) library.getStructure( library.getDefinitionId("remote.exception","1.3"));
 			return !metaAbstract.isMapped(id);
 		} catch (TypeException e) {
 			return false;
@@ -148,7 +149,7 @@ public class MetaRemoteException
 					TypeLibrary library = out.getTypeMap().getLibrary();
 					int id = library.getId(cause.getClass());
 					
-					MetaAbstract metaAbstract = (MetaAbstract) library.getStructure( library.getId("remote.exception"));
+					MetaAbstract metaAbstract = (MetaAbstract) library.getStructure( library.getDefinitionId("remote.exception","1.3"));
 					if (metaAbstract.isMapped(id))
 					{
 						out.writeObject( "remote.exception", cause);
@@ -160,7 +161,7 @@ public class MetaRemoteException
 				WrappedRemoteException wrapped = new WrappedRemoteException(cause);
 				out.writeObject("remote.exception", wrapped);
 			} else {
-				out.writeObject( "uint16", new Integer( out.getTypeMap().getId("empty")));
+				out.writeObject( "uint16", new Integer( out.getTypeMap().getStreamId("empty")));
 			}
 			
 			// write out the stack trace array.

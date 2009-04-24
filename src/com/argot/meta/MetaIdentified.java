@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -35,12 +35,13 @@ public class MetaIdentified
 extends MetaExpression
 {
 	public static String TYPENAME = "meta.identified";
+    public static final String VERSION = "1.3";
 
-	//private String _description;
+	private String _description;
 
-	public MetaIdentified( /*String description*/ )
+	public MetaIdentified( String description )
 	{
-		//_description = description;
+		_description = description;
 	}
 	
     public String getTypeName()
@@ -56,7 +57,7 @@ extends MetaExpression
 		{
 			MetaIdentified ti = (MetaIdentified) o;
 			
-			//out.writeObject( "meta.name", ti._description );
+			out.writeObject( "u8utf8", ti._description );
 		}
 
 		public TypeWriter getWriter(TypeMap map) 
@@ -88,7 +89,7 @@ extends MetaExpression
 	public TypeReader getReader(TypeMap map )
 	throws TypeException 
 	{
-		return new MetaIdentifiedReader( map.getReader(map.getId(UInt16.TYPENAME)));  
+		return new MetaIdentifiedReader( map.getReader(map.getStreamId(UInt16.TYPENAME)));  
 	}
 	
 	private class MetaIdentifiedWriter
@@ -105,7 +106,7 @@ extends MetaExpression
 		throws TypeException, IOException 
 		{
 			int systemId = out.getTypeMap().getLibrary().getId(o.getClass());
-			int id = out.getTypeMap().getId(systemId);
+			int id = out.getTypeMap().getStreamId(systemId);
 			_uint16.write( out, new Integer(id));
 			out.writeObject( id, o );
 		}
@@ -115,7 +116,7 @@ extends MetaExpression
 	public TypeWriter getWriter(TypeMap map)
 	throws TypeException 
 	{
-		return new MetaIdentifiedWriter(map.getWriter(map.getId(UInt16.TYPENAME)));
+		return new MetaIdentifiedWriter(map.getWriter(map.getStreamId(UInt16.TYPENAME)));
 	}
 
 }

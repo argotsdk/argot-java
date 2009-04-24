@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -15,9 +15,12 @@
  */
 package com.argot;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
+
+import com.argot.meta.MetaDefinition;
 
 public final class TypeHelper
 {
@@ -76,4 +79,58 @@ public final class TypeHelper
 		return b;			
 	}
 	
+	/**
+	 * This checks if the id, name & structure are the same as used
+	 * in the map.  The byte[] must follow the TypeMapCore type id's.
+	 * Any function or references must be valid in the context of this
+	 * TypeMap.
+	 * 
+	 * This is like the register version below, however in some cases
+	 * like a protocol you just need to check if the id's are the same.
+	 */
+	public static void isSame( int id, TypeLocation location, byte[] structure, ReferenceTypeMap coreMap )
+	throws TypeException
+	{
+		TypeLibrary library = coreMap.getLibrary();
+				
+		// First check if we can find the same identifier.
+		int i = library.getTypeId(location);
+			
+		// Are the identifiers the same.
+		if ( id != i )
+		{
+			throw new TypeException("Type Mismatch: Type identifiers different");
+		}
+
+		// Are the definitions the same.
+		// read the definition.
+		
+		TypeElement definition = readStructure( coreMap, structure );
+		
+		// check what we've read with the local version.
+		TypeElement localStruct = library.getStructure( i );
+		if (!TypeHelper.structureMatches( coreMap, definition, localStruct ))
+		{
+			throw new TypeException("Type mismatch: structures do not match: ");
+		}
+	}
+
+	public static TypeElement readStructure( ReferenceTypeMap core, byte[] structure )
+	throws TypeException
+	{
+		ByteArrayInputStream bais = new ByteArrayInputStream( structure );
+		TypeInputStream tmis = new TypeInputStream( bais, core);
+		
+		try
+		{
+			Object definition = tmis.readObject( MetaDefinition.TYPENAME );
+			return (TypeElement) definition;
+		}
+		catch (IOException e)
+		{
+			throw new TypeException( "failed reading structure:" + e.getMessage() );
+		}
+		
+	}
+
 }

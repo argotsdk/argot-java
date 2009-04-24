@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -13,10 +13,15 @@
  * to the law of Victoria, Australia, and subject to exclusive 
  * jurisdiction of the Victorian courts.
  */
-package com.argot;
+package com.argot.auto;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+
+import com.argot.TypeConstructor;
+import com.argot.TypeElement;
+import com.argot.TypeException;
+import com.argot.TypeStreamException;
 
 public class TypeConstructorAuto 
 implements TypeConstructor

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -15,16 +15,22 @@
  */
 package com.argot.network;
 
+import com.argot.TypeException;
+import com.argot.TypeLocation;
+import com.argot.TypeMap;
+import com.argot.meta.DictionaryDefinition;
+import com.argot.meta.DictionaryRelation;
+
 public class TypeTriple 
 {
 	private long _id;
-	private String _name;
+	private TypeLocation _location;
 	private byte[] _definition;
 	
-	public TypeTriple( long id, String name, byte[] definition )
+	public TypeTriple( long id, TypeLocation location, byte[] definition )
 	{
 		_id = id;
-		_name = name;
+		_location = location;
 		_definition = definition;
 	}
 	
@@ -33,13 +39,30 @@ public class TypeTriple
 		return _id;
 	}
 	
-	public String getName()
+	public TypeLocation getLocation()
 	{
-		return _name;
+		return _location;
 	}
 	
 	public byte[] getDefinition()
 	{
 		return _definition;
+	}
+	
+	public static TypeLocation fixLocation( TypeLocation location, TypeMap map ) 
+	throws TypeException
+	{
+		if (location instanceof DictionaryDefinition)
+		{
+			DictionaryDefinition definition = (DictionaryDefinition) location;
+			definition.setId( map.getLibrary().getTypeId( definition.getName() ));
+		}
+		else if (location instanceof DictionaryRelation)
+		{
+			DictionaryRelation relation = (DictionaryRelation) location;
+			relation.setId( map.getDefinitionId(relation.getId()));
+		}
+		return location;
+		
 	}
 }

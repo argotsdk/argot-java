@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -13,13 +13,23 @@
  * to the law of Victoria, Australia, and subject to exclusive 
  * jurisdiction of the Victorian courts.
  */
-package com.argot;
+package com.argot.auto;
 
 import java.io.IOException;
 
+import com.argot.TypeBound;
+import com.argot.TypeConstructor;
+import com.argot.TypeElement;
+import com.argot.TypeException;
+import com.argot.TypeInputStream;
+import com.argot.TypeLibrary;
+import com.argot.TypeLibraryReader;
+import com.argot.TypeMap;
+import com.argot.TypeReader;
 import com.argot.meta.MetaExpressionLibraryResolver;
 import com.argot.meta.MetaExpressionResolver;
 import com.argot.meta.MetaSequence;
+
 
 public class TypeReaderAuto
 implements TypeBound,TypeLibraryReader
@@ -41,12 +51,18 @@ implements TypeBound,TypeLibraryReader
 		_constructor = constructor;
 	}
 
-	public void bind(TypeLibrary library, TypeElement definition, String typeName, int typeId) 
+	public void bind(TypeLibrary library, int definitionId, TypeElement definition) 
 	throws TypeException 
 	{
 		if ( !( definition instanceof MetaSequence))
 		{
-			throw new TypeException( "TypeReaderAuto: required MetaSequence to read data." + typeName );
+			if (!(definition instanceof MetaSequence))
+			{
+				throw new TypeException( "TypeReaderAuto: required MetaSequence to read data." );
+			}
+
+			_metaSequence = (MetaSequence) definition;
+			return;
 		}
 		_metaSequence = (MetaSequence) definition;
 	}	

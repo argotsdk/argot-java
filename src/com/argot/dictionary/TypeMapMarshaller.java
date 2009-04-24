@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -18,13 +18,14 @@ package com.argot.dictionary;
 import java.io.IOException;
 import java.util.Iterator;
 
-import com.argot.TypeElement;
 import com.argot.TypeException;
+import com.argot.TypeLibrary;
 import com.argot.TypeLibraryWriter;
 import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeWriter;
 import com.argot.common.UInt16;
+import com.argot.meta.DictionaryLocation;
 
 public class TypeMapMarshaller
 implements TypeLibraryWriter, TypeWriter
@@ -32,7 +33,7 @@ implements TypeLibraryWriter, TypeWriter
     public void write(TypeOutputStream out, Object o) throws TypeException, IOException
     {
 		TypeMap map = (TypeMap) o;
-		
+		TypeLibrary library = map.getLibrary();
 		
 		// write the length out first.
 		out.writeObject( UInt16.TYPENAME, new Integer( map.size() ));
@@ -40,13 +41,12 @@ implements TypeLibraryWriter, TypeWriter
 		Iterator i = map.getIdList().iterator();
 		while (i.hasNext() )
 		{
-			int id = ((Integer) i.next()).intValue();	
-			String name = map.getName( id );
-			TypeElement elem = map.getStructure( id );
+			int streamId = ((Integer) i.next()).intValue();
+			int definitionId = map.getDefinitionId(streamId);
 
-			out.writeObject( UInt16.TYPENAME, new Integer(id));
-			out.writeObject( "meta.name", name );
-			out.writeObject( "meta.definition.envelop", elem );			
+			out.writeObject( UInt16.TYPENAME, new Integer(streamId));
+			out.writeObject( DictionaryLocation.TYPENAME, library.getLocation(definitionId));
+			out.writeObject( "meta.definition.envelop", library.getStructure( definitionId ) );			
 		}
 
     }

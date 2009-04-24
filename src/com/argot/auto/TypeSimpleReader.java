@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -33,13 +33,23 @@ implements TypeLibraryReader,TypeBound
 	{
 		_reader = reader;
 	}
+	
+	protected TypeSimpleReader()
+	{
+		_reader = null;
+	}
 
-	public void bind(TypeLibrary library, TypeElement definition, String typeName, int typeId) 
+	protected void setReader(TypeReader reader)
+	{
+		_reader = reader;
+	}
+	
+	public void bind(TypeLibrary library, int definitionId, TypeElement definition) 
 	throws TypeException 
 	{
-		if (_reader instanceof TypeBound)
+		if (_reader instanceof TypeBound && _reader != this)
 		{
-			((TypeBound)_reader).bind(library, definition, typeName, typeId);
+			((TypeBound)_reader).bind(library, definitionId, definition);
 		}		
 	}
 	

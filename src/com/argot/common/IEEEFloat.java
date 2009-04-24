@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -26,7 +26,8 @@ import com.argot.TypeWriter;
 
 public class IEEEFloat 
 {
-	public static final String TYPENAME = "ieee.float";
+	public static final String TYPENAME = "float";
+	public static final String VERSION = "1.3";
 		
 	public static class Reader
 	implements TypeReader

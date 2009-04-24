@@ -1,3 +1,18 @@
+/*
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ *
+ * This software is licensed under the Argot Public License 
+ * which may be found in the file LICENSE distributed 
+ * with this software.
+ *
+ * More information about this license can be found at
+ * http://www.einet.com.au/License
+ * 
+ * The Developer of this software is Live Media Pty Ltd,
+ * PO Box 4591, Melbourne 3001, Australia.  The license is subject 
+ * to the law of Victoria, Australia, and subject to exclusive 
+ * jurisdiction of the Victorian courts.
+ */
 package com.argot.auto;
 
 import java.io.IOException;
@@ -33,7 +48,7 @@ implements TypeLibraryWriter, TypeLibraryReader, TypeBound
 		_resolver = new MetaExpressionLibraryResolver();
 	}
 	
-	public void bind(TypeLibrary library, TypeElement definition, String typeName, int typeId) 
+	public void bind(TypeLibrary library, int definitionId, TypeElement definition) 
 	throws TypeException 
 	{
 		if ( !(definition instanceof MetaSequence) )
@@ -52,7 +67,7 @@ implements TypeLibraryWriter, TypeLibraryReader, TypeBound
 		MetaArray array = (MetaArray) expression;
 		_sizeExpression = array.getSizeExpression();
 		_dataExpression = array.getTypeExpression();
-		Class arrayClass = library.getClass(typeId);
+		Class arrayClass = library.getClass(definitionId);
 		if (!arrayClass.isArray())
 		{
 			throw new TypeException("TypeArrayMarshaller: not bound to array data type");

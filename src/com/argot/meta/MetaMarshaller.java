@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -36,7 +36,7 @@ implements TypeBound,TypeLibraryReader, TypeLibraryWriter
 	{
 		_resolver = new MetaExpressionLibraryResolver();
 	}
-	public void bind(TypeLibrary library, TypeElement definition, String typeName, int typeId) 
+	public void bind(TypeLibrary library, int definitionId, TypeElement definition) 
 	throws TypeException 
 	{
 		_expression = (MetaExpression) definition;

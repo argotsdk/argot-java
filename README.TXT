@@ -1,5 +1,5 @@
 
-Copyright 2003-2007 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
 
 This software is licensed under the Argot Public License 
 which may be found in the file LICENSE distributed 
@@ -50,6 +50,24 @@ Please view the example .argot files to see how argot is specified.
 
 Version History
 ---------------
+1.3.alpha - 24 April 2009
+
+- Added meta data versioning.  This required a LOT of changes to support this.  Now each
+  type name may have multiple definitions.  Added the concept of a TypeMapper which is
+  required to figure out which version of a definition is required.  Meta dictionary 
+  redesigned to support this.  Introduced the concepts of Name, Definition and Relation
+  for locating definitions instead of just a name.
+- Change meta.version to use major and minor structure.
+- Changed meta.name to use multiple parts and use utf8 string encoding for all parts
+  of the data dictionary. 
+- Change meta dictionary to not split meta identity with definition.  Will only allow
+  a single version of a data type in a dictionary/message/communication.
+
+TODO
+
+- Remove the concept of ReferenceTypeMap and replace with a more general approach to 
+  carrying information with the output stream or type map.
+
 
 1.3.alpha - 22 June 2008
 
@@ -75,7 +93,7 @@ Version History
 - Changed the way MetaMarshaller builds TypeReader and TypeWriter function trees.  Each type
   now uses the MetaExpressionResolver to create the correct function.  Now binds the 
   factory to the TypeLibraryReader instead of the MetaExpression instance.  This allows
-  a lot more flexibility to achieved when building function trees.  Change required
+  a lot more flexibility to be achieved when building function trees.  Change required
   to support document object model style of reading data.
 - Added MetaTag (meta.tag) to the meta dictionary.  meta.reference now only includes
   the reference type and no description.  meta.tag is used to add a description to any
@@ -85,8 +103,8 @@ Version History
   types.
 - Updated the Argot compiler to use S-Expression style syntax and updated to
   ANTLR v3 to support changes.
-- Updated the meta dictionnary and MetaLoader in support of all the changes above.
-  
+- Updated the meta dictionary and MetaLoader in support of all the changes above.
+
 
 1.2.2 - 17 January 2008
 

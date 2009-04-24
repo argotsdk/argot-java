@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -32,6 +32,7 @@ public class MessageTest
 extends TestCase
 {
 	private TypeLibrary _library;
+	private int _mixedDataTypeId;
 	
 	TypeLibraryLoader libraryLoaders[] = {
 		new MetaLoader(),
@@ -43,16 +44,16 @@ extends TestCase
     {
         super.setUp();
         _library = new TypeLibrary( libraryLoaders );
-        MixedData.register( _library );
+        _mixedDataTypeId = MixedData.register( _library );
     }
     
     public void testTypeMapCore() throws Exception
     {
-        MixedData data = new MixedData( 234545, (short)234, "Testing");
+        MixedData data = new MixedData( 2345, (short)234, "Testing");
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         MessageWriter writer = new MessageWriter( _library );
-        writer.writeMessage( baos, MixedData.TYPENAME, data );
+        writer.writeMessage( baos, _mixedDataTypeId, data );
         baos.close();
         
         ByteArrayInputStream bais = new ByteArrayInputStream( baos.toByteArray() );

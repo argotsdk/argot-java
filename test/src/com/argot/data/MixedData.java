@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -23,9 +23,12 @@ import com.argot.TypeLibrary;
 import com.argot.TypeLibraryWriter;
 import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
-import com.argot.TypeReaderAuto;
 import com.argot.TypeWriter;
+import com.argot.auto.TypeReaderAuto;
+import com.argot.meta.DictionaryDefinition;
+import com.argot.meta.DictionaryName;
 import com.argot.meta.MetaExpression;
+import com.argot.meta.MetaIdentity;
 import com.argot.meta.MetaReference;
 import com.argot.meta.MetaSequence;
 import com.argot.meta.MetaTag;
@@ -43,6 +46,8 @@ import com.argot.meta.MetaTag;
 public class MixedData 
 {
 	public static final String TYPENAME = "mixeddata";
+	public static final String VERSION = "1.0";
+	
 	private int _anInt;
 	private short _aShort;
 	private String _anAscii;
@@ -76,8 +81,8 @@ public class MixedData
 		throws TypeException, IOException 
 		{
 			MixedData data = (MixedData) o;
-			out.writeObject("int32", new Integer( data._anInt ));
-			out.writeObject("int16", new Short( data._aShort ));
+			out.writeObject("uint16", new Integer( data._anInt ));
+			out.writeObject("uint8", new Short( data._aShort ));
 			out.writeObject("u8ascii", data._anAscii );
 		}
 		
@@ -92,15 +97,18 @@ public class MixedData
 	 * This should be contained in a dictionary file instead
 	 * of being created in code.  Useful here for testing.
 	 */
-	public static void register( TypeLibrary library )
+	public static int register( TypeLibrary library )
 	throws TypeException
 	{
-		library.register( MixedData.TYPENAME, 
+		int id = library.register( new DictionaryName(TYPENAME), new MetaIdentity() );
+		
+		return library.register( 
+				new DictionaryDefinition(id, TYPENAME,"1.0"),
 				new MetaSequence(
 					new MetaExpression[]{
-					    new MetaTag( "int32", new MetaReference( library.getId("int32"))),
-					    new MetaTag( "int16", new MetaReference( library.getId("int16"))),
-					    new MetaTag( "u8ascii", new MetaReference( library.getId("u8ascii")))
+					    new MetaTag( "uint16", new MetaReference( library.getTypeId("uint16"))),
+					    new MetaTag( "uint8", new MetaReference( library.getTypeId("uint8"))),
+					    new MetaTag( "u8ascii", new MetaReference( library.getTypeId("u8ascii")))
 					}
 				),
 			new TypeReaderAuto( MixedData.class ),

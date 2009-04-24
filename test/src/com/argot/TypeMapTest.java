@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -18,6 +18,7 @@ package com.argot;
 import java.util.Iterator;
 
 import com.argot.meta.MetaLoader;
+import com.argot.meta.MetaName;
 import com.argot.meta.MetaReference;
 
 import junit.framework.TestCase;
@@ -33,41 +34,41 @@ extends TestCase
         super.setUp();
         _library = new TypeLibrary();
         _library.loadLibrary( new MetaLoader() );
-        _map = TypeMapCore.getCoreTypeMap( _library );
+		_map = new TypeMap( _library, new TypeMapperCore(new TypeMapperLibrary()));
     }
     
     public void testGetIdByName() throws Exception
     {
-        int id = _map.getId( MetaReference.TYPENAME );
-        assertEquals( id, TypeMapCore.REFERENCE_ID );
+        int id = _map.getStreamId( MetaReference.TYPENAME );
+        assertEquals( TypeMapperCore.REFERENCE_ID, id );
     }
 
     public void testGetSystemId() throws Exception
     {
-        int id = _map.getId( MetaReference.TYPENAME );
-        int systemId = _map.getSystemId( id );
+        int id = _map.getStreamId( MetaReference.TYPENAME );
+        int systemId = _map.getDefinitionId( id );
 
-        assertEquals( systemId, _library.getId( MetaReference.TYPENAME ));
+        assertEquals( systemId, _library.getTypeId( MetaReference.TYPENAME, "1.3" ));
     }
     
     public void testGetName() throws Exception
     {
-        String name = _map.getName( TypeMapCore.REFERENCE_ID );
-        assertEquals( MetaReference.TYPENAME, name );
+        MetaName name = _map.getName( TypeMapperCore.REFERENCE_ID );
+        assertEquals( MetaReference.TYPENAME, name.toString() );
     }
     
     public void testGetIdBySystemId() throws Exception
     {
-        int id = _map.getId( _library.getId( MetaReference.TYPENAME ));
-        assertEquals( TypeMapCore.REFERENCE_ID, id );
+        int id = _map.getStreamId( _library.getTypeId( MetaReference.TYPENAME, "1.3" ));
+        assertEquals( TypeMapperCore.REFERENCE_ID, id );
     }
     
     public void testIterator() throws Exception
     {
-    	_map = new TypeMap( _library );
-    	_map.map( 34, 0 );
-    	_map.map( 20, 10);
-    	_map.map( 45, 1);
+    	_map = new TypeMap( _library, new TypeMapperLibrary() );
+    	_map.map( 34, 33 );
+    	_map.map( 20, 34 );
+    	_map.map( 45, 35 );
     	
     	Iterator iter = _map.getIdList().iterator();
     	

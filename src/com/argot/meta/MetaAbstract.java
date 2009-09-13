@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.argot.TypeBound;
 import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
@@ -34,7 +35,9 @@ import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeRelation;
 import com.argot.TypeWriter;
+import com.argot.auto.TypeArrayMarshaller;
 import com.argot.common.UInt16;
+import com.argot.common.UInt8;
 
 public class MetaAbstract
 extends MetaExpression
@@ -168,12 +171,35 @@ implements MetaDefinition, TypeRelation
 	
 	
 	public static class MetaAbstractTypeReader
-	implements TypeReader, TypeLibraryReader, MetaExpressionReader
+	implements TypeReader, TypeBound, TypeLibraryReader, MetaExpressionReader
 	{
+		private MetaMarshaller _reader;
+		
+		public MetaAbstractTypeReader()
+		{
+			_reader = new MetaMarshaller();
+		}
+		
+		public void bind(TypeLibrary library, int definitionId, TypeElement definition) 
+		throws TypeException 
+		{
+			_reader.bind(library, definitionId, definition);
+		}
+		
 	    public Object read(TypeInputStream in) 
 	    throws TypeException, IOException
 	    {
-			return new MetaAbstract();
+			Object[] object = (Object[]) _reader.getReader(in.getTypeMap()).read(in);
+			if (object.length != 1 && !(object[0] instanceof Object[])) throw new TypeException("Unexpected data");
+			Object[] mapArray = (Object[]) object[0];
+			MetaAbstractMap[] defaultMaps = new MetaAbstractMap[mapArray.length];
+			for (int x=0;x<mapArray.length;x++)
+			{
+				defaultMaps[x] = (MetaAbstractMap) mapArray[x];
+				//defaultMaps[x].setConcreteType(in.getTypeMap().getNameId(defaultMaps[x].getConcreteType()));
+			}
+
+			return new MetaAbstract(defaultMaps);
 	    }
 
 		public TypeReader getReader(TypeMap map) 
@@ -193,12 +219,21 @@ implements MetaDefinition, TypeRelation
 	public static class MetaAbstractTypeWriter
 	implements TypeWriter, TypeLibraryWriter, MetaExpressionWriter
 	{
+		
 	    public void write(TypeOutputStream out, Object o) 
 	    throws TypeException, IOException
 	    {
-	    	// do nothing.
+	    	MetaAbstract ma = (MetaAbstract) o;
+	    	
+	    	out.writeObject(UInt8.TYPENAME, new Integer(ma._defaultMappings.length));
+	    	
+	    	MetaAbstractMap[] defaultMappings = ma._defaultMappings;
+	    	for (int x=0; x<defaultMappings.length;x++)
+	    	{
+	    		out.writeObject(MetaAbstractMap.TYPENAME, defaultMappings[x]);
+	    	}
 	    }
-
+	    
 		public TypeWriter getWriter(TypeMap map) 
 		throws TypeException 
 		{
@@ -295,7 +330,16 @@ implements MetaDefinition, TypeRelation
 		throws TypeException
 		{
 			// assumes class is bound to definition, not identity.
-			int defId = map.getLibrary().getId(clss);
+			int[] ids = map.getLibrary().getId(clss);
+			if (ids.length != 1)
+			{
+				if (ids.length>1)
+					throw new TypeException("Class bound to multiple system types:" +clss.getName());
+				if (ids.length==0)
+					throw new TypeException("Class not bound to any mapped type:"+clss.getName());
+			}
+			int defId = ids[0];
+			
 			MetaName name = map.getLibrary().getName(defId);
 			
 			// get the identity id.

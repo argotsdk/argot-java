@@ -33,6 +33,9 @@ implements TypeLibraryLoader
 {
 	public static final String DICTIONARY = "dictionary.dictionary";
 	
+	public static final String DICTIONARY_LIST = "dictionary.list";
+	public static final String DICTIONARY_LIST_VERSION = "1.3";
+	
 	public String getName()
 	{
 		return DICTIONARY;
@@ -41,16 +44,16 @@ implements TypeLibraryLoader
 	public void load( TypeLibrary library ) throws TypeException
 	{
 
-		int dictListId = library.register( new DictionaryName( "dictionary.list" ), new MetaIdentity() );  // 1
+		int dictListId = library.register( new DictionaryName( DICTIONARY_LIST ), new MetaIdentity() );  // 1
 		
 		MetaDefinition dWords =
 				new MetaEnvelop(
 					new MetaReference(library.getTypeId(UInt16.TYPENAME ) ),
-					new MetaReference(library.getTypeId("dictionary.entry.list" ))
+					new MetaReference(library.getTypeId(Dictionary.DICTIONARY_ENTRY_LIST ))
 				);			  
 	
 
-		library.register( new DictionaryDefinition(dictListId,"dictionary.list", "1.3"),
+		library.register( new DictionaryDefinition(dictListId,DICTIONARY_LIST, DICTIONARY_LIST_VERSION),
 				dWords, new MetaMarshaller(), new MetaMarshaller(), null );
 			
     }

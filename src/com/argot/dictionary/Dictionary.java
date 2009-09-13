@@ -34,7 +34,7 @@ import com.argot.TypeLocation;
 import com.argot.TypeMap;
 import com.argot.TypeMapperCore;
 import com.argot.TypeMapperDynamic;
-import com.argot.TypeMapperLibrary;
+import com.argot.TypeMapperError;
 import com.argot.TypeOutputStream;
 import com.argot.common.UInt16;
 import com.argot.common.UInt8;
@@ -53,21 +53,24 @@ import com.argot.meta.MetaIdentity;
  */
 public class Dictionary
 {
-	public static final String DICTIONARY_WORDS = "dictionary.entry.list";
-	public static final String DICTIONARY_WORDS_VERSION = "1.3";
+	public static final String DICTIONARY_ENTRY = "dictionary.entry";
+	public static final String DICTIONARY_ENTRY_VERSION = "1.3";
+	
+	public static final String DICTIONARY_ENTRY_LIST = "dictionary.entry.list";
+	public static final String DICTIONARY_ENTRY_LIST_VERSION = "1.3";
 		
 	public static void writeDictionary(  OutputStream fos, TypeMap map ) throws TypeException, IOException 
 	{
 		TypeLibrary library = map.getLibrary();
 		
 		// write out the dictionary used to write the content.
-		ReferenceTypeMap refCore = new ReferenceTypeMap( library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperLibrary())));
+		ReferenceTypeMap refCore = new ReferenceTypeMap( library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperError())));
 
 		// get the core type map.
-		ReferenceTypeMap core = new ReferenceTypeMap( library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperLibrary())), refCore);
+		ReferenceTypeMap core = new ReferenceTypeMap( library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperError())), refCore);
 
 		// create a dynamic type map.	
-		ReferenceTypeMap dynamicDictionaryMap = new ReferenceTypeMap( library, new TypeMapperDynamic(new TypeMapperLibrary()), map);
+		ReferenceTypeMap dynamicDictionaryMap = new ReferenceTypeMap( library, new TypeMapperDynamic(new TypeMapperError()), map);
 
 		ByteArrayOutputStream messageData = new ByteArrayOutputStream();
 		int count = map.size();
@@ -79,8 +82,8 @@ public class Dictionary
 			lastCount = count;
 			messageData = new ByteArrayOutputStream(); 
 			TypeOutputStream messageDataStream = new TypeOutputStream( messageData , dynamicDictionaryMap );
-			messageDataStream.writeObject( UInt16.TYPENAME, new Integer(dynamicDictionaryMap.getStreamId(DICTIONARY_WORDS)));
-			messageDataStream.writeObject( DICTIONARY_WORDS, map );
+			messageDataStream.writeObject( UInt16.TYPENAME, new Integer(dynamicDictionaryMap.getStreamId(DICTIONARY_ENTRY_LIST)));
+			messageDataStream.writeObject( DICTIONARY_ENTRY_LIST, map );
 			messageData.close();
 			
 			count = map.size();
@@ -103,7 +106,7 @@ public class Dictionary
 			dictionaryStream = new ByteArrayOutputStream(); 
 			dictionaryObjectStream = new TypeOutputStream( dictionaryStream , dynamicDictionaryMap );
 			dictionaryObjectStream.writeObject( UInt8.TYPENAME, new Integer( 1 ));
-			dictionaryObjectStream.writeObject( DICTIONARY_WORDS, dynamicDictionaryMap );
+			dictionaryObjectStream.writeObject( DICTIONARY_ENTRY_LIST, dynamicDictionaryMap );
 			dictionaryObjectStream.getStream().close();
 			dictionaryStream.close();
 			
@@ -113,7 +116,7 @@ public class Dictionary
 		dictionaryStream = new ByteArrayOutputStream(); 
 		dictionaryObjectStream = new TypeOutputStream( dictionaryStream , core );
 		dictionaryObjectStream.writeObject( UInt8.TYPENAME, new Integer( 1 ));
-		dictionaryObjectStream.writeObject( DICTIONARY_WORDS, dynamicDictionaryMap );
+		dictionaryObjectStream.writeObject( DICTIONARY_ENTRY_LIST, dynamicDictionaryMap );
 		dictionaryObjectStream.getStream().close();
 		dictionaryStream.close();
 		
@@ -142,7 +145,7 @@ public class Dictionary
  *   			(reference #uint8)
  *   			(meta.envelop
  *   				(reference #uint16)
- *   				(reference #dictionary.entry.list)
+ *   				(reference #dictionary.entry_list)
  *   	] ))
  * 
  * 
@@ -206,7 +209,7 @@ public class Dictionary
 
 				out2.writeObject( UInt16.TYPENAME, new Integer(id.intValue()));
 				out2.writeObject( DictionaryLocation.TYPENAME, location);
-				out2.writeObject( "meta.definition.envelop", definition );
+				out2.writeObject( MetaDefinition.META_DEFINITION_ENVELOP, definition );
 			}
 			
 			out2.getStream().close();
@@ -223,10 +226,10 @@ public class Dictionary
 	
 	public static byte[] writeCore( TypeMap map ) throws TypeException, IOException
 	{
-		TypeMap refCore = new TypeMap(map.getLibrary(), new TypeMapperCore(new TypeMapperLibrary()));
+		TypeMap refCore = new TypeMap(map.getLibrary(), new TypeMapperCore(new TypeMapperError()));
 		ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
 		TypeOutputStream coreObjectStream = new TypeOutputStream( baos1, map );
-		coreObjectStream.writeObject( DICTIONARY_WORDS, refCore );
+		coreObjectStream.writeObject( DICTIONARY_ENTRY_LIST, refCore );
 		baos1.close();		
 		return baos1.toByteArray();
 	}
@@ -241,8 +244,8 @@ public class Dictionary
 	 */
 	public static TypeMap readDictionary( TypeLibrary library, InputStream fis) throws TypeException, IOException
 	{
-		TypeMap refCore = new TypeMap(library, new TypeMapperCore(new TypeMapperLibrary()));
-		ReferenceTypeMap core = new ReferenceTypeMap(library, new TypeMapperCore(new TypeMapperLibrary()), refCore);		
+		TypeMap refCore = new TypeMap(library, new TypeMapperCore(new TypeMapperError()));
+		ReferenceTypeMap core = new ReferenceTypeMap(library, new TypeMapperCore(new TypeMapperError()), refCore);		
 		TypeInputStream tmis = new TypeInputStream( fis, core );      
         
 		// read the core map.
@@ -253,20 +256,20 @@ public class Dictionary
 		// read the final dictionary. register types if needed.
 
 		Integer ident = (Integer) tmis.readObject( UInt16.TYPENAME );
-		if ( ident.intValue() != messageMap.getStreamId(DICTIONARY_WORDS) )
+		if ( ident.intValue() != messageMap.getStreamId(DICTIONARY_ENTRY_LIST) )
 			throw new TypeException( "Wrong dictionary index value: " + ident.intValue() );
 
 		tmis.setTypeMap( messageMap );
         
-		TypeMap finalMap = new TypeMap( coreMap.getLibrary(), new TypeMapperLibrary() );
+		TypeMap finalMap = new TypeMap( coreMap.getLibrary(), new TypeMapperError() );
 		setMap( tmis, messageMap, finalMap );
 		return finalMap;
 	}
 
 	private static ReferenceTypeMap readCore( TypeLibrary library, TypeInputStream tmis ) throws TypeException, IOException
 	{
-		TypeMap refCore = new TypeMap(library, new TypeMapperCore(new TypeMapperLibrary()));
-		ReferenceTypeMap core = new ReferenceTypeMap( library, new TypeMapperCore(new TypeMapperLibrary()), refCore);
+		TypeMap refCore = new TypeMap(library, new TypeMapperCore(new TypeMapperError()));
+		ReferenceTypeMap core = new ReferenceTypeMap( library, new TypeMapperCore(new TypeMapperError()), refCore);
 		
 		// read the core array size.  expect = 2.
 		Short arraySize = (Short) tmis.readObject( UInt8.TYPENAME );
@@ -309,7 +312,7 @@ public class Dictionary
 	
 	private static ReferenceTypeMap readMessageMap( TypeInputStream tmis, ReferenceTypeMap coreMap ) throws TypeException, IOException
 	{
-		ReferenceTypeMap mapSpec = new ReferenceTypeMap( coreMap.getLibrary(), new TypeMapperLibrary(), coreMap );
+		ReferenceTypeMap mapSpec = new ReferenceTypeMap( coreMap.getLibrary(), new TypeMapperError(), coreMap );
 		
 		// read the data dictionary array size.  expect = 1.
 		Short arraySize = (Short) tmis.readObject( UInt8.TYPENAME );
@@ -340,7 +343,7 @@ public class Dictionary
 			Triple newType = new Triple();
 			newType.id = ((Integer)dictDataIn.readObject( UInt16.TYPENAME )).intValue();
 			newType.location = (TypeLocation) dictDataIn.readObject(DictionaryLocation.TYPENAME);
-			newType.structure = (byte[]) dictDataIn.readObject( "meta.definition.envelop" );
+			newType.structure = (byte[]) dictDataIn.readObject( MetaDefinition.META_DEFINITION_ENVELOP );
 			newTypes[x] = newType;
 		}
 		

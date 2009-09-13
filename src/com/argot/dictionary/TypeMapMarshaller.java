@@ -26,6 +26,7 @@ import com.argot.TypeOutputStream;
 import com.argot.TypeWriter;
 import com.argot.common.UInt16;
 import com.argot.meta.DictionaryLocation;
+import com.argot.meta.MetaDefinition;
 
 public class TypeMapMarshaller
 implements TypeLibraryWriter, TypeWriter
@@ -46,7 +47,7 @@ implements TypeLibraryWriter, TypeWriter
 
 			out.writeObject( UInt16.TYPENAME, new Integer(streamId));
 			out.writeObject( DictionaryLocation.TYPENAME, library.getLocation(definitionId));
-			out.writeObject( "meta.definition.envelop", library.getStructure( definitionId ) );			
+			out.writeObject( MetaDefinition.META_DEFINITION_ENVELOP, library.getStructure( definitionId ) );			
 		}
 
     }

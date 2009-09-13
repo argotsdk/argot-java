@@ -172,13 +172,20 @@ implements MetaDefinition
 	{
 		try 
 		{
-			int id = getLibrary().getId(exception.getClass());
+			int ids[] = getLibrary().getId(exception.getClass());
+			if (ids.length != 1)
+			{
+				if (ids.length>1)
+					throw new TypeException("Class bound to multiple system types:" +exception.getClass().getName());
+				if (ids.length==0)
+					throw new TypeException("Class not bound to any mapped type:"+exception.getClass().getName());
+			}
 			
 			// see if the exception is directly related.
 			for (int x=0;x<_errorTypes.length;x++)
 			{
-				if (id == _errorTypes[x])
-					return id;
+				if (ids[0] == _errorTypes[x])
+					return ids[0];
 			}
 			
 			// look through abstract types.
@@ -188,7 +195,7 @@ implements MetaDefinition
 				if (element instanceof MetaAbstract)
 				{
 					MetaAbstract metaAbstract = (MetaAbstract) element;
-					if (metaAbstract.isMapped(id))
+					if (metaAbstract.isMapped(ids[0]))
 					{
 						return _errorTypes[x];
 					}

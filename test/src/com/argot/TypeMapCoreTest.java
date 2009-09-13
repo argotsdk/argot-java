@@ -15,6 +15,10 @@
  */
 package com.argot;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
+import com.argot.dictionary.Dictionary;
 import com.argot.meta.MetaFixedWidth;
 import com.argot.meta.MetaLoader;
 
@@ -34,7 +38,26 @@ extends TestCase
     
     public void testTypeMapCore() throws Exception
     {
-       // TypeMapCore.getCoreTypeMap( _library );
+		TypeMap baseMap = new TypeMap( _library, new TypeMapperCore(new TypeMapperError()));
+		ReferenceTypeMap coreMap = new ReferenceTypeMap( _library, new TypeMapperCore(new TypeMapperError()), baseMap);
+  	
+        byte[] core = writeCore(coreMap);
+        
+        int count=0;
+        System.out.println("Core Size: " + core.length);
+        for (int x=0; x<core.length;x++)
+        {
+        	count++;
+        	String value = Integer.toString( core[x], 16 );
+        	if (value.length()==1) value = "0" + value;
+        	value = "" + value;
+        	System.out.print( "" + value + " ");
+        	if (count>30)
+        	{
+        		count=0;
+        		System.out.println("");
+        	}
+        }
     }
     
     public void testGetClass() throws Exception
@@ -44,5 +67,15 @@ extends TestCase
       //  int id = map.getStreamId( MetaFixedWidth.class );
       //  assertEquals( id, map.getStreamId( MetaFixedWidth.TYPENAME ));
     }
+    
+	public static byte[] writeCore( TypeMap map ) throws TypeException, IOException
+	{
+		TypeMap refCore = new TypeMap(map.getLibrary(), new TypeMapperCore(new TypeMapperError()));
+		ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
+		TypeOutputStream coreObjectStream = new TypeOutputStream( baos1, map );
+		coreObjectStream.writeObject( Dictionary.DICTIONARY_ENTRY_LIST, refCore );
+		baos1.close();		
+		return baos1.toByteArray();
+	}    
 
 }

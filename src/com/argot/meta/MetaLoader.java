@@ -30,6 +30,7 @@ import com.argot.common.Empty;
 import com.argot.common.U8Utf8;
 import com.argot.common.UInt16;
 import com.argot.common.UInt8;
+import com.argot.dictionary.Dictionary;
 import com.argot.dictionary.TypeMapMarshaller;
 
 public class MetaLoader
@@ -375,7 +376,7 @@ implements TypeLibraryLoader
 				new MetaTag( "definition", new MetaReference( metaDefinitionEnvelopId)) 
 			}
 	    );
-		library.register( new DictionaryDefinition(dictionaryEntryId,"dictionary.entry", "1.3"), entryDef, new MetaMarshaller(), new MetaMarshaller(), null );
+		library.register( new DictionaryDefinition(dictionaryEntryId,Dictionary.DICTIONARY_ENTRY, Dictionary.DICTIONARY_ENTRY_VERSION), entryDef, new MetaMarshaller(), new MetaMarshaller(), null );
 		
 		// 30 - 61. dictionary.entry.list
 		// TODO Remove surrounding sequence.  Requires better marshaller.
@@ -384,7 +385,7 @@ implements TypeLibraryLoader
 					new MetaReference(uint16Id ),
 					new MetaReference(dictionaryEntryId)
 				)});
-		library.register( new DictionaryDefinition(dictionaryEntryListId,"dictionary.entry.list", "1.3"), dmDef, new TypeReaderAuto(TypeMap.class), new TypeMapMarshaller(), null );
+		library.register( new DictionaryDefinition(dictionaryEntryListId,Dictionary.DICTIONARY_ENTRY_LIST, Dictionary.DICTIONARY_ENTRY_LIST_VERSION), dmDef, new TypeReaderAuto(TypeMap.class), new TypeMapMarshaller(), null );
 		
 	}
 

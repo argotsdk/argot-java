@@ -140,7 +140,7 @@ extends ResourceDictionaryLoader
 		if ( library.getTypeState( typeId ) == TypeLibrary.TYPE_REGISTERED )
 		{	
 			U8Ascii sbu = new U8Ascii();
-			id = library.bind( typeId, new TypeSimpleReader(sbu), new TypeSimpleWriter(sbu), null );
+			id = library.bind( typeId, new TypeSimpleReader(sbu), new TypeSimpleWriter(sbu), String.class );
 			library.setSimpleType(id,true);
 		}
 

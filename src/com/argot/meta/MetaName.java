@@ -46,7 +46,7 @@ public class MetaName
 	
 	public String[] getParts()
 	{
-		return _name.clone();
+		return (String[]) _name.clone();
 	}
 	
 	public int size()

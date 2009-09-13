@@ -44,10 +44,12 @@ public class MetaAbstractMap
 extends MetaExpression
 implements MetaDefinition
 {
-    public static final String TYPENAME = "meta.abstract.map";
+    public static final String TYPENAME = "meta.abstract_map";
     public static final String VERSION = "1.3";
     
 	private TypeLibrary _library;
+	
+	private boolean _isBound;
 	
 	private int _abstractType;
 	private int _concreteType;
@@ -56,6 +58,8 @@ implements MetaDefinition
 	
 	public MetaAbstractMap( int concreteType ) throws TypeException
 	{
+		_isBound = false;
+		
 		if (concreteType < 0 )
 		{
 			throw new TypeException("Invalid Type identifier for concrete type");
@@ -97,6 +101,8 @@ implements MetaDefinition
     {
         super.bind(library, definitionId, location, definition);
         
+        _isBound = true;
+        
         if (!(location instanceof TypeLocationRelation))
         {
         	throw new TypeException("Expected TypeLocationRelation");
@@ -128,9 +134,13 @@ implements MetaDefinition
 	{
 		return _concreteType;
 	}
+	
 
-	private void setConcreteType(int i)
+	public void setConcreteType(int i) 
+	throws TypeException
 	{
+		if (_isBound) throw new TypeException("map already bound");
+		
 		_concreteType = i;        
 	}
 	

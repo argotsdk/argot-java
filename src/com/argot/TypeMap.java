@@ -222,26 +222,42 @@ public class TypeMap
 	}
 	
 	/**
-	 * returns the stream identifier given a class.  A class must be unique
+	 * returns the stream identifiers given a class.  A class must be unique
 	 * in each TypeLibrary.
 	 * 
 	 * @param clss
 	 * @return
 	 * @throws TypeException
 	 */
-	public int getStreamId( Class clss) 
+
+	public int[] getStreamId( Class clss) 
 	throws TypeException
 	{
-		int definitionId = _library.getId(clss);
+		int[] definitionIds = _library.getId(clss);
 
-		int streamId = _map.findKey(definitionId);
-		if (streamId == -1)
+		List list = new ArrayList();
+		
+		for (int x=0;x<definitionIds.length;x++)
 		{
-			return getStreamId(definitionId);
+			int streamId = _map.findKey(definitionIds[x]);
+			if (streamId == -1)
+			{
+				list.add( new Integer( getStreamId(definitionIds[x]) ));
+			}
+			else
+			{
+				list.add( new Integer( streamId ));
+			}
 		}
-		return streamId;	
+
+		int[] finalList = new int[list.size()];
+		for (int x=0;x<list.size();x++)
+		{
+			finalList[x] = ((Integer) list.get(x)).intValue();
+		}
+		return finalList;	
 	}
-	
+
 	// Functions that use stream identifier to return type data.
 
 	/**

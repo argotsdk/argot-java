@@ -25,7 +25,7 @@ import com.argot.TypeMap;
 import com.argot.TypeInputStream;
 import com.argot.TypeMapperCore;
 import com.argot.TypeMapperDynamic;
-import com.argot.TypeMapperLibrary;
+import com.argot.TypeMapperError;
 import com.argot.TypeOutputStream;
 import com.argot.TypeLibrary;
 import com.argot.dictionary.DictionaryLoader;
@@ -51,7 +51,7 @@ extends TestCase
         
 		baos = new ByteArrayOutputStream();
         TypeLibrary library = new TypeLibrary( libraryLoaders );
-		map = new TypeMap( library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperLibrary())) );
+		map = new TypeMap( library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperError())) );
         out = new TypeOutputStream( baos, map );        
     }
 

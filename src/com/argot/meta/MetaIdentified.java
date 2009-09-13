@@ -105,8 +105,20 @@ extends MetaExpression
 		public void write(TypeOutputStream out, Object o)
 		throws TypeException, IOException 
 		{
-			int systemId = out.getTypeMap().getLibrary().getId(o.getClass());
-			int id = out.getTypeMap().getStreamId(systemId);
+			if (o==null)
+			{
+				throw new TypeException("Identified type is null");
+			}
+			int streamIds[] = out.getTypeMap().getStreamId(o.getClass());
+			if (streamIds.length != 1)
+			{
+				if (streamIds.length>1)
+					throw new TypeException("Class bound to multiple system types:" +o.getClass().getName());
+				if (streamIds.length==0)
+					throw new TypeException("Class not bound to any mapped type:"+o.getClass().getName());
+			}
+			//int id = out.getTypeMap().getStreamId(systemIds[0]);
+			int id = streamIds[0];
 			_uint16.write( out, new Integer(id));
 			out.writeObject( id, o );
 		}

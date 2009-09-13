@@ -28,6 +28,7 @@ implements TypeElement
 	
     private TypeLibrary _library;
     private TypeElement _definition;
+    private TypeLocation _location;
     private int _memberTypeId;
     private int _typeId;
  
@@ -35,8 +36,9 @@ implements TypeElement
     throws TypeException
     {
         _library = library;
-        _definition = definition;
         _memberTypeId = memberTypeId;
+        _location = location;
+        _definition = definition;
         _typeId = _library.getTypeId( getTypeName() );
     }
     
@@ -58,6 +60,11 @@ implements TypeElement
     public int getTypeId()
     {
         return _typeId;
+    }
+    
+    public TypeLocation getLocation()
+    {
+    	return _location;
     }
     
     public abstract String getTypeName();

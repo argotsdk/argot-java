@@ -15,40 +15,40 @@
  */
 package com.argot;
 
+import com.argot.meta.MetaName;
 
-public class TypeMapperDirect 
-implements TypeMapper
+public class TypeMapperError 
+implements TypeMapper 
 {
-	TypeLibrary _library;
-	TypeMap _map;
+	private TypeLibrary _library;
+
+	public TypeMapperError()
+	{
+	}
 	
 	public void initialise(TypeMap map) 
 	throws TypeException 
 	{
 		_library = map.getLibrary();
-		_map = map;
 	}
 
 	public int map(int definitionId) 
 	throws TypeException 
 	{
-		_map.map(definitionId, definitionId);
-		
-		return definitionId;
+		throw new TypeException("not mapped: " + _library.getName(definitionId));
 	}
 
 	public int mapReverse(int streamId) 
 	throws TypeException 
 	{
-		throw new TypeException("Call should not be reached");
+		throw new TypeException("not mapped");
 	}
 
 	public int mapDefault(int nameId) 
 	throws TypeException 
 	{
-		int defId = _map.getDefinitionId(nameId);
-		TypeElement elemStructure = _library.getStructure(defId);
-		return -1;
+		MetaName name = _library.getName(nameId);
+		throw new TypeException("not mapped: " + name );
 	}
 
 }

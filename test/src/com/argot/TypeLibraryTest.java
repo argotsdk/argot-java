@@ -412,8 +412,9 @@ extends TestCase
         //int id = _library.register( "test","1.0", new TestTypeElement(), new TestReader(), writer, writer.getClass() );
         int id = _library.register( new DictionaryName("test"), new TestTypeElement(), new TestReader(), writer, writer.getClass() );
         
-        int cid = _library.getId( writer.getClass() );
-        assertEquals( id, cid );      
+        int[] cids = _library.getId( writer.getClass() );
+        assertEquals( 1, cids.length );
+        assertEquals( id, cids[0] );      
     }
     
     public void testGetClassIdAfterReserve() throws Exception
@@ -423,8 +424,9 @@ extends TestCase
         //int id = _library.register( "test","1.0", new TestTypeElement(), new TestReader(), writer, writer.getClass() );
         int id = _library.register( new DictionaryName("test"), new TestTypeElement(), new TestReader(), writer, writer.getClass() );
         
-        int cid = _library.getId( writer.getClass() );
-        assertEquals( id, cid );      
+        int[] cids = _library.getId( writer.getClass() );
+        assertEquals( 1, cids.length );
+        assertEquals( id, cids[0] );      
     }
     
     public void testGetName() throws Exception
@@ -517,6 +519,23 @@ extends TestCase
 			// ignore
 		}
     }
+    
+    public void testAddClassAliasOverloadedOk() throws Exception
+    {
+        TestWriter writer = new TestWriter();
+        //int id = _library.register( "test","1.0", new TestTypeElement(), new TestReader(), writer, writer.getClass() );
+        int id1 = _library.register( new DictionaryName("test1"), new TestTypeElement(), new TestReader(), writer, writer.getClass() );
+        int id2 = _library.register( new DictionaryName("test2"), new TestTypeElement(), new TestReader(), writer, writer.getClass() );
+    	
+		//	_library.addClassAlias(id, String.class);
+		int ids[] = _library.getId(writer.getClass());
+		assertTrue(ids.length == 2 );
+		for (int x=0; x<ids.length;x++)
+		{
+			if ( id1 != ids[x] && id2 != ids[x] )
+				fail("invalid ids returned");
+		}
+    }    
     
     public void testGetNames() throws Exception
     {

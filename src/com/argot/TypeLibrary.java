@@ -17,6 +17,8 @@ package com.argot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import com.argot.meta.MetaIdentity;
@@ -49,6 +51,8 @@ public class TypeLibrary
 
 	private HashMap _classes;  // class to TypeDefinitionEntry
 	
+	private TreeItem _tree;
+	
 	private class TypeDefinitionEntry
 	{
 	    public int state;
@@ -71,6 +75,8 @@ public class TypeLibrary
 		_types = new ArrayList();
 		_names = new HashMap();
 		_classes = new HashMap();
+		_tree = new TreeItem();
+		_tree.cluster = new HashMap();
 	}
 
 	public TypeLibrary( TypeLibraryLoader[] loaders )
@@ -90,6 +96,87 @@ public class TypeLibrary
 		loader.load(this);
 	}
 	
+	private void addClass( TypeDefinitionEntry definition, Class clss)
+	throws TypeException
+	{
+        List list = (List) _classes.get( clss);
+        if ( list == null )
+        {
+        	list = new ArrayList();
+        	_classes.put(clss, list);
+        } else {
+        	Iterator iter = list.iterator();
+        	while (iter.hasNext())
+        	{
+        		TypeDefinitionEntry entry = (TypeDefinitionEntry) iter.next();
+        		
+        		if (entry == definition)
+        		{
+        			throw new TypeException("Class already bound to type");
+        		}
+        	}
+        }
+        list.add( definition );
+		
+	}
+	
+	static private class TreeItem
+	{
+		public HashMap cluster = new HashMap();
+		public TypeDefinitionEntry entry;
+	}
+	
+	private void addLocationToTree(MetaName location, TypeDefinitionEntry entry) 
+	throws TypeException
+	{
+		String[] parts = location.getParts();
+		
+		TreeItem currentMap = _tree;
+		
+		for (int x=0; x<parts.length-1;x++)
+		{
+			
+			TreeItem data = (TreeItem) currentMap.cluster.get(parts[x]);
+			if (data == null)
+			{
+				// this group not defined.  Add it.
+				TreeItem newMap = new TreeItem();
+				currentMap.cluster.put(parts[x],newMap);
+				currentMap = newMap;
+				continue;
+			}
+
+			// group already in tree.  Add it.
+			currentMap = data;
+			continue;
+		/*	
+			if (data instanceof TypeDefinitionEntry)
+			{
+				throw new TypeException("Group: '" + parts[x] + "' defined as data type in: " + location.toString());
+			}
+		*/	
+			
+		}
+		
+		TreeItem data = (TreeItem) currentMap.cluster.get(parts[parts.length-1]);
+		if (data != null)
+		{
+			if (data.entry != null)
+			{
+				throw new TypeDefinedException("Name already defined: " + location.toString());
+			}
+			
+			data.entry = entry;
+			return;
+		}
+		
+		data = new TreeItem();
+		data.entry = entry;
+		currentMap.cluster.put(parts[parts.length-1], data);
+
+		//currentMap.put(parts[parts.length-1], entry);
+	}
+	
 	/**
 	 * Add a new definition to the library. This must be a fresh entry.
 	 * Either a reserved or register call.
@@ -107,14 +194,19 @@ public class TypeLibrary
 	    // Add to list of names if it isn't already there.
 	    if (definition.location instanceof TypeLocationName)
 	    {
-	    	String name = checkName( ((TypeLocationName)definition.location).getName().toString() );
+	    	MetaName metaName = ((TypeLocationName)definition.location).getName();
 	    	
+	    	String name = checkName( metaName.toString() );
+
+
 		    TypeDefinitionEntry nameEntry = (TypeDefinitionEntry) _names.get(name);
 		    if ( nameEntry != null )
 		    {
 		    	throw new TypeDefinedException("Type name already exists");
 		    }
-		    
+
+			addLocationToTree(metaName, definition);
+
 		    // Add name lookup in names map.
 		    _names.put(name, definition);
 		}
@@ -183,9 +275,7 @@ public class TypeLibrary
 	    // Add class lookup if defined.
 	    if ( definition.clss != null )
 	    {
-	        if ( _classes.get( definition.clss) != null )
-	            throw new TypeException("class overloaded");
-	        _classes.put( definition.clss, definition );
+	    	addClass( definition, definition.clss );
 	    }
 	    return id;
 	}
@@ -402,9 +492,7 @@ public class TypeLibrary
 		    // copied from add.  Need to add class.
 		    if ( definition.clss != null )
 		    {
-		        if ( _classes.get( definition.clss) != null )
-		            throw new TypeException("class overloaded");
-		        _classes.put( definition.clss, definition );
+		    	addClass( definition, definition.clss );
 		    }
 	    }
 	    else
@@ -542,16 +630,14 @@ public class TypeLibrary
 	    def.clss = clss;
 	    def.state = TYPE_COMPLETE;
 
-	    // copied from add.  Need to add class.
+	    // Need to add class.
 	    if ( def.clss != null )
 	    {
-	        if ( _classes.get( def.clss) != null )
-	            throw new TypeException("class overloaded: ");
-	        _classes.put( def.clss, def );
+	    	addClass( def, def.clss);
 	    }
 	    TypeElement structure = (TypeElement) def.structure;
 	    
-	    structure.bind( this, def.id, null, structure );
+	    structure.bind( this, def.id, def.location, structure );
 	    
 	    if ( reader instanceof TypeBound )
 	    {
@@ -629,7 +715,9 @@ public class TypeLibrary
 		}
 		else if (def.location instanceof TypeLocationRelation)
 		{
-			return getName(((TypeLocationRelation)def.location).getId());// + "#" + ((TypeLocationRelation)def.location).getTag();
+			return getName(((TypeLocationRelation)def.location).getId());
+			//String tag = ((TypeLocationRelation)def.location).getTag();
+			//return MetaName.parseName( name.toString() + "." + tag );
 		}
 				
 		throw new TypeException("Type not named");
@@ -800,7 +888,8 @@ public class TypeLibrary
 	 * @return structure id
 	 * @throws TypeException
 	 */
-	public int getId( Class clss )
+
+	public int[] getId( Class clss )
 	throws TypeException
 	{
 		Class searchClass = clss;
@@ -821,14 +910,20 @@ public class TypeLibrary
 			searchClass = Float.class;	
 		
 			
-		TypeDefinitionEntry w = (TypeDefinitionEntry) _classes.get( searchClass );
-		if ( w == null )
+		List list = (List) _classes.get( searchClass );
+		if ( list == null )
 			throw new TypeException( "no id for class: " + searchClass.getName() );
 		
-		if ( w.id == -1 )
-			throw new TypeException( "no id for class");
-			
-		return w.id;
+
+		int[] values = new int[list.size()];
+		Iterator iter = list.iterator();
+		int x=0;
+		while(iter.hasNext())
+		{
+			values[x] = ((TypeDefinitionEntry) iter.next()).id;
+			x++;
+		}
+		return values;
 	}
 
 	/**
@@ -846,11 +941,14 @@ public class TypeLibrary
 		if ( def == null )
 			throw new TypeException( "type not found" );
 		
+		addClass( def, clss );
+/*		
 		TypeDefinitionEntry w = (TypeDefinitionEntry) _classes.get( clss );
 		if ( w != null )
 			throw new TypeException( "class overloaded: " + clss.getName() );
 
 		_classes.put( clss, def );
+		*/
 	}
 	
 

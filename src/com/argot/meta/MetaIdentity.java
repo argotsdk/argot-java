@@ -36,11 +36,11 @@ implements MetaDefinition
 {
 	public static final String TYPENAME = "meta.identity";
 	
-	private Map<MetaVersion, Integer> _versions;
+	private Map _versions;
 	
 	public MetaIdentity()
 	{
-		_versions = new HashMap<MetaVersion, Integer>();
+		_versions = new HashMap();
 
 	}
 	
@@ -68,7 +68,7 @@ implements MetaDefinition
 		return value.intValue();
 	}
 	
-	public Set<MetaVersion> getVersions()
+	public Set getVersions()
 	{
 		return _versions.keySet();
 	}

@@ -68,11 +68,11 @@ implements TypeReader, TypeWriter
 			b = ((Byte)o).intValue();
 		}
 		else
-			throw new TypeException( "S8B: object not supported");
+			throw new TypeException( "int8: object not supported");
 
 		// Check the range.
 		if ( b < MIN || b > MAX )
-			throw new TypeException( "U8B: out of range: " + b );
+			throw new TypeException( "int8: out of range: " + b );
 
 		// We take the int value and & 0xff to take the lower
 		// eight bits.  This will convert the value to between

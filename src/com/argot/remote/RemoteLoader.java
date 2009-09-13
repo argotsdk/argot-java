@@ -66,12 +66,20 @@ extends ResourceDictionaryLoader
 			library.bind( typeId, new TypeSimpleReader(new MetaObject.MetaObjectReader()), new TypeSimpleWriter(new MetaObject.MetaObjectWriter()), MetaObject.class );
 		}
 		
-		typeId = library.getTypeId( MetaParameter.TYPENAME, MetaParameter.VERSION );
+		typeId = library.getTypeId( MetaObject.TYPENAME, MetaObject.VERSION );
+		if ( library.getTypeState( typeId ) == TypeLibrary.TYPE_REGISTERED )
+		{
+			library.bind( typeId, new TypeSimpleReader(new MetaObject.MetaObjectReader()), new TypeSimpleWriter(new MetaObject.MetaObjectWriter()), MetaObject.class );
+		}
+		
+		typeId = library.getTypeId( MetaLocation.TYPENAME, MetaLocation.VERSION );
 		if ( library.getTypeState( typeId ) == TypeLibrary.TYPE_REGISTERED )
 		{
 			library.bind( typeId,new MetaMarshaller(),new MetaMarshaller(), MetaLocation.class );
 		}
+		
 
+		library.bind( library.getTypeId("remote.exception","1.3"), new MetaMarshaller(), new MetaMarshaller(), null );
 		library.bind( library.getTypeId("remote.exception.basic", "1.3"), new MetaMarshaller(),new MetaMarshaller(), null );
 		library.bind( library.getTypeId("remote.stack_trace_element", "1.3"), new TypeReaderAuto( MetaRemoteStackTraceElement.class ),new MetaRemoteStackTraceElement.MetaRemoteStackTraceElementWriter(), MetaRemoteStackTraceElement.class );
 		library.bind( library.getTypeId("remote.exception.wrapped", "1.3"), new MetaRemoteException.Reader(WrappedRemoteException.class), new MetaRemoteException.Writer(), WrappedRemoteException.class );

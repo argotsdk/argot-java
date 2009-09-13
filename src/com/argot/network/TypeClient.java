@@ -250,7 +250,7 @@ implements TypeTransport
 			TypeLocation locationDefinition = (TypeLocation) tmis.readObject( DictionaryLocation.TYPENAME );
 			byte[] definition = (byte[]) tmis.readObject( "u16binary" );
 			
-			return new TypeTriple( mapId, TypeTriple.fixLocation(locationDefinition, _linkMap), definition );
+			return new TypeTriple( mapId.intValue(), TypeTriple.fixLocation(locationDefinition, _linkMap), definition );
 		}
 		finally
 		{

@@ -41,7 +41,7 @@ extends TestCase
 		super.setUp();
 		
 		_library = new TypeLibrary( libraryLoaders );
-		_typeMap = new TypeMap( _library, new TypeMapperDynamic( new TypeMapperLibrary() ) );
+		_typeMap = new TypeMap( _library, new TypeMapperDynamic( new TypeMapperError() ) );
 	}
 	
 	public void testMap()
@@ -67,8 +67,9 @@ extends TestCase
 	public void testGetIdClass()
 	throws Exception
 	{
-		int id = _typeMap.getStreamId( MetaSequence.class );
-		assertTrue( id != TypeMap.NOTYPE );
+		int[] ids = _typeMap.getStreamId( MetaSequence.class );
+		assertTrue( ids.length == 1 );
+		assertTrue( ids[0] != TypeMap.NOTYPE );
 	}
 	
 	public void testGetReader()

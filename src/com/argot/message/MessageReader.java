@@ -31,11 +31,12 @@ import com.argot.TypeLocation;
 import com.argot.TypeMap;
 import com.argot.TypeMapperCore;
 import com.argot.TypeMapperDynamic;
-import com.argot.TypeMapperLibrary;
+import com.argot.TypeMapperError;
 import com.argot.TypeOutputStream;
 
 import com.argot.common.UInt16;
 import com.argot.common.UInt8;
+import com.argot.dictionary.Dictionary;
 import com.argot.meta.DictionaryDefinition;
 import com.argot.meta.DictionaryLocation;
 import com.argot.meta.DictionaryName;
@@ -44,16 +45,13 @@ import com.argot.meta.MetaDefinition;
 
 
 public class MessageReader 
-{
-	public static final String DICTIONARY_WORDS = "dictionary.entry.list";
-	public static final String DICTIONARY_WORDS_VERSION = "1.3";
-		
+{		
 	public static ReferenceTypeMap readMessageDataDictionary( TypeLibrary library, InputStream is)
 	throws TypeException, IOException
 	{
-		TypeMap refCore = new TypeMap( library, new TypeMapperCore(new TypeMapperLibrary()));
+		TypeMap refCore = new TypeMap( library, new TypeMapperCore(new TypeMapperError()));
 		
-		ReferenceTypeMap core = new ReferenceTypeMap( library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperLibrary())), refCore);
+		ReferenceTypeMap core = new ReferenceTypeMap( library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperError())), refCore);
 		
 		TypeInputStream tmis = new TypeInputStream( is, core );
     
@@ -68,8 +66,8 @@ public class MessageReader
 	public static Object readMessage( TypeLibrary library, InputStream fis) 
 	throws TypeException, IOException
 	{
-		TypeMap refCore = new TypeMap( library, new TypeMapperCore(new TypeMapperLibrary()));
-		ReferenceTypeMap core = new ReferenceTypeMap( library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperLibrary())), refCore);
+		TypeMap refCore = new TypeMap( library, new TypeMapperCore(new TypeMapperError()));
+		ReferenceTypeMap core = new ReferenceTypeMap( library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperError())), refCore);
 		TypeInputStream tmis = new TypeInputStream( fis, core );
          
 		// read the core map.
@@ -88,8 +86,8 @@ public class MessageReader
 
 	private static ReferenceTypeMap readCore( TypeLibrary library, TypeInputStream tmis ) throws TypeException, IOException
 	{
-		TypeMap refCore = new TypeMap(library, new TypeMapperCore(new TypeMapperLibrary()));
-		ReferenceTypeMap core = new ReferenceTypeMap( library, new TypeMapperCore(new TypeMapperLibrary()), refCore);
+		TypeMap refCore = new TypeMap(library, new TypeMapperCore(new TypeMapperError()));
+		ReferenceTypeMap core = new ReferenceTypeMap( library, new TypeMapperCore(new TypeMapperError()), refCore);
 		
 		// read the core array size.  expect = 2.
 		Short arraySize = (Short) tmis.readObject( UInt8.TYPENAME );
@@ -133,7 +131,7 @@ public class MessageReader
 	
 	private static ReferenceTypeMap readMessageMap( TypeInputStream tmis, ReferenceTypeMap coreMap ) throws TypeException, IOException
 	{
-		ReferenceTypeMap mapSpec = new ReferenceTypeMap( coreMap.getLibrary(), new TypeMapperLibrary(), coreMap );
+		ReferenceTypeMap mapSpec = new ReferenceTypeMap( coreMap.getLibrary(), new TypeMapperError(), coreMap );
 		
 		// read the data dictionary array size.  expect = 1.
 		Short arraySize = (Short) tmis.readObject( UInt8.TYPENAME );
@@ -165,7 +163,7 @@ public class MessageReader
 			Triple newType = new Triple();
 			newType.id = ((Integer)dictDataIn.readObject(UInt16.TYPENAME)).intValue();
 			newType.location = (TypeLocation) dictDataIn.readObject(DictionaryLocation.TYPENAME );
-			newType.structure = (byte[]) dictDataIn.readObject( "meta.definition.envelop" );
+			newType.structure = (byte[]) dictDataIn.readObject( MetaDefinition.META_DEFINITION_ENVELOP );
 			newTypes[x] = newType;
 		}
 
@@ -276,10 +274,10 @@ public class MessageReader
 
 	public static byte[] writeCore( TypeMap map ) throws TypeException, IOException
 	{
-		TypeMap refCore = new TypeMap(map.getLibrary(), new TypeMapperCore(new TypeMapperLibrary()));
+		TypeMap refCore = new TypeMap(map.getLibrary(), new TypeMapperCore(new TypeMapperError()));
 		ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
 		TypeOutputStream coreObjectStream = new TypeOutputStream( baos1, map );
-		coreObjectStream.writeObject( DICTIONARY_WORDS, refCore );
+		coreObjectStream.writeObject( Dictionary.DICTIONARY_ENTRY_LIST, refCore );
 		baos1.close();		
 		return baos1.toByteArray();
 	}

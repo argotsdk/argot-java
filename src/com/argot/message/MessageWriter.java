@@ -27,19 +27,17 @@ import com.argot.TypeLocation;
 import com.argot.TypeMap;
 import com.argot.TypeMapperCore;
 import com.argot.TypeMapperDynamic;
-import com.argot.TypeMapperLibrary;
+import com.argot.TypeMapperError;
 import com.argot.TypeOutputStream;
 import com.argot.TypeLibrary;
 import com.argot.common.UInt16;
 import com.argot.common.UInt8;
+import com.argot.dictionary.Dictionary;
 import com.argot.meta.DictionaryLocation;
 import com.argot.meta.MetaDefinition;
 
 public class MessageWriter
-{
-	public static final String DICTIONARY_WORDS = "dictionary.entry.list";
-	public static final String DICTIONARY_WORDS_VERSION = "1.3";
-	
+{	
     private TypeLibrary _library;
     
     public MessageWriter( TypeLibrary library )
@@ -51,13 +49,13 @@ public class MessageWriter
     {
 		
 		// write out the dictionary used to write the content.
-		ReferenceTypeMap refCore = new ReferenceTypeMap( _library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperLibrary())));
+		ReferenceTypeMap refCore = new ReferenceTypeMap( _library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperError())));
 
 		// write out the dictionary used to write the content.
-		ReferenceTypeMap core = new ReferenceTypeMap( _library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperLibrary())), refCore);
+		ReferenceTypeMap core = new ReferenceTypeMap( _library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperError())), refCore);
 	
 		// create a dynamic type map.
-		ReferenceTypeMap dtm = new ReferenceTypeMap( _library, new TypeMapperDynamic( new TypeMapperLibrary() ));
+		ReferenceTypeMap dtm = new ReferenceTypeMap( _library, new TypeMapperDynamic( new TypeMapperError() ));
 		
 		// get the id of the object on the stream.
 		int streamId = dtm.getStreamId(id);
@@ -87,7 +85,7 @@ public class MessageWriter
 			dictionaryStream = new ByteArrayOutputStream(); 
 			dictionaryObjectStream = new TypeOutputStream( dictionaryStream , dtm );
 			dictionaryObjectStream.writeObject( UInt8.TYPENAME, new Integer( 1 ));
-			dictionaryObjectStream.writeObject( DICTIONARY_WORDS, dtm );
+			dictionaryObjectStream.writeObject( Dictionary.DICTIONARY_ENTRY_LIST, dtm );
 			dictionaryObjectStream.getStream().close();
 			dictionaryStream.close();
 			
@@ -97,7 +95,7 @@ public class MessageWriter
 		dictionaryStream = new ByteArrayOutputStream(); 
 		dictionaryObjectStream = new TypeOutputStream( dictionaryStream , core );
 		dictionaryObjectStream.writeObject( UInt8.TYPENAME, new Integer( 1 ));
-		dictionaryObjectStream.writeObject( DICTIONARY_WORDS, dtm );
+		dictionaryObjectStream.writeObject( Dictionary.DICTIONARY_ENTRY_LIST, dtm );
 		dictionaryObjectStream.getStream().close();
 		dictionaryStream.close();
 		
@@ -171,7 +169,7 @@ public class MessageWriter
 				MetaDefinition definition = (MetaDefinition) map.getStructure(id.intValue());
 				out2.writeObject( UInt16.TYPENAME, new Integer(id.intValue()));
 				out2.writeObject( DictionaryLocation.TYPENAME, location);
-				out2.writeObject( "meta.definition.envelop", definition );
+				out2.writeObject( "meta.definition_envelop", definition );
 			}
 			
 			out2.getStream().close();
@@ -187,10 +185,10 @@ public class MessageWriter
 
 	public static byte[] writeCore( TypeMap map ) throws TypeException, IOException
 	{
-		TypeMap refCore = new TypeMap(map.getLibrary(), new TypeMapperCore(new TypeMapperLibrary()));
+		TypeMap refCore = new TypeMap(map.getLibrary(), new TypeMapperCore(new TypeMapperError()));
 		ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
 		TypeOutputStream coreObjectStream = new TypeOutputStream( baos1, map );
-		coreObjectStream.writeObject( DICTIONARY_WORDS, refCore );
+		coreObjectStream.writeObject( Dictionary.DICTIONARY_ENTRY_LIST, refCore );
 		baos1.close();		
 		return baos1.toByteArray();
 	}

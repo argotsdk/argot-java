@@ -12,26 +12,28 @@
  *  A very simple book description.
  */
 
-(dictionary.source [
+(library.list [
 
-(meta.structure meta.name:"book" 
+(library.entry 
+	(library.definition meta.name:"book" meta.version:"1.0")
 	(meta.sequence [
 		(meta.tag u8ascii:"ISBN" (meta.reference #u8ascii))
 		(meta.tag u8ascii:"title" (meta.reference #u8ascii))
 		(meta.tag u8ascii:"description" (meta.reference #u8ascii))
 		(meta.tag u8ascii:"author" (meta.reference #u8ascii))
-	])
-)
+	]))
 
 /*
  *  A list of books.
  */
 
-(meta.structure meta.name:"booklist" (meta.sequence [
-	(meta.array
-		(meta.reference #uint8)
-		(meta.reference #book)
-	)
-]))
+(library.entry 
+	(library.definition meta.name:"booklist" meta.version:"1.0")
+	(meta.sequence [
+		(meta.array
+			(meta.reference #uint8)
+			(meta.reference #book)
+		)
+	]))
 
 ])

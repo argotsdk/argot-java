@@ -115,9 +115,13 @@ public class MetaRemoteException
 	public static boolean isWrapRequired(TypeLibrary library, Throwable cause)
 	{
 		try {
-			int id = library.getId(cause.getClass());
+			int[] ids = library.getId(cause.getClass());
+			if ( ids.length<=1)
+			{
+				throw new TypeException("Exception mapped to multiple types");
+			}
 			MetaAbstract metaAbstract = (MetaAbstract) library.getStructure( library.getDefinitionId("remote.exception","1.3"));
-			return !metaAbstract.isMapped(id);
+			return !metaAbstract.isMapped(ids[0]);
 		} catch (TypeException e) {
 			return false;
 		}
@@ -147,10 +151,17 @@ public class MetaRemoteException
 			{
 				try {
 					TypeLibrary library = out.getTypeMap().getLibrary();
-					int id = library.getId(cause.getClass());
+					int[] ids = library.getId(cause.getClass());
+					if (ids.length != 1)
+					{
+						if (ids.length>1)
+							throw new TypeException("Class bound to multiple system types:" +o.getClass().getName());
+						if (ids.length==0)
+							throw new TypeException("Class not bound to any mapped type:"+o.getClass().getName());
+					}
 					
 					MetaAbstract metaAbstract = (MetaAbstract) library.getStructure( library.getDefinitionId("remote.exception","1.3"));
-					if (metaAbstract.isMapped(id))
+					if (metaAbstract.isMapped(ids[0]))
 					{
 						out.writeObject( "remote.exception", cause);
 						return;

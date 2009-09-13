@@ -20,7 +20,7 @@ import java.util.Comparator;
 import com.argot.TypeException;
 
 public class MetaVersion 
-implements Comparable<MetaVersion>
+implements Comparable
 {
 	public static final String TYPENAME = "meta.version";
 	public static final String VERSION = "1.3";
@@ -127,20 +127,18 @@ implements Comparable<MetaVersion>
 		
 	}
 
-	public int compareTo(MetaVersion o) 
+	public int compareTo(Object o) 
 	{
 		if (o==null) return -1;
 		
 		return this.toString().compareTo(o.toString());
 	}
 
-	@Override
 	public int hashCode() 
 	{
 		return this.toString().hashCode();
 	}
 
-	@Override
 	public boolean equals(Object obj) 
 	{
 		if (obj == null)

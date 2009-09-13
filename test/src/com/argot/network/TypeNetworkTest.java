@@ -23,7 +23,7 @@ import com.argot.TypeLibraryLoader;
 import com.argot.TypeMap;
 import com.argot.TypeMapperCore;
 import com.argot.TypeMapperDynamic;
-import com.argot.TypeMapperLibrary;
+import com.argot.TypeMapperError;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
 import com.argot.common.CommonLoader;
@@ -52,7 +52,7 @@ extends TestCase
 
     public void testClientMetaDictionaryUsage() throws Exception
     {
-    	ReferenceTypeMap serverMap = new ReferenceTypeMap( _library, new TypeMapperDynamic( new TypeMapperCore(new TypeMapperLibrary() )));
+    	ReferenceTypeMap serverMap = new ReferenceTypeMap( _library, new TypeMapperDynamic( new TypeMapperCore(new TypeMapperError() )));
 		//TypeMapCore.mapMeta( serverMap, _library );
 		//serverMap.map( 42, _library.getDefinitionId("dictionary.words","1.3"));
 		
@@ -74,7 +74,7 @@ extends TestCase
     
     public void testClientResolutionGetIdName() throws Exception
     {
-       	ReferenceTypeMap serverMap = new ReferenceTypeMap( _library, new TypeMapperDynamic( new TypeMapperCore(new TypeMapperLibrary() )));
+       	ReferenceTypeMap serverMap = new ReferenceTypeMap( _library, new TypeMapperDynamic( new TypeMapperCore(new TypeMapperError() )));
 		
     	TypeServer typeServer = new TypeServer( _library, serverMap );
     	// client will write to server and expect a response.
@@ -90,7 +90,7 @@ extends TestCase
 
     public void testClientResolutionReverse() throws Exception
     {
-       	ReferenceTypeMap serverMap = new ReferenceTypeMap( _library, new TypeMapperDynamic( new TypeMapperCore(new TypeMapperLibrary() )));
+       	ReferenceTypeMap serverMap = new ReferenceTypeMap( _library, new TypeMapperDynamic( new TypeMapperCore(new TypeMapperError() )));
 		
     	TypeServer typeServer = new TypeServer( _library, serverMap );
     	TestTypeTransport transport = new TestTypeTransport( typeServer );
@@ -105,7 +105,7 @@ extends TestCase
 
     public void testClientResolutionLibraryId() throws Exception
     {
-       	ReferenceTypeMap serverMap = new ReferenceTypeMap( _library, new TypeMapperDynamic( new TypeMapperCore(new TypeMapperLibrary() )));
+       	ReferenceTypeMap serverMap = new ReferenceTypeMap( _library, new TypeMapperDynamic( new TypeMapperCore(new TypeMapperError() )));
    	
     	TypeServer typeServer = new TypeServer( _library, serverMap );
     	TestTypeTransport transport = new TestTypeTransport( typeServer );
@@ -119,7 +119,7 @@ extends TestCase
 
     public void testClientResolutionReader() throws Exception
     {
-       	ReferenceTypeMap serverMap = new ReferenceTypeMap( _library, new TypeMapperDynamic( new TypeMapperCore(new TypeMapperLibrary() )));
+       	ReferenceTypeMap serverMap = new ReferenceTypeMap( _library, new TypeMapperDynamic( new TypeMapperCore(new TypeMapperError() )));
    	
     	TypeServer typeServer = new TypeServer( _library, serverMap );
     	TestTypeTransport transport = new TestTypeTransport( typeServer );
@@ -133,7 +133,7 @@ extends TestCase
 
     public void testClientResolutionWriter() throws Exception
     {
-       	ReferenceTypeMap serverMap = new ReferenceTypeMap( _library, new TypeMapperDynamic( new TypeMapperCore(new TypeMapperLibrary() )));
+       	ReferenceTypeMap serverMap = new ReferenceTypeMap( _library, new TypeMapperDynamic( new TypeMapperCore(new TypeMapperError() )));
    	
     	TypeServer typeServer = new TypeServer( _library, serverMap );
     	TestTypeTransport transport = new TestTypeTransport( typeServer );
@@ -147,7 +147,7 @@ extends TestCase
     
     public void testProcessServiceMessage() throws Exception
     {
-    	ReferenceTypeMap serverMap = new ReferenceTypeMap( _library, new TypeMapperDynamic( new TypeMapperLibrary() ) );
+    	ReferenceTypeMap serverMap = new ReferenceTypeMap( _library, new TypeMapperDynamic( new TypeMapperError() ) );
     	TestService service = new TestService();
     	TypeServer typeServer = new TypeServer( _library, serverMap, service );
     	TestTypeTransport transport = new TestTypeTransport( typeServer );

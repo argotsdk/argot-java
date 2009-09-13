@@ -26,7 +26,7 @@ import com.argot.TypeMap;
 
 import com.argot.TypeLibrary;
 import com.argot.TypeMapperCore;
-import com.argot.TypeMapperLibrary;
+import com.argot.TypeMapperError;
 import com.argot.dictionary.Dictionary;
 import com.argot.meta.MetaLoader;
 
@@ -50,7 +50,7 @@ extends TestCase
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         
-		TypeMap map = new TypeMap( _library, new TypeMapperCore(new TypeMapperLibrary()));
+		TypeMap map = new TypeMap( _library, new TypeMapperCore(new TypeMapperError()));
 
 		Dictionary.writeDictionary( baos, map );
 		

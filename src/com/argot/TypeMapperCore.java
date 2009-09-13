@@ -22,6 +22,7 @@ import com.argot.common.Empty;
 import com.argot.common.U8Utf8;
 import com.argot.common.UInt16;
 import com.argot.common.UInt8;
+import com.argot.dictionary.Dictionary;
 import com.argot.meta.DictionaryDefinition;
 import com.argot.meta.DictionaryLocation;
 import com.argot.meta.DictionaryName;
@@ -96,9 +97,9 @@ implements TypeMapper
 		map.map( DICTIONARY_RELATION_ID, library.getDefinitionId( DictionaryRelation.TYPENAME, VERSION ));
 		map.map( DICTIONARY_LOCATION_ID, library.getDefinitionId( DictionaryLocation.TYPENAME, VERSION ));
 			
-		map.map( DEFINITION_ENVELOP_ID, library.getDefinitionId( "meta.definition.envelop", VERSION ));
-		map.map( DICTIONARY_ENTRY_ID, library.getDefinitionId( "dictionary.entry", VERSION ));
-		map.map( DICTIONARY_ENTRY_LIST_ID, library.getDefinitionId( "dictionary.entry.list", VERSION ));		
+		map.map( DEFINITION_ENVELOP_ID, library.getDefinitionId( MetaDefinition.META_DEFINITION_ENVELOP, VERSION ));
+		map.map( DICTIONARY_ENTRY_ID, library.getDefinitionId( Dictionary.DICTIONARY_ENTRY, VERSION ));
+		map.map( DICTIONARY_ENTRY_LIST_ID, library.getDefinitionId( Dictionary.DICTIONARY_ENTRY_LIST, VERSION ));		
 
 		_chain.initialise(map);
 	}

@@ -22,4 +22,7 @@ extends TypeElement
 {
     public static String TYPENAME = "meta.definition";
 	public static String VERSION = "1.3";
+	
+	public static String META_DEFINITION_ENVELOP = "meta.definition.envelop";
+	public static String META_DEFINITION_ENVELOP_VERSION = "1.3";
 }

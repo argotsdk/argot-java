@@ -34,7 +34,7 @@ extends TestCase
         super.setUp();
         _library = new TypeLibrary();
         _library.loadLibrary( new MetaLoader() );
-		_map = new TypeMap( _library, new TypeMapperCore(new TypeMapperLibrary()));
+		_map = new TypeMap( _library, new TypeMapperCore(new TypeMapperError()));
     }
     
     public void testGetIdByName() throws Exception
@@ -65,7 +65,7 @@ extends TestCase
     
     public void testIterator() throws Exception
     {
-    	_map = new TypeMap( _library, new TypeMapperLibrary() );
+    	_map = new TypeMap( _library, new TypeMapperError() );
     	_map.map( 34, 33 );
     	_map.map( 20, 34 );
     	_map.map( 45, 35 );

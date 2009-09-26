@@ -31,6 +31,7 @@ import com.argot.TypeReader;
 import com.argot.TypeWriter;
 import com.argot.auto.TypeReaderAuto;
 import com.argot.common.UInt16;
+import com.argot.common.UVInt28;
 
 public class MetaReference
 extends MetaExpression
@@ -114,7 +115,7 @@ implements MetaDefinition
 			MetaReference tr = (MetaReference) o;
 			ReferenceTypeMap mapCore = (ReferenceTypeMap) out.getTypeMap();
 			int id = mapCore.referenceMap().getStreamId( tr._type );
-			out.writeObject( UInt16.TYPENAME, new Integer( id ));
+			out.writeObject( UVInt28.TYPENAME, new Integer( id ));
 	    }
 
 		public TypeWriter getExpressionWriter(TypeMap map, MetaExpressionResolver resolver, TypeElement element)

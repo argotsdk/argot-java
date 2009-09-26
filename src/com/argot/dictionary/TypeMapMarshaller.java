@@ -25,6 +25,7 @@ import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeWriter;
 import com.argot.common.UInt16;
+import com.argot.common.UVInt28;
 import com.argot.meta.DictionaryLocation;
 import com.argot.meta.MetaDefinition;
 
@@ -37,7 +38,7 @@ implements TypeLibraryWriter, TypeWriter
 		TypeLibrary library = map.getLibrary();
 		
 		// write the length out first.
-		out.writeObject( UInt16.TYPENAME, new Integer( map.size() ));
+		out.writeObject( UVInt28.TYPENAME, new Integer( map.size() ));
 				
 		Iterator i = map.getIdList().iterator();
 		while (i.hasNext() )
@@ -45,9 +46,9 @@ implements TypeLibraryWriter, TypeWriter
 			int streamId = ((Integer) i.next()).intValue();
 			int definitionId = map.getDefinitionId(streamId);
 
-			out.writeObject( UInt16.TYPENAME, new Integer(streamId));
+			out.writeObject( UVInt28.TYPENAME, new Integer(streamId));
 			out.writeObject( DictionaryLocation.TYPENAME, library.getLocation(definitionId));
-			out.writeObject( MetaDefinition.META_DEFINITION_ENVELOP, library.getStructure( definitionId ) );			
+			out.writeObject( MetaDefinition.META_DEFINITION_ENVELOPE, library.getStructure( definitionId ) );			
 		}
 
     }

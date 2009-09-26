@@ -24,7 +24,7 @@ import com.argot.TypeMap;
 import com.argot.TypeWriter;
 import com.argot.meta.MetaAbstract;
 import com.argot.meta.MetaArray;
-import com.argot.meta.MetaEnvelop;
+import com.argot.meta.MetaEnvelope;
 import com.argot.meta.MetaExpression;
 import com.argot.meta.MetaExpressionResolver;
 import com.argot.meta.MetaReference;
@@ -66,7 +66,7 @@ implements TypeBound, TypeLibraryWriter
 		resolver.addExpressionMap(MetaSequence.class, new SequenceData.SequenceDataExpressionReader(), new SequenceData.SequenceDataExpressionWriter());
 		resolver.addExpressionMap(MetaReference.class, new ReferenceData.ReferenceDataExpressionReader(), new ReferenceData.ReferenceDataExpressionWriter());
 		resolver.addExpressionMap(MetaArray.class, new ArrayData.ArrayDataExpressionReader(), new ArrayData.ArrayDataExpressionWriter());
-		resolver.addExpressionMap(MetaEnvelop.class, new EnvelopData.EnvelopDataExpressionReader(), new EnvelopData.EnvelopDataExpressionWriter());
+		resolver.addExpressionMap(MetaEnvelope.class, new EnvelopData.EnvelopDataExpressionReader(), new EnvelopData.EnvelopDataExpressionWriter());
 		resolver.addExpressionMap(MetaAbstract.class, new AbstractData.AbstractDataExpressionReader(), new AbstractData.AbstractDataExpressionWriter());
 		resolver.addExpressionMap(MetaTag.class, new TagData.TagDataExpressionReader(), new TagData.TagDataExpressionWriter());
 		return resolver;

@@ -36,6 +36,7 @@ import com.argot.TypeOutputStream;
 
 import com.argot.common.UInt16;
 import com.argot.common.UInt8;
+import com.argot.common.UVInt28;
 import com.argot.dictionary.Dictionary;
 import com.argot.meta.DictionaryDefinition;
 import com.argot.meta.DictionaryLocation;
@@ -154,16 +155,16 @@ public class MessageReader
 	
 		TypeLibrary library = mapSpec.getLibrary();
 		
-		int size = ((Integer)dictDataIn.readObject( UInt16.TYPENAME )).intValue();
+		int size = ((Integer)dictDataIn.readObject( UVInt28.TYPENAME )).intValue();
 		Triple newTypes[] = new Triple[size];
 		
 		// Step 1.  Read all the types in.
 		for ( int x = 0; x<size; x++ )
 		{
 			Triple newType = new Triple();
-			newType.id = ((Integer)dictDataIn.readObject(UInt16.TYPENAME)).intValue();
+			newType.id = ((Integer)dictDataIn.readObject(UVInt28.TYPENAME)).intValue();
 			newType.location = (TypeLocation) dictDataIn.readObject(DictionaryLocation.TYPENAME );
-			newType.structure = (byte[]) dictDataIn.readObject( MetaDefinition.META_DEFINITION_ENVELOP );
+			newType.structure = (byte[]) dictDataIn.readObject( MetaDefinition.META_DEFINITION_ENVELOPE );
 			newTypes[x] = newType;
 		}
 

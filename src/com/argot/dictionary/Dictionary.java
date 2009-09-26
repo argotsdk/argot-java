@@ -38,6 +38,7 @@ import com.argot.TypeMapperError;
 import com.argot.TypeOutputStream;
 import com.argot.common.UInt16;
 import com.argot.common.UInt8;
+import com.argot.common.UVInt28;
 import com.argot.meta.DictionaryDefinition;
 import com.argot.meta.DictionaryLocation;
 import com.argot.meta.DictionaryName;
@@ -82,7 +83,7 @@ public class Dictionary
 			lastCount = count;
 			messageData = new ByteArrayOutputStream(); 
 			TypeOutputStream messageDataStream = new TypeOutputStream( messageData , dynamicDictionaryMap );
-			messageDataStream.writeObject( UInt16.TYPENAME, new Integer(dynamicDictionaryMap.getStreamId(DICTIONARY_ENTRY_LIST)));
+			messageDataStream.writeObject( UVInt28.TYPENAME, new Integer(dynamicDictionaryMap.getStreamId(DICTIONARY_ENTRY_LIST)));
 			messageDataStream.writeObject( DICTIONARY_ENTRY_LIST, map );
 			messageData.close();
 			
@@ -159,7 +160,7 @@ public class Dictionary
 		out.writeObject( UInt8.TYPENAME , new Integer( 2 ));
 		
 		byte[] coreBuffer = writeCore( map );
-		out.writeObject( UInt16.TYPENAME, new Integer( coreBuffer.length ));
+		out.writeObject( UVInt28.TYPENAME, new Integer( coreBuffer.length ));
 		out.getStream().write( coreBuffer );
 
 		int count = map.size();
@@ -192,7 +193,7 @@ public class Dictionary
 			
 			TypeOutputStream out2 = new TypeOutputStream( baos2, map );
 			
-			out2.writeObject(UInt16.TYPENAME, new Integer( extensionCount ));
+			out2.writeObject(UVInt28.TYPENAME, new Integer( extensionCount ));
 
 			// write out the extensions
 			i = map.getIdList().iterator();
@@ -207,9 +208,9 @@ public class Dictionary
 				TypeLocation location = map.getLocation(id.intValue());
 				MetaDefinition definition = (MetaDefinition) map.getStructure(id.intValue());
 
-				out2.writeObject( UInt16.TYPENAME, new Integer(id.intValue()));
+				out2.writeObject( UVInt28.TYPENAME, new Integer(id.intValue()));
 				out2.writeObject( DictionaryLocation.TYPENAME, location);
-				out2.writeObject( MetaDefinition.META_DEFINITION_ENVELOP, definition );
+				out2.writeObject( MetaDefinition.META_DEFINITION_ENVELOPE, definition );
 			}
 			
 			out2.getStream().close();
@@ -219,7 +220,7 @@ public class Dictionary
 		}
 		
 		byte[] extBuffer = baos2.toByteArray();
-		out.writeObject( UInt16.TYPENAME, new Integer( extBuffer.length ));
+		out.writeObject( UVInt28.TYPENAME, new Integer( extBuffer.length ));
 		out.getStream().write( extBuffer );
 	}
 	
@@ -255,7 +256,7 @@ public class Dictionary
 		ReferenceTypeMap messageMap = readMessageMap( tmis, coreMap );
 		// read the final dictionary. register types if needed.
 
-		Integer ident = (Integer) tmis.readObject( UInt16.TYPENAME );
+		Integer ident = (Integer) tmis.readObject( UVInt28.TYPENAME );
 		if ( ident.intValue() != messageMap.getStreamId(DICTIONARY_ENTRY_LIST) )
 			throw new TypeException( "Wrong dictionary index value: " + ident.intValue() );
 
@@ -273,7 +274,7 @@ public class Dictionary
 		
 		// read the core array size.  expect = 2.
 		Short arraySize = (Short) tmis.readObject( UInt8.TYPENAME );
-		Integer coreSize = (Integer) tmis.readObject( UInt16.TYPENAME );
+		Integer coreSize = (Integer) tmis.readObject( UVInt28.TYPENAME );
 		byte[] readcore = new byte[coreSize.intValue()];		
 		tmis.getStream().read(readcore,0,coreSize.intValue());
 
@@ -297,7 +298,7 @@ public class Dictionary
 		// now the core is confirmed we can add in the extensions.
 		for ( int x=0; x < arraySize.intValue()-1; x++ )
 		{
-			Integer extSize = (Integer) tmis.readObject( UInt16.TYPENAME );
+			Integer extSize = (Integer) tmis.readObject( UVInt28.TYPENAME );
 			byte[] extension = new byte[extSize.intValue()];
 			tmis.getStream().read(extension,0,extSize.intValue());
 			
@@ -334,16 +335,16 @@ public class Dictionary
 	{
 		TypeLibrary library = mapSpec.getLibrary();
 			
-		int size = ((Integer)dictDataIn.readObject( UInt16.TYPENAME )).intValue();
+		int size = ((Integer)dictDataIn.readObject( UVInt28.TYPENAME )).intValue();
 		Triple newTypes[] = new Triple[size];
 		
 		// Step 1.  Read all the types in.
 		for ( int x = 0; x<size; x++ )
 		{
 			Triple newType = new Triple();
-			newType.id = ((Integer)dictDataIn.readObject( UInt16.TYPENAME )).intValue();
+			newType.id = ((Integer)dictDataIn.readObject( UVInt28.TYPENAME )).intValue();
 			newType.location = (TypeLocation) dictDataIn.readObject(DictionaryLocation.TYPENAME);
-			newType.structure = (byte[]) dictDataIn.readObject( MetaDefinition.META_DEFINITION_ENVELOP );
+			newType.structure = (byte[]) dictDataIn.readObject( MetaDefinition.META_DEFINITION_ENVELOPE );
 			newTypes[x] = newType;
 		}
 		

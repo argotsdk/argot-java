@@ -27,7 +27,7 @@ import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
-import com.argot.meta.MetaEnvelop;
+import com.argot.meta.MetaEnvelope;
 import com.argot.meta.MetaExpression;
 import com.argot.meta.MetaExpressionReader;
 import com.argot.meta.MetaExpressionResolver;
@@ -36,10 +36,10 @@ import com.argot.meta.MetaExpressionWriter;
 public class EnvelopData
 extends ModelData
 {
-	private MetaEnvelop _metaEnvelop;
+	private MetaEnvelope _metaEnvelop;
 	private Object _data;
 	
-	public EnvelopData( MetaEnvelop metaEnvelop, Object data )
+	public EnvelopData( MetaEnvelope metaEnvelop, Object data )
 	{
 		_metaEnvelop = metaEnvelop;
 		_data = data;
@@ -61,7 +61,7 @@ extends ModelData
 		public TypeReader getExpressionReader(TypeMap map, MetaExpressionResolver resolver, TypeElement element)
 		throws TypeException 
 		{
-			MetaEnvelop metaEnvelop = (MetaEnvelop) element;
+			MetaEnvelope metaEnvelop = (MetaEnvelope) element;
 			return new EnvelopDataReader(metaEnvelop, resolver.getExpressionReader(map, metaEnvelop.getSizeExpression()), resolver.getExpressionReader(map, metaEnvelop.getTypeExpression()));		
 		}	
 		
@@ -70,11 +70,11 @@ extends ModelData
     private static class EnvelopDataReader
     implements TypeReader
     {
-    	private MetaEnvelop _metaEnvelop;
+    	private MetaEnvelope _metaEnvelop;
     	private TypeReader _size;
     	private TypeReader _type;
     	
-    	private EnvelopDataReader( MetaEnvelop metaEnvelop, TypeReader size, TypeReader type)
+    	private EnvelopDataReader( MetaEnvelope metaEnvelop, TypeReader size, TypeReader type)
     	{
     		_metaEnvelop = metaEnvelop;
     		_size = size;
@@ -135,7 +135,7 @@ extends ModelData
 		public TypeWriter getExpressionWriter(TypeMap map, MetaExpressionResolver resolver, TypeElement element)
 		throws TypeException 
 		{
-			MetaEnvelop metaEnvelop = (MetaEnvelop) element;
+			MetaEnvelope metaEnvelop = (MetaEnvelope) element;
 			return new EnvelopDataWriter(getSizeWriter(map, resolver, metaEnvelop.getSizeExpression()), resolver.getExpressionWriter(map, metaEnvelop.getTypeExpression()));		
 		}
 		

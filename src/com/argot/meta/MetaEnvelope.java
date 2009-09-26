@@ -35,17 +35,17 @@ import com.argot.TypeWriter;
  * an expression as a reference to a size like u16.  Expressions have been allowed
  * because it can be specified that way.
  */
-public class MetaEnvelop
+public class MetaEnvelope
 extends MetaExpression
 implements MetaDefinition
 {
-	public static final String TYPENAME = "meta.envelop";
+	public static final String TYPENAME = "meta.envelope";
 	public static final String VERSION = "1.3";
 	
 	private MetaExpression _size;
 	private MetaExpression _type;
 	
-	public MetaEnvelop( MetaExpression size, MetaExpression type )
+	public MetaEnvelope( MetaExpression size, MetaExpression type )
 	{
 		_size = size;
 		_type = type;
@@ -79,13 +79,13 @@ implements MetaDefinition
 	{
 		public MetaEnvelopTypeReader() 
 		{
-			super(MetaEnvelop.class);
+			super(MetaEnvelope.class);
 		}
 
 		public TypeReader getExpressionReader(TypeMap map, MetaExpressionResolver resolver, TypeElement element)
 		throws TypeException 
 		{
-			MetaEnvelop metaEnvelop = (MetaEnvelop) element;
+			MetaEnvelope metaEnvelop = (MetaEnvelope) element;
 			return new MetaEnvelopReader(resolver.getExpressionReader(map, metaEnvelop._size));		
 		}	
 	}    
@@ -96,7 +96,7 @@ implements MetaDefinition
 		public void write(TypeOutputStream out, Object o )
 		throws TypeException, IOException
 		{
-			MetaEnvelop ma = (MetaEnvelop) o;
+			MetaEnvelope ma = (MetaEnvelope) o;
 	
 			out.writeObject( "meta.expression", ma._size );
 			out.writeObject( "meta.expression", ma._type );					
@@ -111,7 +111,7 @@ implements MetaDefinition
 		public TypeWriter getExpressionWriter(TypeMap map, MetaExpressionResolver resolver, TypeElement element)
 		throws TypeException 
 		{
-			MetaEnvelop metaEnvelop = (MetaEnvelop) element;
+			MetaEnvelope metaEnvelop = (MetaEnvelope) element;
 			return new MetaEnvelopWriter( resolver.getExpressionWriter(map, metaEnvelop._type), resolver.getExpressionWriter(map, metaEnvelop._size));
 		}
     }

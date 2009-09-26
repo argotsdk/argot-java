@@ -169,7 +169,7 @@ public class MessageWriter
 				MetaDefinition definition = (MetaDefinition) map.getStructure(id.intValue());
 				out2.writeObject( UInt16.TYPENAME, new Integer(id.intValue()));
 				out2.writeObject( DictionaryLocation.TYPENAME, location);
-				out2.writeObject( "meta.definition_envelop", definition );
+				out2.writeObject( "meta.definition.envelope", definition );
 			}
 			
 			out2.getStream().close();

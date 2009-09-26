@@ -24,6 +24,7 @@ import com.argot.TypeOutputStream;
 import com.argot.TypeWriter;
 import com.argot.common.UInt16;
 import com.argot.common.UInt8;
+import com.argot.common.UVInt28;
 
 public class MetaFixedWidth
 extends MetaExpression
@@ -64,7 +65,7 @@ implements MetaDefinition
 		{
 			MetaFixedWidth tb = (MetaFixedWidth) o;
 			
-			out.writeObject( UInt16.TYPENAME, new Integer( tb._width ));
+			out.writeObject( UVInt28.TYPENAME, new Integer( tb._width ));
 			
 			// This could be replaced with an array marshaller.
 			out.writeObject( UInt8.TYPENAME, new Short( (short) tb._attributes.length ));

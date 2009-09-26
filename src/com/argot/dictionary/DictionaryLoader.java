@@ -20,10 +20,11 @@ import com.argot.TypeException;
 import com.argot.TypeLibrary;
 import com.argot.TypeLibraryLoader;
 import com.argot.common.UInt16;
+import com.argot.common.UVInt28;
 import com.argot.meta.DictionaryDefinition;
 import com.argot.meta.DictionaryName;
 import com.argot.meta.MetaDefinition;
-import com.argot.meta.MetaEnvelop;
+import com.argot.meta.MetaEnvelope;
 import com.argot.meta.MetaIdentity;
 import com.argot.meta.MetaMarshaller;
 import com.argot.meta.MetaReference;
@@ -47,8 +48,8 @@ implements TypeLibraryLoader
 		int dictListId = library.register( new DictionaryName( DICTIONARY_LIST ), new MetaIdentity() );  // 1
 		
 		MetaDefinition dWords =
-				new MetaEnvelop(
-					new MetaReference(library.getTypeId(UInt16.TYPENAME ) ),
+				new MetaEnvelope(
+					new MetaReference(library.getTypeId(UVInt28.TYPENAME ) ),
 					new MetaReference(library.getTypeId(Dictionary.DICTIONARY_ENTRY_LIST ))
 				);			  
 	

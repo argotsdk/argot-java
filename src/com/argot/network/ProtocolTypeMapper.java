@@ -76,6 +76,8 @@ implements TypeMapper
 		map.map( 19, library.getDefinitionId( "meta.reference", "1.3"));
 		map.map( 20, library.getDefinitionId( "meta.sequence", "1.3"));
 		map.map( 21, library.getDefinitionId( "meta.array", "1.3"));
+		map.map( 22, library.getDefinitionId( "uvint28", "1.3"));
+		map.map( 23, library.getTypeId( new DictionaryRelation( library.getDefinitionId(DictionaryLocation.TYPENAME,"1.3"), "name")));
 		
 	}
 

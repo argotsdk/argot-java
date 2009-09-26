@@ -31,6 +31,7 @@ import com.argot.TypeReader;
 import com.argot.TypeWriter;
 import com.argot.auto.TypeReaderAuto;
 import com.argot.common.UInt16;
+import com.argot.common.UVInt28;
 
 
 /**
@@ -184,7 +185,7 @@ implements MetaDefinition
 			MetaAbstractMap tr = (MetaAbstractMap) o;
 			ReferenceTypeMap mapCore = (ReferenceTypeMap) out.getTypeMap();
 			int concreteId = mapCore.referenceMap().getStreamId( tr._concreteType );
-			out.writeObject( UInt16.TYPENAME, new Integer( concreteId ) );
+			out.writeObject( UVInt28.TYPENAME, new Integer( concreteId ) );
 	    }   
 	}
 
@@ -217,7 +218,7 @@ implements MetaDefinition
 		public void write(TypeOutputStream out, Object o)
 		throws TypeException, IOException 
 		{
-	    	out.writeObject(UInt16.TYPENAME, new Integer(out.getTypeMap().getStreamId(getMemberTypeId()) ));
+	    	out.writeObject(UVInt28.TYPENAME, new Integer(out.getTypeMap().getStreamId(getMemberTypeId()) ));
 			
 			// This will force the mapId to be mapped in dynamic type maps.
 			out.getTypeMap().getStreamId(getMemberTypeId() );

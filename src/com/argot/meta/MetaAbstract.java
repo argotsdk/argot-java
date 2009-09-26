@@ -38,6 +38,7 @@ import com.argot.TypeWriter;
 import com.argot.auto.TypeArrayMarshaller;
 import com.argot.common.UInt16;
 import com.argot.common.UInt8;
+import com.argot.common.UVInt28;
 
 public class MetaAbstract
 extends MetaExpression
@@ -212,7 +213,7 @@ implements MetaDefinition, TypeRelation
 		throws TypeException 
 		{
 			MetaAbstract metaAbstract = (MetaAbstract) element;
-			return new MetaAbstractReader(metaAbstract,map.getReader(map.getStreamId(UInt16.TYPENAME)));
+			return new MetaAbstractReader(metaAbstract,map.getReader(map.getStreamId(UVInt28.TYPENAME)));
 		}
 	}
 
@@ -244,7 +245,7 @@ implements MetaDefinition, TypeRelation
 		throws TypeException 
 		{
 			MetaAbstract metaAbstract = (MetaAbstract) element;
-			return new MetaAbstractWriter(metaAbstract,map.getWriter(map.getStreamId(UInt16.TYPENAME)));
+			return new MetaAbstractWriter(metaAbstract,map.getWriter(map.getStreamId(UVInt28.TYPENAME)));
 		}
 	}
 

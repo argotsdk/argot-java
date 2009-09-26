@@ -109,12 +109,12 @@ implements TypeLibraryLoader
 		int dictionaryEntryListId = library.register( new DictionaryName( "dictionary.entry.list"), new MetaIdentity() );
 		
 		// 0 - 31. Empty 
-		Empty te = new Empty();
+		//Empty te = new Empty();
 		
-		MetaDefinition emptyDef = new MetaAtom( 0,
-			new MetaAtomAttribute[] {
-				new MetaAtomAttributeSize(0)
-		});
+		//MetaDefinition emptyDef = new MetaAtom( 0,0,
+		//	new MetaAtomAttribute[] {
+		//		new MetaAtomAttributeSize(0)
+		//});
 		
 	//	id = library.register(new DictionaryDefinition(emptyId,Empty.TYPENAME, "1.3"), emptyDef, new TypeSimpleReader(te),new TypeSimpleWriter(te),te.getClass() );
 	//	library.setSimpleType(id,true);
@@ -122,7 +122,7 @@ implements TypeLibraryLoader
 		// 1 - 32. uint8
 		UInt8 bbe = new UInt8();
 		
-		MetaDefinition u8def = new MetaAtom(8,
+		MetaDefinition u8def = new MetaAtom(8,8,
 			new MetaAtomAttribute[] {
 				new MetaAtomAttributeSize(8),
 				new MetaAtomAttributeInteger(),
@@ -136,7 +136,7 @@ implements TypeLibraryLoader
 		// 2 - 32. uvint28
 		UVInt28 uvi28 = new UVInt28();
 		
-		MetaDefinition uvi28def = new MetaAtom(8,
+		MetaDefinition uvi28def = new MetaAtom(8,28,
 			new MetaAtomAttribute[] {
 				new MetaAtomAttributeSize(8),
 				new MetaAtomAttributeInteger(),
@@ -149,15 +149,15 @@ implements TypeLibraryLoader
 		
 		
 		// 2 - 33. uint16
-		UInt16 bbs = new UInt16();
+		//UInt16 bbs = new UInt16();
 		
-		MetaDefinition u16def = new MetaAtom( 16,
-			new MetaAtomAttribute[] {
-				new MetaAtomAttributeSize(16),
-				new MetaAtomAttributeInteger(),
-				new MetaAtomAttributeUnsigned(),
-				new MetaAtomAttributeBigEndian()
-		});
+		//MetaDefinition u16def = new MetaAtom( 16,16,
+		//	new MetaAtomAttribute[] {
+		//		new MetaAtomAttributeSize(16),
+		//		new MetaAtomAttributeInteger(),
+		//		new MetaAtomAttributeUnsigned(),
+		//		new MetaAtomAttributeBigEndian()
+		//});
 		
 		//id = library.register( new DictionaryDefinition(uint16Id,UInt16.TYPENAME, "1.3"), u16def, new TypeSimpleReader(bbs), new TypeSimpleWriter(bbs), null );
 	//	library.setSimpleType(id,true);
@@ -299,8 +299,9 @@ implements TypeLibraryLoader
 	    // 18 - 49. meta.fixed_width
 		MetaDefinition basicDef = new MetaSequence(
 			new MetaExpression[] {
-				new MetaTag( "size", new MetaReference( uvint28Id )),
-				new MetaTag( "flags",
+				new MetaTag( "min_bit_length", new MetaReference( uvint28Id )),
+				new MetaTag( "max_bit_length", new MetaReference( uvint28Id )),
+				new MetaTag( "attributes",
 					new MetaArray(
 						new MetaReference( uint8Id ),
 						new MetaReference( metaFixedWidthAttributeId )

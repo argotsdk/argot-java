@@ -22,7 +22,6 @@ import com.argot.TypeLibraryWriter;
 import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeWriter;
-import com.argot.common.UInt16;
 import com.argot.common.UInt8;
 import com.argot.common.UVInt28;
 
@@ -33,18 +32,22 @@ implements MetaDefinition
 	public static String TYPENAME = "meta.atom";
 	public static final String VERSION = "1.3";
 		
-	private int _width;
+	private int _min_bit_length;
+	private int _max_bit_length;
 	private MetaAtomAttribute[] _attributes;
 	
-	public MetaAtom( int width, MetaAtomAttribute[] attributes )
+	public MetaAtom( int min_bit_length, int max_bit_length, MetaAtomAttribute[] attributes )
 	{
-		_width = width;
+		_min_bit_length = min_bit_length;
+		_max_bit_length = max_bit_length;
 		_attributes = attributes;
 	}
 
-	public MetaAtom( int width, Object[] attributes )
+	public MetaAtom( int min_bit_length, int max_bit_length, Object[] attributes )
 	{
-		_width = width;
+		_min_bit_length = min_bit_length;
+		_max_bit_length = max_bit_length;
+		
 		_attributes = new MetaAtomAttribute[attributes.length];
 		for (int x=0; x<attributes.length;x++)
 		{
@@ -65,7 +68,8 @@ implements MetaDefinition
 		{
 			MetaAtom tb = (MetaAtom) o;
 			
-			out.writeObject( UVInt28.TYPENAME, new Integer( tb._width ));
+			out.writeObject( UVInt28.TYPENAME, new Integer( tb._min_bit_length ));
+			out.writeObject( UVInt28.TYPENAME, new Integer( tb._max_bit_length ));
 			
 			// This could be replaced with an array marshaller.
 			out.writeObject( UInt8.TYPENAME, new Short( (short) tb._attributes.length ));

@@ -19,7 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import com.argot.dictionary.Dictionary;
-import com.argot.meta.MetaFixedWidth;
+import com.argot.meta.MetaAtom;
 import com.argot.meta.MetaLoader;
 
 import junit.framework.TestCase;
@@ -58,6 +58,13 @@ extends TestCase
         		System.out.println("");
         	}
         }
+        
+        int zeros = 0;
+        for (int x=0; x<core.length;x++)
+        {
+        	if ( core[x] == 0 ) zeros++;
+        }
+        System.out.println("Zeros:" + zeros );
     }
     
     public void testGetClass() throws Exception
@@ -77,5 +84,39 @@ extends TestCase
 		baos1.close();		
 		return baos1.toByteArray();
 	}    
+	
+	private static class CheckArrayOutputStream
+	extends ByteArrayOutputStream
+	{
+		static int blah = 0;
+		@Override
+		public synchronized void write(byte[] b, int off, int len)
+		{
+			for (int x=off; x<len;x++)
+			{
+				if (b[x]==0)
+				{
+					blah++;
+					if (blah==4)
+					{
+						throw new RuntimeException("Attempting to write zero!!");
+					}
+				}
+			}
+			super.write(b, off, len);
+		}
+
+		@Override
+		public synchronized void write(int b)
+		{
+			System.out.println("blah!");
+			if (b==0)
+			{
+				throw new RuntimeException("Attempting to write Zero!!!");
+			}
+			super.write(b);
+		}
+		
+	}
 
 }

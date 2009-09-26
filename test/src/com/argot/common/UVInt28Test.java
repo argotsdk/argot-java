@@ -29,10 +29,9 @@ import com.argot.TypeMapperError;
 import com.argot.TypeOutputStream;
 import com.argot.TypeLibrary;
 import com.argot.dictionary.DictionaryLoader;
-import com.argot.meta.MetaExtensionLoader;
 import com.argot.meta.MetaLoader;
 
-public class CommonTest
+public class UVInt28Test
 extends TestCase
 {
 
@@ -42,9 +41,7 @@ extends TestCase
 
 	TypeLibraryLoader libraryLoaders[] = {
 		new MetaLoader(),
-		new DictionaryLoader(),
-		new MetaExtensionLoader(),
-		new CommonLoader()
+		new DictionaryLoader()
 	};
 
     protected void setUp() throws Exception
@@ -70,94 +67,104 @@ extends TestCase
     }
     
     
-    public void testBigEndianSignedInteger() throws Exception
+    public void testUnsignedVariableInteger28singleByte() throws Exception
     {
-		int i = -(int)(Math.PI*100000000l);
+		int i = 10;
 	
-		Int32 besi = new Int32();
+		UVInt28 besi = new UVInt28();
 		besi.write( out, new Integer( i ) );
 
 		TypeInputStream tmis = getInputStream();
 
+		assertEquals(1,baos.size());
+		
 		Integer si = (Integer) besi.read( tmis );
 		assertEquals( i, si.intValue() );
     }
     
-    public void testBigEndianSignedLong() throws Exception
+    public void testUnsignedVariableInteger28doubleByte() throws Exception
     {
-		long l = -(long)(Math.PI*1000000000000000000l);
-		
-		Int64 besl = new Int64();
-		besl.write( out, new Long( l) );
-		
+		int i = 150;
+	
+		System.out.println("Writing: " + Integer.toBinaryString(i) );
+		UVInt28 besi = new UVInt28();
+		besi.write( out, new Integer( i ) );
+
 		TypeInputStream tmis = getInputStream();
 
-		Long sl = (Long) besl.read( tmis );
-		assertEquals( l, sl.longValue() );
+		assertEquals(2, baos.size());
+		
+		Integer si = (Integer) besi.read( tmis );
+		assertEquals( i, si.intValue() );
     }
     
-    public void testBigEndianSignedShort() throws Exception
+    public void testUnsignedVariableInteger28tripleByte() throws Exception
     {
-		short s = -(short)(Math.PI*10000l);
+		int i = 18000;
+
+		System.out.println("Writing: " + Integer.toBinaryString(i) );
+
+		UVInt28 besi = new UVInt28();
+		besi.write( out, new Integer( i ) );
+
+		TypeInputStream tmis = getInputStream();
+
+		assertEquals(3, baos.size());
+		
+		Integer si = (Integer) besi.read( tmis );
+		assertEquals( i, si.intValue() );
+    }
+  
+    public void testUnsignedVariableInteger28quadByte() throws Exception
+    {
+		int i = 2500000;
+
+		System.out.println("Writing: " + Integer.toBinaryString(i) );
+
+		UVInt28 besi = new UVInt28();
+		besi.write( out, new Integer( i ) );
+
+		TypeInputStream tmis = getInputStream();
+
+		assertEquals( 4, baos.size());
+		
+		Integer si = (Integer) besi.read( tmis );
+		assertEquals( i, si.intValue() );
+    }
+    
+    public void testUnsignedVariableInteger28negativeError() throws Exception
+    {
+		int i = -10;
+	
+		UVInt28 besi = new UVInt28();
+		
+		try
+		{
+			besi.write( out, new Integer( i ) );
+			fail("should throw error.");
+		}
+		catch(Exception ex)
+		{
 			
-		Int16 bess = new Int16();
-		bess.write( out, new Integer( s ) );
-		
-		TypeInputStream tmis = getInputStream();
-        
-		Short sr = (Short) bess.read( tmis );
-		assertEquals( s, sr.shortValue() );
+		}
     }
     
-    public void testBigEndianUnsignedByte() throws Exception
+    public void testUnsignedVariableInteger28overflowError() throws Exception
     {
-		short bs = (240);
-        
-		UInt8 beub = new UInt8();
-		beub.write( out, new Short( bs ) );
+		int i = (1<<28)+1;
 
-		TypeInputStream tmis = getInputStream();
+		System.out.println("Writing: " + Integer.toBinaryString(i) );
+
+		UVInt28 besi = new UVInt28();
 		
-		Short us = (Short) beub.read( tmis );
-		assertEquals( bs, us.shortValue() );
-    }
-    
-    public void testBigEndianUnsignedShort() throws Exception
-    {
-		short s = (short)(Math.PI*10000l);
-		
-		UInt16 beus = new UInt16();
-		beus.write( out, new Integer( s ) );
-
-		TypeInputStream tmis = getInputStream();
-		
-		Integer us = (Integer) beus.read( tmis );		
-		assertEquals( s, us.shortValue() );
-    }
-    
-    public void testBigEndianUnsignedInteger() throws Exception
-    {
-		int i = (int)(Math.PI*100000000l);
-        
-		UInt32 beui = new UInt32();
-		beui.write( out, new Long( i )); 
-		TypeInputStream tmis = getInputStream();
-
-		Long ui = (Long) beui.read( tmis );
-		assertEquals( i, ui.longValue() );
-    }
-    
-    public void testBigEndianUnsignedLong() throws Exception
-    {
-		long l = (long)(Math.PI*1000000000000000000l);
-
-		UInt64 beul = new UInt64();
-		beul.write( out, new Long( l ));
-		
-		TypeInputStream tmis = getInputStream();        
-
-		Long ul = (Long) beul.read( tmis );
-		assertEquals( l, ul.longValue() );
-    }
-    
+		try
+		{
+			besi.write( out, new Integer( i ) );
+			fail("should throw error.");
+		}
+		catch(Exception ex)
+		{
+			
+		}
+    }    
 }

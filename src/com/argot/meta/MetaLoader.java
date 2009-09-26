@@ -84,17 +84,17 @@ implements TypeLibraryLoader
 		// 17. meta.encoding
 		int metaEncodingId = library.register( new DictionaryName( MetaEncoding.TYPENAME ), new MetaIdentity() );
 		// 18. meta.fixed_width
-		int metaFixedWidthId = library.register( new DictionaryName( MetaFixedWidth.TYPENAME ), new MetaIdentity() );
+		int metaFixedWidthId = library.register( new DictionaryName( MetaAtom.TYPENAME ), new MetaIdentity() );
 		// 19. meta.fixed_width.attribute
-		int metaFixedWidthAttributeId = library.register( new DictionaryName( MetaFixedWidthAttribute.TYPENAME ), new MetaIdentity() );
+		int metaFixedWidthAttributeId = library.register( new DictionaryName( MetaAtomAttribute.TYPENAME ), new MetaIdentity() );
 		// 20. meta.fixed_width.attribute.size
-		int metaFixedWidthAttributeSizeId = library.register( new DictionaryName( MetaFixedWidthAttributeSize.TYPENAME ), new MetaIdentity() );
+		int metaFixedWidthAttributeSizeId = library.register( new DictionaryName( MetaAtomAttributeSize.TYPENAME ), new MetaIdentity() );
 		// 21. meta.fixed_width.attribute.integer
-		int metaFixedWidthAttributeIntegerId = library.register( new DictionaryName( MetaFixedWidthAttributeInteger.TYPENAME ), new MetaIdentity() );
+		int metaFixedWidthAttributeIntegerId = library.register( new DictionaryName( MetaAtomAttributeInteger.TYPENAME ), new MetaIdentity() );
 		// 22. meta.fixed_width.attribute.unsigned
-		int metaFixedWidthAttributeUnsignedId = library.register( new DictionaryName( MetaFixedWidthAttributeUnsigned.TYPENAME ), new MetaIdentity() );
+		int metaFixedWidthAttributeUnsignedId = library.register( new DictionaryName( MetaAtomAttributeUnsigned.TYPENAME ), new MetaIdentity() );
 		// 23. meta.fixed_width.attribute.bigendian
-		int metaFixedWidthAttributeBigEndianId = library.register( new DictionaryName( MetaFixedWidthAttributeBigEndian.TYPENAME ), new MetaIdentity() );
+		int metaFixedWidthAttributeBigEndianId = library.register( new DictionaryName( MetaAtomAttributeBigEndian.TYPENAME ), new MetaIdentity() );
 		// 25. dictionary.definition
 		int dictionaryDefinitionId = library.register( new DictionaryName( DictionaryDefinition.TYPENAME), new MetaIdentity() );
 		// 26. dictionary.relation
@@ -111,9 +111,9 @@ implements TypeLibraryLoader
 		// 0 - 31. Empty 
 		Empty te = new Empty();
 		
-		MetaDefinition emptyDef = new MetaFixedWidth( 0,
-			new MetaFixedWidthAttribute[] {
-				new MetaFixedWidthAttributeSize(0)
+		MetaDefinition emptyDef = new MetaAtom( 0,
+			new MetaAtomAttribute[] {
+				new MetaAtomAttributeSize(0)
 		});
 		
 	//	id = library.register(new DictionaryDefinition(emptyId,Empty.TYPENAME, "1.3"), emptyDef, new TypeSimpleReader(te),new TypeSimpleWriter(te),te.getClass() );
@@ -122,12 +122,12 @@ implements TypeLibraryLoader
 		// 1 - 32. uint8
 		UInt8 bbe = new UInt8();
 		
-		MetaDefinition u8def = new MetaFixedWidth(8,
-			new MetaFixedWidthAttribute[] {
-				new MetaFixedWidthAttributeSize(8),
-				new MetaFixedWidthAttributeInteger(),
-				new MetaFixedWidthAttributeUnsigned(),
-				new MetaFixedWidthAttributeBigEndian()
+		MetaDefinition u8def = new MetaAtom(8,
+			new MetaAtomAttribute[] {
+				new MetaAtomAttributeSize(8),
+				new MetaAtomAttributeInteger(),
+				new MetaAtomAttributeUnsigned(),
+				new MetaAtomAttributeBigEndian()
 		});
 
 		id = library.register( new DictionaryDefinition(uint8Id,UInt8.TYPENAME, "1.3"), u8def, new TypeSimpleReader(bbe), new TypeSimpleWriter(bbe), null );
@@ -136,12 +136,12 @@ implements TypeLibraryLoader
 		// 2 - 32. uvint28
 		UVInt28 uvi28 = new UVInt28();
 		
-		MetaDefinition uvi28def = new MetaFixedWidth(8,
-			new MetaFixedWidthAttribute[] {
-				new MetaFixedWidthAttributeSize(8),
-				new MetaFixedWidthAttributeInteger(),
-				new MetaFixedWidthAttributeUnsigned(),
-				new MetaFixedWidthAttributeBigEndian()
+		MetaDefinition uvi28def = new MetaAtom(8,
+			new MetaAtomAttribute[] {
+				new MetaAtomAttributeSize(8),
+				new MetaAtomAttributeInteger(),
+				new MetaAtomAttributeUnsigned(),
+				new MetaAtomAttributeBigEndian()
 		});
 
 		id = library.register( new DictionaryDefinition(uvint28Id,UVInt28.TYPENAME, "1.3"), uvi28def, new TypeSimpleReader(uvi28), new TypeSimpleWriter(uvi28), null );
@@ -151,12 +151,12 @@ implements TypeLibraryLoader
 		// 2 - 33. uint16
 		UInt16 bbs = new UInt16();
 		
-		MetaDefinition u16def = new MetaFixedWidth( 16,
-			new MetaFixedWidthAttribute[] {
-				new MetaFixedWidthAttributeSize(16),
-				new MetaFixedWidthAttributeInteger(),
-				new MetaFixedWidthAttributeUnsigned(),
-				new MetaFixedWidthAttributeBigEndian()
+		MetaDefinition u16def = new MetaAtom( 16,
+			new MetaAtomAttribute[] {
+				new MetaAtomAttributeSize(16),
+				new MetaAtomAttributeInteger(),
+				new MetaAtomAttributeUnsigned(),
+				new MetaAtomAttributeBigEndian()
 		});
 		
 		//id = library.register( new DictionaryDefinition(uint16Id,UInt16.TYPENAME, "1.3"), u16def, new TypeSimpleReader(bbs), new TypeSimpleWriter(bbs), null );
@@ -308,7 +308,7 @@ implements TypeLibraryLoader
 				)
 			}
 		);	
-		library.register( new DictionaryDefinition(metaFixedWidthId, MetaFixedWidth.TYPENAME, "1.3"), basicDef, new TypeReaderAuto(MetaFixedWidth.class), new MetaFixedWidth.MetaBasicTypeWriter(), MetaFixedWidth.class );
+		library.register( new DictionaryDefinition(metaFixedWidthId, MetaAtom.TYPENAME, "1.3"), basicDef, new TypeReaderAuto(MetaAtom.class), new MetaAtom.MetaBasicTypeWriter(), MetaAtom.class );
 
 	    // 19 - 50. meta.fixed_width.attribute 
 	    MetaDefinition fwAttribute = new MetaAbstract(
@@ -318,23 +318,23 @@ implements TypeLibraryLoader
 	    				new MetaAbstractMap( metaFixedWidthAttributeUnsignedId ),
 	    				new MetaAbstractMap( metaFixedWidthAttributeBigEndianId )
 	    		});
-	    library.register( new DictionaryDefinition(metaFixedWidthAttributeId,MetaFixedWidthAttribute.TYPENAME, "1.3"), fwAttribute, new MetaMarshaller(),new MetaMarshaller(), null );
+	    library.register( new DictionaryDefinition(metaFixedWidthAttributeId,MetaAtomAttribute.TYPENAME, "1.3"), fwAttribute, new MetaMarshaller(),new MetaMarshaller(), null );
 		
 	    // 20 - 51. meta.fixed_width.attribute.size
 	    MetaDefinition fwaSize = new MetaSequence( new MetaExpression[] { new MetaTag( "size", new MetaReference( uvint28Id )) });
-	    library.register( new DictionaryDefinition(metaFixedWidthAttributeSizeId,MetaFixedWidthAttributeSize.TYPENAME, "1.3"), fwaSize, new TypeReaderAuto(MetaFixedWidthAttributeSize.class), new TypeBeanMarshaller(), MetaFixedWidthAttributeSize.class );	    
+	    library.register( new DictionaryDefinition(metaFixedWidthAttributeSizeId,MetaAtomAttributeSize.TYPENAME, "1.3"), fwaSize, new TypeReaderAuto(MetaAtomAttributeSize.class), new TypeBeanMarshaller(), MetaAtomAttributeSize.class );	    
 
 	    // 21 - 52. meta.fixed_width.attribute.integer
 	    MetaDefinition fwaInteger = new MetaSequence( new MetaExpression[] {} );
-	    library.register(new DictionaryDefinition(metaFixedWidthAttributeIntegerId,MetaFixedWidthAttributeInteger.TYPENAME, "1.3"),  fwaInteger, new TypeReaderAuto(MetaFixedWidthAttributeInteger.class), new TypeBeanMarshaller(), MetaFixedWidthAttributeInteger.class );	    
+	    library.register(new DictionaryDefinition(metaFixedWidthAttributeIntegerId,MetaAtomAttributeInteger.TYPENAME, "1.3"),  fwaInteger, new TypeReaderAuto(MetaAtomAttributeInteger.class), new TypeBeanMarshaller(), MetaAtomAttributeInteger.class );	    
 	    
 	    // 22 - 53. meta.fixed_width.attribute.unsigned
 	    MetaDefinition fwaUnsigned = new MetaSequence( new MetaExpression[] {} );
-	    library.register( new DictionaryDefinition(metaFixedWidthAttributeUnsignedId, MetaFixedWidthAttributeUnsigned.TYPENAME, "1.3"), fwaUnsigned, new TypeReaderAuto(MetaFixedWidthAttributeUnsigned.class), new TypeBeanMarshaller(), MetaFixedWidthAttributeUnsigned.class );	    
+	    library.register( new DictionaryDefinition(metaFixedWidthAttributeUnsignedId, MetaAtomAttributeUnsigned.TYPENAME, "1.3"), fwaUnsigned, new TypeReaderAuto(MetaAtomAttributeUnsigned.class), new TypeBeanMarshaller(), MetaAtomAttributeUnsigned.class );	    
 
 	    // 23 - 54. meta.fixed_width.attribute.bigendian
 	    MetaDefinition fwaBigEndian = new MetaSequence( new MetaExpression[] {} );
-	    library.register( new DictionaryDefinition(metaFixedWidthAttributeBigEndianId, MetaFixedWidthAttributeBigEndian.TYPENAME, "1.3"), fwaBigEndian, new TypeReaderAuto(MetaFixedWidthAttributeBigEndian.class), new TypeBeanMarshaller(), MetaFixedWidthAttributeBigEndian.class );	    
+	    library.register( new DictionaryDefinition(metaFixedWidthAttributeBigEndianId, MetaAtomAttributeBigEndian.TYPENAME, "1.3"), fwaBigEndian, new TypeReaderAuto(MetaAtomAttributeBigEndian.class), new TypeBeanMarshaller(), MetaAtomAttributeBigEndian.class );	    
 
 	    // 24 - 55. dictionary.name
 	    /*

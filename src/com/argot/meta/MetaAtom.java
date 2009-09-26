@@ -26,29 +26,29 @@ import com.argot.common.UInt16;
 import com.argot.common.UInt8;
 import com.argot.common.UVInt28;
 
-public class MetaFixedWidth
+public class MetaAtom
 extends MetaExpression
 implements MetaDefinition
 {
-	public static String TYPENAME = "meta.fixed_width";
+	public static String TYPENAME = "meta.atom";
 	public static final String VERSION = "1.3";
 		
 	private int _width;
-	private MetaFixedWidthAttribute[] _attributes;
+	private MetaAtomAttribute[] _attributes;
 	
-	public MetaFixedWidth( int width, MetaFixedWidthAttribute[] attributes )
+	public MetaAtom( int width, MetaAtomAttribute[] attributes )
 	{
 		_width = width;
 		_attributes = attributes;
 	}
 
-	public MetaFixedWidth( int width, Object[] attributes )
+	public MetaAtom( int width, Object[] attributes )
 	{
 		_width = width;
-		_attributes = new MetaFixedWidthAttribute[attributes.length];
+		_attributes = new MetaAtomAttribute[attributes.length];
 		for (int x=0; x<attributes.length;x++)
 		{
-			_attributes[x] = (MetaFixedWidthAttribute)attributes[x];
+			_attributes[x] = (MetaAtomAttribute)attributes[x];
 		}
 		
 	}	
@@ -63,7 +63,7 @@ implements MetaDefinition
 		public void write(TypeOutputStream out, Object o ) 
 		throws TypeException, IOException
 		{
-			MetaFixedWidth tb = (MetaFixedWidth) o;
+			MetaAtom tb = (MetaAtom) o;
 			
 			out.writeObject( UVInt28.TYPENAME, new Integer( tb._width ));
 			
@@ -71,7 +71,7 @@ implements MetaDefinition
 			out.writeObject( UInt8.TYPENAME, new Short( (short) tb._attributes.length ));
 			for (int x=0; x<tb._attributes.length; x++)
 			{
-				out.writeObject( MetaFixedWidthAttribute.TYPENAME, tb._attributes[x]);
+				out.writeObject( MetaAtomAttribute.TYPENAME, tb._attributes[x]);
 			}
 		}
 		

@@ -15,9 +15,9 @@
  */
 package com.argot.meta;
 
-public class MetaFixedWidthAttributeSigned 
-extends MetaFixedWidthAttribute
+public class MetaAtomAttributeInteger 
+extends MetaAtomAttribute
 {
-	public static final String TYPENAME = "meta.fixed_width.attribute.signed";
+	public static final String TYPENAME = "meta.atom.attribute.integer";
     public static final String VERSION = "1.3";
 }

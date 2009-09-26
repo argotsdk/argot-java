@@ -48,16 +48,16 @@ extends ResourceDictionaryLoader
 			DictionaryName.class );
 		
 	    library.bind( 
-	    	library.getTypeId(MetaFixedWidthAttributeSigned.TYPENAME, "1.3"),
-	    	new TypeReaderAuto(MetaFixedWidthAttributeUnsigned.class), 
+	    	library.getTypeId(MetaAtomAttributeSigned.TYPENAME, "1.3"),
+	    	new TypeReaderAuto(MetaAtomAttributeUnsigned.class), 
 	    	new TypeBeanMarshaller(), 
-	    	MetaFixedWidthAttributeSigned.class );	    
+	    	MetaAtomAttributeSigned.class );	    
 
 	    library.bind( 
-    		library.getTypeId(MetaFixedWidthAttributeIEEE756.TYPENAME, "1.3"),
-    		new TypeReaderAuto(MetaFixedWidthAttributeIEEE756.class), 
+    		library.getTypeId(MetaAtomAttributeIEEE756.TYPENAME, "1.3"),
+    		new TypeReaderAuto(MetaAtomAttributeIEEE756.class), 
     		new TypeBeanMarshaller(), 
-    		MetaFixedWidthAttributeIEEE756.class );
+    		MetaAtomAttributeIEEE756.class );
 	    
 	}
 

@@ -35,12 +35,12 @@ import com.argot.meta.MetaDefinition;
 import com.argot.meta.MetaEncoding;
 import com.argot.meta.MetaEnvelope;
 import com.argot.meta.MetaExpression;
-import com.argot.meta.MetaFixedWidth;
-import com.argot.meta.MetaFixedWidthAttribute;
-import com.argot.meta.MetaFixedWidthAttributeBigEndian;
-import com.argot.meta.MetaFixedWidthAttributeInteger;
-import com.argot.meta.MetaFixedWidthAttributeSize;
-import com.argot.meta.MetaFixedWidthAttributeUnsigned;
+import com.argot.meta.MetaAtom;
+import com.argot.meta.MetaAtomAttribute;
+import com.argot.meta.MetaAtomAttributeBigEndian;
+import com.argot.meta.MetaAtomAttributeInteger;
+import com.argot.meta.MetaAtomAttributeSize;
+import com.argot.meta.MetaAtomAttributeUnsigned;
 import com.argot.meta.MetaIdentity;
 import com.argot.meta.MetaReference;
 import com.argot.meta.MetaSequence;
@@ -88,12 +88,12 @@ implements TypeMapper
 		map.map( ENVELOPE_ID, library.getDefinitionId( MetaEnvelope.TYPENAME, VERSION ) );
 		map.map( ENCODED_ID, library.getDefinitionId( MetaEncoding.TYPENAME, VERSION ));
 
-		map.map( FIXED_WIDTH_ID, library.getDefinitionId( MetaFixedWidth.TYPENAME, VERSION ));
-		map.map( FIXED_WIDTH_ATTRIBUTE_ID, library.getDefinitionId( MetaFixedWidthAttribute.TYPENAME, VERSION ));
-		map.map( FIXED_WIDTH_ATTRIBUTE_SIZE_ID, library.getDefinitionId( MetaFixedWidthAttributeSize.TYPENAME, VERSION ));
-		map.map( FIXED_WIDTH_ATTRIBUTE_UNSIGNED_ID, library.getDefinitionId( MetaFixedWidthAttributeUnsigned.TYPENAME, VERSION ));
-		map.map( FIXED_WIDTH_ATTRIBUTE_INTEGER_ID, library.getDefinitionId( MetaFixedWidthAttributeInteger.TYPENAME, VERSION ));
-		map.map( FIXED_WIDTH_ATTRIBUTE_BIGENDIAN_ID, library.getDefinitionId( MetaFixedWidthAttributeBigEndian.TYPENAME, VERSION ));
+		map.map( FIXED_WIDTH_ID, library.getDefinitionId( MetaAtom.TYPENAME, VERSION ));
+		map.map( FIXED_WIDTH_ATTRIBUTE_ID, library.getDefinitionId( MetaAtomAttribute.TYPENAME, VERSION ));
+		map.map( FIXED_WIDTH_ATTRIBUTE_SIZE_ID, library.getDefinitionId( MetaAtomAttributeSize.TYPENAME, VERSION ));
+		map.map( FIXED_WIDTH_ATTRIBUTE_UNSIGNED_ID, library.getDefinitionId( MetaAtomAttributeUnsigned.TYPENAME, VERSION ));
+		map.map( FIXED_WIDTH_ATTRIBUTE_INTEGER_ID, library.getDefinitionId( MetaAtomAttributeInteger.TYPENAME, VERSION ));
+		map.map( FIXED_WIDTH_ATTRIBUTE_BIGENDIAN_ID, library.getDefinitionId( MetaAtomAttributeBigEndian.TYPENAME, VERSION ));
 
 	//	map.map( DICTIONARY_NAME_ID, library.getDefinitionId( DictionaryName.TYPENAME, VERSION ));
 		map.map( DICTIONARY_DEFINITION_ID, library.getDefinitionId( DictionaryDefinition.TYPENAME, VERSION ));

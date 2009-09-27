@@ -19,8 +19,10 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
+import com.argot.meta.DictionaryBase;
 import com.argot.meta.DictionaryDefinition;
 import com.argot.meta.DictionaryName;
+import com.argot.meta.MetaCluster;
 import com.argot.meta.MetaIdentity;
 import com.argot.meta.MetaName;
 
@@ -33,6 +35,7 @@ extends TestCase
     {
         super.setUp();
         _library = new TypeLibrary();
+        _library.register(new DictionaryBase(), new MetaCluster() );
     }
     
     public void testCreateTypeLibrary() throws Exception
@@ -60,12 +63,12 @@ extends TestCase
     public void testReserveAlreadyDefinedType() throws Exception
     {
     	//_library.reserve("test","1.0");
-    	_library.register( new DictionaryName("test"), new MetaIdentity());
+    	_library.register( new DictionaryName(_library,"test"), new MetaIdentity());
     	
     	try
 		{
 			//_library.reserve("test","1.0");
-        	_library.register( new DictionaryName("test"), new MetaIdentity());
+        	_library.register( new DictionaryName(_library,"test"), new MetaIdentity());
 			fail("shouldn't get here");
 		}
 		catch (TypeException e)
@@ -77,7 +80,7 @@ extends TestCase
     public void testNotDefinedTypeState() throws Exception
     {
         //int id = _library.getTypeState("blah","1.3");
-    	int id = _library.getTypeState(0);
+    	int id = _library.getTypeState(2);
         assertEquals( id, TypeLibrary.TYPE_NOT_DEFINED );
     }
     
@@ -85,7 +88,7 @@ extends TestCase
     {
         //_library.register( "test","1.0", new TestTypeElement() );
     	TestTypeElement element = new TestTypeElement();
-    	_library.register( new DictionaryName("test"), element );
+    	_library.register( new DictionaryName(_library,"test"), element );
         //assertEquals( _library.getTypeState("test","1.0"), TypeLibrary.TYPE_REGISTERED );
     	assertEquals( _library.getTypeState(_library.getTypeId("test")), TypeLibrary.TYPE_REGISTERED );
     }
@@ -94,7 +97,7 @@ extends TestCase
     {
         //_library.register( "test","1.0", new TestTypeElement(), new TestReader(), new TestWriter(), null );
         //assertEquals( _library.getTypeState("test","1.0"), TypeLibrary.TYPE_COMPLETE );
-        _library.register( new DictionaryName("test"), new TestTypeElement(), new TestReader(), new TestWriter(), null );
+        _library.register( new DictionaryName(_library,"test"), new TestTypeElement(), new TestReader(), new TestWriter(), null );
         assertEquals( _library.getTypeState( _library.getTypeId("test") ), TypeLibrary.TYPE_COMPLETE );
     }
     
@@ -114,7 +117,7 @@ extends TestCase
         try
 		{
 			//_library.register( "","", new TestTypeElement(), new TestReader(), new TestWriter(), null );
-			_library.register( new DictionaryName(""),new TestTypeElement(), new TestReader(), new TestWriter(), null );
+			_library.register( new DictionaryName(_library,""),new TestTypeElement(), new TestReader(), new TestWriter(), null );
 			fail();
 		}
 		catch (TypeException e)
@@ -129,7 +132,7 @@ extends TestCase
         try
 		{
 			//_library.register( "test","1.0", null, new TestReader(), new TestWriter(), null );
-			_library.register( new DictionaryName("test"), null, new TestReader(), new TestWriter(), null );
+			_library.register( new DictionaryName(_library,"test"), null, new TestReader(), new TestWriter(), null );
 			fail();
 		}
 		catch (TypeException e)
@@ -143,7 +146,7 @@ extends TestCase
         try
 		{
 			//_library.register( "test","1.0", new TestTypeElement(), null, new TestWriter(), null );
-			_library.register( new DictionaryName("test"), new TestTypeElement(), null, new TestWriter(), null );
+			_library.register( new DictionaryName(_library,"test"), new TestTypeElement(), null, new TestWriter(), null );
 			fail();
 		}
 		catch (TypeException e)
@@ -157,7 +160,7 @@ extends TestCase
         try
 		{
 			//_library.register( "test","1.0", new TestTypeElement(), new TestReader(), null, null );
-        	_library.register( new DictionaryName("test"), new TestTypeElement(), new TestReader(), null, null );
+        	_library.register( new DictionaryName(_library,"test"), new TestTypeElement(), new TestReader(), null, null );
 			fail();
 		}
 		catch (TypeException e)
@@ -171,8 +174,8 @@ extends TestCase
         //_library.reserve( "test","1.0" );
         //_library.register( "test","1.0", new TestTypeElement(), new TestReader(), new TestWriter(), null );
         //assertEquals( _library.getTypeState("test","1.0"), TypeLibrary.TYPE_COMPLETE );
-    	int id = _library.register( new DictionaryName("test"), new MetaIdentity());
-        _library.register( new DictionaryDefinition(id,"test", "1.3"), new TestTypeElement(), new TestReader(), new TestWriter(), null );
+    	int id = _library.register( new DictionaryName(_library,"test"), new MetaIdentity());
+        _library.register( new DictionaryDefinition(_library,id,"test", "1.3"), new TestTypeElement(), new TestReader(), new TestWriter(), null );
         assertEquals( _library.getTypeState( _library.getDefinitionId("test","1.3")), TypeLibrary.TYPE_COMPLETE );
         	
         TypeElement structure = _library.getStructure( _library.getDefinitionId("test","1.3"));
@@ -183,7 +186,7 @@ extends TestCase
     {
         //_library.register( "test","1.0", new TestTypeElement() );
         //_library.bind( "test",null,"1.0" );
-        int id = _library.register( new DictionaryName("test"), new TestTypeElement() );
+        int id = _library.register( new DictionaryName(_library,"test"), new TestTypeElement() );
         _library.bind( id, new TestReader(), new TestWriter(), null );
     }
     
@@ -224,7 +227,7 @@ extends TestCase
     public void testGetTypeStateRegistered() throws Exception
     {
         //int id = _library.register( "test","1.0", new TestTypeElement() );
-        int id = _library.register( new DictionaryName("test"),new TestTypeElement() );
+        int id = _library.register( new DictionaryName(_library,"test"),new TestTypeElement() );
     	
         //int state = _library.getTypeState("test","1.0");
         int state = _library.getTypeState( id );
@@ -235,7 +238,7 @@ extends TestCase
     {
         TestWriter writer = new TestWriter();
         //int id = _library.register( "test","1.0", new TestTypeElement(), new TestReader(), writer, writer.getClass() );
-        int id = _library.register( new DictionaryName("test"),new TestTypeElement(), new TestReader(), writer, writer.getClass() );
+        int id = _library.register( new DictionaryName(_library,"test"),new TestTypeElement(), new TestReader(), writer, writer.getClass() );
 
     	int state = _library.getTypeState( id );
     	assertEquals( state, TypeLibrary.TYPE_COMPLETE );    	
@@ -245,7 +248,7 @@ extends TestCase
     {
         TestTypeElement element = new TestTypeElement();
         //_library.register( "test","1.0", element, new TestReader(), new TestWriter(), null );
-        int id = _library.register( new DictionaryName("test"), element, new TestReader(), new TestWriter(), null );
+        int id = _library.register( new DictionaryName(_library,"test"), element, new TestReader(), new TestWriter(), null );
         
         TypeElement elem = _library.getStructure( id );
         assertEquals( element, elem );
@@ -286,7 +289,7 @@ extends TestCase
     {
         TestReader reader = new TestReader();
         //_library.register( "test","1.0", new TestTypeElement(), reader, new TestWriter(), null );
-        int id = _library.register( new DictionaryName("test"), new TestTypeElement(), reader, new TestWriter(), null );
+        int id = _library.register( new DictionaryName(_library,"test"), new TestTypeElement(), reader, new TestWriter(), null );
         
         //TypeLibraryReader read = _library.getReader( _library.getDefinitionId("test","1.0"));
         TypeLibraryReader read = _library.getReader( id );
@@ -296,7 +299,7 @@ extends TestCase
     public void testGetReaderFail() throws Exception
     {
         //_library.register( "test","1.0", new TestTypeElement() );
-    	int id = _library.register( new DictionaryName("test"),new TestTypeElement() );
+    	int id = _library.register( new DictionaryName(_library,"test"),new TestTypeElement() );
         
         try
         {
@@ -328,7 +331,7 @@ extends TestCase
     {
         TestWriter writer = new TestWriter();
         //_library.register( "test","1.0", new TestTypeElement(), new TestReader(), writer, null );
-        int id = _library.register( new DictionaryName("test"),new TestTypeElement(), new TestReader(), writer, null );
+        int id = _library.register( new DictionaryName(_library,"test"),new TestTypeElement(), new TestReader(), writer, null );
         
         //TypeLibraryWriter write = _library.getWriter( _library.getDefinitionId("test","1.0"));
         TypeLibraryWriter write = _library.getWriter( id );
@@ -338,7 +341,7 @@ extends TestCase
     public void testGetWriterFail() throws Exception
     {
         //_library.register( "test","1.0", new TestTypeElement() );
-    	int id = _library.register( new DictionaryName("test"), new TestTypeElement() );
+    	int id = _library.register( new DictionaryName(_library,"test"), new TestTypeElement() );
         
         try
         {
@@ -370,7 +373,7 @@ extends TestCase
     {
         TestWriter writer = new TestWriter();
         //int id = _library.register( "test","1.0", new TestTypeElement(), new TestReader(), writer, writer.getClass() );
-        int id = _library.register( new DictionaryName("test"),new TestTypeElement(), new TestReader(), writer, writer.getClass() );
+        int id = _library.register( new DictionaryName(_library,"test"),new TestTypeElement(), new TestReader(), writer, writer.getClass() );
         
         Class clss = _library.getClass( id );
         assertEquals( clss, writer.getClass() );      
@@ -393,7 +396,7 @@ extends TestCase
     {
         TestWriter writer = new TestWriter();
         //int id = _library.register( "test","1.0", new TestTypeElement(), new TestReader(), writer, null );
-        int id = _library.register( new DictionaryName("test"), new TestTypeElement(), new TestReader(), writer, null );
+        int id = _library.register( new DictionaryName(_library,"test"), new TestTypeElement(), new TestReader(), writer, null );
 
         try
 		{
@@ -410,7 +413,7 @@ extends TestCase
     {
         TestWriter writer = new TestWriter();
         //int id = _library.register( "test","1.0", new TestTypeElement(), new TestReader(), writer, writer.getClass() );
-        int id = _library.register( new DictionaryName("test"), new TestTypeElement(), new TestReader(), writer, writer.getClass() );
+        int id = _library.register( new DictionaryName(_library,"test"), new TestTypeElement(), new TestReader(), writer, writer.getClass() );
         
         int[] cids = _library.getId( writer.getClass() );
         assertEquals( 1, cids.length );
@@ -422,7 +425,7 @@ extends TestCase
         TestWriter writer = new TestWriter();
         //_library.reserve("test","1.0");
         //int id = _library.register( "test","1.0", new TestTypeElement(), new TestReader(), writer, writer.getClass() );
-        int id = _library.register( new DictionaryName("test"), new TestTypeElement(), new TestReader(), writer, writer.getClass() );
+        int id = _library.register( new DictionaryName(_library,"test"), new TestTypeElement(), new TestReader(), writer, writer.getClass() );
         
         int[] cids = _library.getId( writer.getClass() );
         assertEquals( 1, cids.length );
@@ -434,10 +437,10 @@ extends TestCase
         TestWriter writer = new TestWriter();
        // _library.reserve("test","1.0");
         //int id = _library.register( "test","1.0", new TestTypeElement(), new TestReader(), writer, writer.getClass() );
-        int id = _library.register( new DictionaryName("test"), new TestTypeElement(), new TestReader(), writer, writer.getClass() );
+        int id = _library.register( new DictionaryName(_library,"test"), new TestTypeElement(), new TestReader(), writer, writer.getClass() );
 
         MetaName name = _library.getName(id);
-        assertEquals(name.toString(),"test");
+        assertEquals(name.getFullName(),"test");
     }
 
     public void testGetNameInvalid() throws Exception
@@ -466,17 +469,17 @@ extends TestCase
     public void testMixedCaseNames() throws Exception
     {
         //int id1 = _library.reserve( "TeSt" ,"1.0");
-    	int id1 = _library.register( new DictionaryName("TeSt"), new MetaIdentity());
-        assertEquals( "TeSt", _library.getName( id1 ).toString());
+    	int id1 = _library.register( new DictionaryName(_library,"TeSt"), new MetaIdentity());
+        assertEquals( "TeSt", _library.getName( id1 ).getFullName());
         
         //int id2 = _library.register( "TeSt2","1.0", new TestTypeElement() );
-        int id2 = _library.register( new DictionaryName("TeSt2"), new MetaIdentity() );
-        assertEquals( "TeSt2", _library.getName( id2 ).toString());
+        int id2 = _library.register( new DictionaryName(_library,"TeSt2"), new MetaIdentity() );
+        assertEquals( "TeSt2", _library.getName( id2 ).getFullName());
         
         TestWriter writer = new TestWriter();
         //int id3 = _library.register( "teSt3","1.0", new TestTypeElement(), new TestReader(), writer, writer.getClass() );
-        int id3 = _library.register( new DictionaryName("teSt3"), new MetaIdentity(), new TestReader(), writer, writer.getClass() );
-        assertEquals( "teSt3", _library.getName( id3 ).toString());
+        int id3 = _library.register( new DictionaryName(_library,"teSt3"), new MetaIdentity(), new TestReader(), writer, writer.getClass() );
+        assertEquals( "teSt3", _library.getName( id3 ).getFullName());
         
         assertEquals( id1, _library.getTypeId( "TeSt" ));
     }
@@ -498,7 +501,7 @@ extends TestCase
     {
         TestWriter writer = new TestWriter();
         //int id = _library.register( "test","1.0", new TestTypeElement(), new TestReader(), writer, writer.getClass() );
-        int id = _library.register( new DictionaryName("test"), new TestTypeElement(), new TestReader(), writer, writer.getClass() );
+        int id = _library.register( new DictionaryName(_library,"test"), new TestTypeElement(), new TestReader(), writer, writer.getClass() );
     	
         _library.addClassAlias(id, Boolean.class);
     }
@@ -507,7 +510,7 @@ extends TestCase
     {
         TestWriter writer = new TestWriter();
         //int id = _library.register( "test","1.0", new TestTypeElement(), new TestReader(), writer, writer.getClass() );
-        int id = _library.register( new DictionaryName("test"), new TestTypeElement(), new TestReader(), writer, writer.getClass() );
+        int id = _library.register( new DictionaryName(_library,"test"), new TestTypeElement(), new TestReader(), writer, writer.getClass() );
     	
         try
 		{
@@ -524,8 +527,8 @@ extends TestCase
     {
         TestWriter writer = new TestWriter();
         //int id = _library.register( "test","1.0", new TestTypeElement(), new TestReader(), writer, writer.getClass() );
-        int id1 = _library.register( new DictionaryName("test1"), new TestTypeElement(), new TestReader(), writer, writer.getClass() );
-        int id2 = _library.register( new DictionaryName("test2"), new TestTypeElement(), new TestReader(), writer, writer.getClass() );
+        int id1 = _library.register( new DictionaryName(_library,"test1"), new TestTypeElement(), new TestReader(), writer, writer.getClass() );
+        int id2 = _library.register( new DictionaryName(_library,"test2"), new TestTypeElement(), new TestReader(), writer, writer.getClass() );
     	
 		//	_library.addClassAlias(id, String.class);
 		int ids[] = _library.getId(writer.getClass());
@@ -541,7 +544,7 @@ extends TestCase
     {
         TestWriter writer = new TestWriter();
         //int id = _library.register( "test","1.0", new TestTypeElement(), new TestReader(), writer, writer.getClass() );
-        int id = _library.register( new DictionaryName("test"), new TestTypeElement(), new TestReader(), writer, writer.getClass() );
+        int id = _library.register( new DictionaryName(_library,"test"), new TestTypeElement(), new TestReader(), writer, writer.getClass() );
 
         Set set = _library.getNames();
         assertEquals( set.size(), 1 );

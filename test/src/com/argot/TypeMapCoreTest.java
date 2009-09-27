@@ -48,10 +48,20 @@ extends TestCase
         for (int x=0; x<core.length;x++)
         {
         	count++;
-        	String value = Integer.toString( core[x], 16 );
-        	if (value.length()==1) value = "0" + value;
-        	value = "" + value;
-        	System.out.print( "" + value + " ");
+        	
+        	if (core[x] >= 48 && core[x] <= 122 )
+        	{
+        		String value = String.valueOf((char)core[x]);
+        		System.out.print( value + "  ");
+        	}
+        	else
+        	{
+	        	String value = Integer.toString( core[x], 16 );
+	        	if (value.length()==1) value = "0" + value;
+	        	value = "" + value;
+	        	
+	        	System.out.print( "" + value + " ");
+        	}
         	if (count>30)
         	{
         		count=0;
@@ -64,7 +74,7 @@ extends TestCase
         {
         	if ( core[x] == 0 ) zeros++;
         }
-        System.out.println("Zeros:" + zeros );
+        System.out.println("\n\nZeros:" + zeros );
     }
     
     public void testGetClass() throws Exception

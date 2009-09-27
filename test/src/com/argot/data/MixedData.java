@@ -29,9 +29,11 @@ import com.argot.meta.DictionaryDefinition;
 import com.argot.meta.DictionaryName;
 import com.argot.meta.MetaExpression;
 import com.argot.meta.MetaIdentity;
+import com.argot.meta.MetaName;
 import com.argot.meta.MetaReference;
 import com.argot.meta.MetaSequence;
 import com.argot.meta.MetaTag;
+import com.argot.meta.MetaVersion;
 
 
 /*
@@ -100,10 +102,10 @@ public class MixedData
 	public static int register( TypeLibrary library )
 	throws TypeException
 	{
-		int id = library.register( new DictionaryName(TYPENAME), new MetaIdentity() );
+		int id = library.register( new DictionaryName(MetaName.parseName(library,TYPENAME)), new MetaIdentity() );
 		
 		return library.register( 
-				new DictionaryDefinition(id, TYPENAME,"1.0"),
+				new DictionaryDefinition(id, MetaName.parseName(library,TYPENAME), MetaVersion.parseVersion("1.0")),
 				new MetaSequence(
 					new MetaExpression[]{
 					    new MetaTag( "uint16", new MetaReference( library.getTypeId("uint16"))),

@@ -20,6 +20,8 @@ import java.util.Iterator;
 import com.argot.meta.MetaLoader;
 import com.argot.meta.MetaName;
 import com.argot.meta.MetaReference;
+import com.argot.meta.MetaSequence;
+import com.argot.meta.MetaTag;
 
 import junit.framework.TestCase;
 
@@ -54,7 +56,7 @@ extends TestCase
     public void testGetName() throws Exception
     {
         MetaName name = _map.getName( TypeMapperCore.REFERENCE_ID );
-        assertEquals( MetaReference.TYPENAME, name.toString() );
+        assertEquals( MetaReference.TYPENAME, name.getFullName() );
     }
     
     public void testGetIdBySystemId() throws Exception
@@ -66,9 +68,9 @@ extends TestCase
     public void testIterator() throws Exception
     {
     	_map = new TypeMap( _library, new TypeMapperError() );
-    	_map.map( 34, 33 );
-    	_map.map( 20, 34 );
-    	_map.map( 45, 35 );
+    	_map.map( 34, _library.getTypeId( MetaReference.TYPENAME, "1.3") );
+    	_map.map( 20, _library.getTypeId( MetaTag.TYPENAME, "1.3") );
+    	_map.map( 45, _library.getTypeId( MetaSequence.TYPENAME, "1.3") );
     	
     	Iterator iter = _map.getIdList().iterator();
     	

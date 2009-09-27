@@ -69,7 +69,6 @@ implements TypeMapper
 		map.map( 12, library.getDefinitionId( DictionaryRelation.TYPENAME, "1.3" ));
 		map.map( 13, library.getDefinitionId( "meta.abstract", "1.3"));
 		map.map( 14, library.getDefinitionId( "meta.id", "1.3"));
-		map.map( 15, library.getDefinitionId( "meta.name_part", "1.3"));
 		map.map( 16, library.getDefinitionId( "meta.name", "1.3"));
 		map.map( 17, library.getDefinitionId( "meta.version", "1.3"));
 		map.map( 18, library.getDefinitionId( "meta.tag", "1.3"));
@@ -77,7 +76,6 @@ implements TypeMapper
 		map.map( 20, library.getDefinitionId( "meta.sequence", "1.3"));
 		map.map( 21, library.getDefinitionId( "meta.array", "1.3"));
 		map.map( 22, library.getDefinitionId( "uvint28", "1.3"));
-		map.map( 23, library.getTypeId( new DictionaryRelation( library.getDefinitionId(DictionaryLocation.TYPENAME,"1.3"), "name")));
 		
 	}
 

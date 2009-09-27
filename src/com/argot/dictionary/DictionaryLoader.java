@@ -27,7 +27,9 @@ import com.argot.meta.MetaDefinition;
 import com.argot.meta.MetaEnvelope;
 import com.argot.meta.MetaIdentity;
 import com.argot.meta.MetaMarshaller;
+import com.argot.meta.MetaName;
 import com.argot.meta.MetaReference;
+import com.argot.meta.MetaVersion;
 
 public class DictionaryLoader
 implements TypeLibraryLoader
@@ -45,7 +47,7 @@ implements TypeLibraryLoader
 	public void load( TypeLibrary library ) throws TypeException
 	{
 
-		int dictListId = library.register( new DictionaryName( DICTIONARY_LIST ), new MetaIdentity() );  // 1
+		int dictListId = library.register( new DictionaryName( MetaName.parseName(library,DICTIONARY_LIST) ), new MetaIdentity() );  // 1
 		
 		MetaDefinition dWords =
 				new MetaEnvelope(
@@ -54,7 +56,7 @@ implements TypeLibraryLoader
 				);			  
 	
 
-		library.register( new DictionaryDefinition(dictListId,DICTIONARY_LIST, DICTIONARY_LIST_VERSION),
+		library.register( new DictionaryDefinition(dictListId,MetaName.parseName(library,DICTIONARY_LIST), MetaVersion.parseVersion(DICTIONARY_LIST_VERSION)),
 				dWords, new MetaMarshaller(), new MetaMarshaller(), null );
 			
     }

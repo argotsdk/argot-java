@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.argot.meta.MetaCluster;
 import com.argot.meta.MetaName;
 import com.argot.util.TwoWayHashMap;
 
@@ -144,7 +145,11 @@ public class TypeMap
 		}
 		else if (location instanceof TypeLocationName)
 		{
-			throw new TypeException("Names may not be mapped directly.");
+			TypeElement element = _library.getStructure( definitionId );
+			if (!(element instanceof MetaCluster))
+			{
+				throw new TypeException("Names may not be mapped directly.");
+			}
 		}
 			
 		_map.add( streamId, definitionId, item );

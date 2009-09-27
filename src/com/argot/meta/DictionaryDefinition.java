@@ -58,17 +58,11 @@ implements TypeLocationDefinition
 		_name = name;
 		_version = version;
 	}
-	
-	public DictionaryDefinition(int id, String name, String version)
+
+	public DictionaryDefinition(TypeLibrary library, int id, String name, String version)
 	throws TypeException
 	{
-		this( id, MetaName.parseName(name), MetaVersion.parseVersion(version) );
-	}
-	
-	public DictionaryDefinition(String name, String version)
-	throws TypeException
-	{
-		this( -1, name, version );
+		this( id, MetaName.parseName(library, name), MetaVersion.parseVersion(version) );
 	}
 
 

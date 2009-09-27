@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.argot.meta.MetaCluster;
 import com.argot.meta.MetaIdentity;
 import com.argot.meta.MetaName;
 import com.argot.meta.MetaVersion;
@@ -51,7 +52,10 @@ public class TypeLibrary
 
 	private HashMap _classes;  // class to TypeDefinitionEntry
 	
-	private TreeItem _tree;
+	//private TreeItem _tree;
+	private MetaCluster _tree;
+	
+	private boolean _primed;
 	
 	private class TypeDefinitionEntry
 	{
@@ -75,8 +79,8 @@ public class TypeLibrary
 		_types = new ArrayList();
 		_names = new HashMap();
 		_classes = new HashMap();
-		_tree = new TreeItem();
-		_tree.cluster = new HashMap();
+		_tree = null;
+		_primed = false;
 	}
 
 	public TypeLibrary( TypeLibraryLoader[] loaders )
@@ -94,6 +98,11 @@ public class TypeLibrary
 	throws TypeException
 	{
 		loader.load(this);
+	}
+	
+	public void setPrimed()
+	{
+		_primed = true;
 	}
 	
 	private void addClass( TypeDefinitionEntry definition, Class clss)
@@ -122,59 +131,31 @@ public class TypeLibrary
 	
 	static private class TreeItem
 	{
-		public HashMap cluster = new HashMap();
+		public MetaCluster cluster;
 		public TypeDefinitionEntry entry;
 	}
 	
+	
+	/*
+	 * Used to add any new names to the tree structure.
+	 */
 	private void addLocationToTree(MetaName location, TypeDefinitionEntry entry) 
 	throws TypeException
 	{
-		String[] parts = location.getParts();
-		
-		TreeItem currentMap = _tree;
-		
-		for (int x=0; x<parts.length-1;x++)
+		TypeElement data = getStructure(location.getGroup());
+		if (data == null)
 		{
-			
-			TreeItem data = (TreeItem) currentMap.cluster.get(parts[x]);
-			if (data == null)
-			{
-				// this group not defined.  Add it.
-				TreeItem newMap = new TreeItem();
-				currentMap.cluster.put(parts[x],newMap);
-				currentMap = newMap;
-				continue;
-			}
-
-			// group already in tree.  Add it.
-			currentMap = data;
-			continue;
-		/*	
-			if (data instanceof TypeDefinitionEntry)
-			{
-				throw new TypeException("Group: '" + parts[x] + "' defined as data type in: " + location.toString());
-			}
-		*/	
-			
+			throw new TypeException("Structure not found");
 		}
 		
-		TreeItem data = (TreeItem) currentMap.cluster.get(parts[parts.length-1]);
-		if (data != null)
-		{
-			if (data.entry != null)
-			{
-				throw new TypeDefinedException("Name already defined: " + location.toString());
-			}
-			
-			data.entry = entry;
-			return;
+		if (!(data instanceof MetaCluster))
+		{			
+			throw new TypeException("Name location not in group");
 		}
 		
-		data = new TreeItem();
-		data.entry = entry;
-		currentMap.cluster.put(parts[parts.length-1], data);
+		MetaCluster group = (MetaCluster) data;
 
-		//currentMap.put(parts[parts.length-1], entry);
+		group.put(location.getName(), entry.structure);
 	}
 	
 	/**
@@ -196,7 +177,7 @@ public class TypeLibrary
 	    {
 	    	MetaName metaName = ((TypeLocationName)definition.location).getName();
 	    	
-	    	String name = checkName( metaName.toString() );
+	    	String name = checkName( metaName.getFullName() );
 
 
 		    TypeDefinitionEntry nameEntry = (TypeDefinitionEntry) _names.get(name);
@@ -256,6 +237,13 @@ public class TypeLibrary
 	    	
 	    	relation = (TypeRelation) targetEntry.structure;
 	    	relationTag = typeRel.getTag();	    	
+	    }
+	    else if (definition.location instanceof TypeLocationBase)
+	    {
+	    	if (_tree != null)
+	    		throw new TypeException("Base cluster already defined");
+	    	
+	    	_tree = (MetaCluster) definition.structure;
 	    }
 
 	    // Add to list of definitions.
@@ -353,7 +341,7 @@ public class TypeLibrary
 		{
 			TypeLocationName locationName = (TypeLocationName) location;
 			
-			TypeDefinitionEntry entry = (TypeDefinitionEntry) _names.get(checkName(locationName.getName().toString()));
+			TypeDefinitionEntry entry = (TypeDefinitionEntry) _names.get(checkName(locationName.getName().getFullName()));
 			if (entry == null)
 			{
 				return NOTYPE;
@@ -397,6 +385,12 @@ public class TypeLibrary
 			TypeRelation relation = (TypeRelation) definition.structure;
 			
 			return relation.getRelation(locationRelation.getTag());
+		}
+		else if (location instanceof TypeLocationBase )
+		{
+			if (_primed)
+				return 0;  // Type 0 must be the base group.
+			return -1;
 		}
 		else
 		{
@@ -659,7 +653,7 @@ public class TypeLibrary
 	public int getDefinitionId(MetaName name, MetaVersion version) 
 	throws TypeException
 	{
-		return getDefinitionId(name.toString(), version.toString());
+		return getDefinitionId(name.getFullName(), version.toString());
 	}
 	
 	public int getDefinitionId( String name, String version )
@@ -719,6 +713,12 @@ public class TypeLibrary
 			//String tag = ((TypeLocationRelation)def.location).getTag();
 			//return MetaName.parseName( name.toString() + "." + tag );
 		}
+		else if (def.location instanceof TypeLocationBase)
+		{
+			// This is a bit ugly.  
+			return new MetaName(0,"...","...");
+			//throw new TypeException("Library base not named");
+		}
 				
 		throw new TypeException("Type not named");
 	}
@@ -726,7 +726,7 @@ public class TypeLibrary
 	public int getTypeId(MetaName name) 
 	throws TypeException
 	{
-		return getTypeId(name.toString());
+		return getTypeId(name.getFullName());
 	}
 	
 	
@@ -811,7 +811,7 @@ public class TypeLibrary
 			throw new TypeNotDefinedException( "type id" );
 		
 		if ( def.state != TYPE_COMPLETE && def.state != TYPE_REGISTERED )
-			throw new TypeException( "type not complete: " + this.getName(typeId));
+			throw new TypeException( "type not complete: " + this.getName(typeId).getFullName());
 
 		return (TypeElement) def.structure;
 	}
@@ -833,7 +833,7 @@ public class TypeLibrary
 			throw new TypeNotDefinedException( "type id" );
 			
 		if ( def.state != TYPE_COMPLETE )
-			throw new TypeException( "type not complete: " + this.getName(typeId));
+			throw new TypeException( "type not complete: " + this.getName(typeId).getFullName());
 			
 		return def.reader;
 	}
@@ -855,7 +855,7 @@ public class TypeLibrary
 			throw new TypeException( "type not found" );
 				
 		if ( def.state != TYPE_COMPLETE )
-			throw new TypeException( "type not complete: " + typeId + " - " + this.getName(typeId));
+			throw new TypeException( "type not complete: " + typeId + " - " + this.getName(typeId).getFullName());
 			
 		return def.writer;
 	}
@@ -942,13 +942,6 @@ public class TypeLibrary
 			throw new TypeException( "type not found" );
 		
 		addClass( def, clss );
-/*		
-		TypeDefinitionEntry w = (TypeDefinitionEntry) _classes.get( clss );
-		if ( w != null )
-			throw new TypeException( "class overloaded: " + clss.getName() );
-
-		_classes.put( clss, def );
-		*/
 	}
 	
 

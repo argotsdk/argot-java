@@ -17,6 +17,7 @@ package com.argot;
 
 import java.util.Iterator;
 
+import com.argot.meta.MetaCluster;
 import com.argot.meta.MetaIdentity;
 import com.argot.meta.MetaName;
 import com.argot.meta.MetaVersion;
@@ -69,6 +70,12 @@ implements TypeMapper
 		{
 			return this.mapDefault(definitionId);
 		}
+		else if (location instanceof TypeLocationDefinition)
+		{
+			// Need to ensure the parent group is also mapped.  Getting stream should force it.
+			TypeLocationDefinition tld = (TypeLocationDefinition) location;
+			_map.getStreamId(tld.getName().getGroup());
+		}
 		
 		int mapId = getNextId();
 		_map.map(mapId, definitionId);
@@ -86,9 +93,21 @@ implements TypeMapper
 	{		
 		TypeElement elemStructure = _library.getStructure(systemNameId);
 		if (!(elemStructure instanceof MetaIdentity))
+		{	
+			if (elemStructure instanceof MetaCluster)
+			{
+				TypeLocationName location =  (TypeLocationName) _library.getLocation(systemNameId);
+				_map.getStreamId(location.getName().getGroup());
+				int mapId = getNextId();
+				_map.map(mapId, systemNameId);
+				return mapId;				
+			}
 			throw new TypeException("MapDefault requires name definition: " + elemStructure.getClass().getName() );
-		
+		}
 		MetaName name = _library.getName(systemNameId);
+		
+		// Need to ensure the parent group is also mapped.  Getting stream should force it.
+		_map.getStreamId(name.getGroup());
 		
 		MetaIdentity metaName = (MetaIdentity) elemStructure;
 		Iterator iter = metaName.getVersions().iterator();

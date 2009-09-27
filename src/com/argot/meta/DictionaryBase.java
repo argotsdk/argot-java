@@ -15,14 +15,18 @@
  */
 package com.argot.meta;
 
-import com.argot.TypeElement;
+import com.argot.TypeLocation;
+import com.argot.TypeLocationBase;
 
-public interface MetaDefinition
-extends TypeElement
+public class DictionaryBase 
+extends DictionaryLocation
+implements TypeLocationBase
 {
-    public static String TYPENAME = "meta.definition";
-	public static String VERSION = "1.3";
+	public static final String TYPENAME = "dictionary.base";
 	
-	public static String META_DEFINITION_ENVELOPE = "dictionary.definition_envelope";
-	public static String META_DEFINITION_ENVELOPE_VERSION = "1.3";
+	public DictionaryBase()
+	{
+		super(TypeLocation.BASE);
+	}
+
 }

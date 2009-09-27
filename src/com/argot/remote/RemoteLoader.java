@@ -80,9 +80,9 @@ extends ResourceDictionaryLoader
 		
 
 		library.bind( library.getTypeId("remote.exception","1.3"), new MetaMarshaller(), new MetaMarshaller(), null );
-		library.bind( library.getTypeId("remote.exception.basic", "1.3"), new MetaMarshaller(),new MetaMarshaller(), null );
+		library.bind( library.getTypeId("remote.exception_basic", "1.3"), new MetaMarshaller(),new MetaMarshaller(), null );
 		library.bind( library.getTypeId("remote.stack_trace_element", "1.3"), new TypeReaderAuto( MetaRemoteStackTraceElement.class ),new MetaRemoteStackTraceElement.MetaRemoteStackTraceElementWriter(), MetaRemoteStackTraceElement.class );
-		library.bind( library.getTypeId("remote.exception.wrapped", "1.3"), new MetaRemoteException.Reader(WrappedRemoteException.class), new MetaRemoteException.Writer(), WrappedRemoteException.class );
+		library.bind( library.getTypeId("remote.exception_wrapped", "1.3"), new MetaRemoteException.Reader(WrappedRemoteException.class), new MetaRemoteException.Writer(), WrappedRemoteException.class );
 	}
 
 

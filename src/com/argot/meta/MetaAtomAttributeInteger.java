@@ -18,6 +18,6 @@ package com.argot.meta;
 public class MetaAtomAttributeInteger 
 extends MetaAtomAttribute
 {
-	public static final String TYPENAME = "meta.atom.attribute.integer";
+	public static final String TYPENAME = "meta.attribute.integer";
     public static final String VERSION = "1.3";
 }

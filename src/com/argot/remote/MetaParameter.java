@@ -17,6 +17,7 @@ package com.argot.remote;
 
 import java.io.IOException;
 
+import com.argot.ReferenceTypeMap;
 import com.argot.TypeBound;
 import com.argot.TypeElement;
 import com.argot.TypeException;
@@ -76,7 +77,8 @@ extends MetaExpression
 		{
 			TypeReader reader = _reader.getReader(in.getTypeMap());
 			MetaParameter mp = (MetaParameter) reader.read( in );
-			mp._typeId = in.getTypeMap().getDefinitionId( mp._typeId );
+			ReferenceTypeMap mapCore = (ReferenceTypeMap) in.getTypeMap();
+			mp._typeId = mapCore.referenceMap().getDefinitionId( mp._typeId );
 			return mp;
 		}
 	}
@@ -88,7 +90,8 @@ extends MetaExpression
 		throws TypeException, IOException 
 		{
 			MetaParameter mp = (MetaParameter) o;
-			int id = out.getTypeMap().getStreamId( mp._typeId );
+			ReferenceTypeMap mapCore = (ReferenceTypeMap) out.getTypeMap();
+			int id = mapCore.referenceMap().getStreamId( mp._typeId );
 			out.writeObject( UInt16.TYPENAME, new Integer(id));
 			out.writeObject( U8Ascii.TYPENAME, mp._name );
 		}

@@ -41,11 +41,6 @@ extends ResourceDictionaryLoader
 	public void bind(TypeLibrary library) throws TypeException
 	{
 	
-		library.bind( 
-			library.getTypeId( DictionaryName.TYPENAME, "1.3"), 
-			new TypeReaderAuto(DictionaryName.class), 
-			new TypeBeanMarshaller(), 
-			DictionaryName.class );
 		
 	    library.bind( 
 	    	library.getTypeId(MetaAtomAttributeSigned.TYPENAME, "1.3"),

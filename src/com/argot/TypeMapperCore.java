@@ -24,6 +24,7 @@ import com.argot.common.UInt16;
 import com.argot.common.UInt8;
 import com.argot.common.UVInt28;
 import com.argot.dictionary.Dictionary;
+import com.argot.meta.DictionaryBase;
 import com.argot.meta.DictionaryDefinition;
 import com.argot.meta.DictionaryLocation;
 import com.argot.meta.DictionaryName;
@@ -41,7 +42,9 @@ import com.argot.meta.MetaAtomAttributeBigEndian;
 import com.argot.meta.MetaAtomAttributeInteger;
 import com.argot.meta.MetaAtomAttributeSize;
 import com.argot.meta.MetaAtomAttributeUnsigned;
+import com.argot.meta.MetaCluster;
 import com.argot.meta.MetaIdentity;
+import com.argot.meta.MetaName;
 import com.argot.meta.MetaReference;
 import com.argot.meta.MetaSequence;
 import com.argot.meta.MetaTag;
@@ -64,22 +67,20 @@ implements TypeMapper
 		TypeLibrary library = map.getLibrary();
 
 		// Map Definitions
-		//map.map( EMPTY_ID, library.getDefinitionId( Empty.TYPENAME, VERSION ));
+		map.map( BASE_ID, library.getTypeId( new DictionaryBase() ));
 		map.map( UINT8_ID, library.getDefinitionId( UInt8.TYPENAME, VERSION ) );
 		map.map( UVINT28_ID, library.getDefinitionId( UVInt28.TYPENAME, VERSION ));
-
-		//	map.map( UINT16_ID, library.getDefinitionId( UInt16.TYPENAME, VERSION ) );
-		
+		map.map( META_GROUP_ID, library.getTypeId( "meta") );	
 		map.map( META_ID, library.getDefinitionId( "meta.id", VERSION ));
-		map.map( ABSTRACT_ID, library.getDefinitionId( MetaAbstract.TYPENAME, VERSION ));
+		
+		map.map( META_CLUSTER_ID, library.getDefinitionId( MetaCluster.TYPENAME, VERSION));
 		map.map( ABSTRACT_MAP_ID, library.getDefinitionId( MetaAbstractMap.TYPENAME, VERSION ));
+		map.map( ABSTRACT_ID, library.getDefinitionId( MetaAbstract.TYPENAME, VERSION ));
 		map.map( U8UTF8_ID, library.getDefinitionId( U8Utf8.TYPENAME, VERSION ));
-		map.map( NAME_PART_ID, library.getDefinitionId( "meta.name_part", VERSION ));
 		map.map( NAME_ID, library.getDefinitionId( "meta.name", VERSION ));
 		map.map( VERSION_ID, library.getDefinitionId("meta.version", VERSION));
+
 		map.map( DEFINITION_ID, library.getDefinitionId( MetaDefinition.TYPENAME, VERSION));
-		//map.map( IDENTITY_ID, library.getDefinitionId(MetaIdentity.TYPENAME, VERSION));
-		
 		map.map( EXPRESSION_ID, library.getDefinitionId( MetaExpression.TYPENAME, VERSION ));
 		map.map( REFERENCE_ID, library.getDefinitionId( MetaReference.TYPENAME, VERSION ) );
 		map.map( TAG_ID, library.getDefinitionId( MetaTag.TYPENAME, VERSION ) );
@@ -88,19 +89,22 @@ implements TypeMapper
 		map.map( ENVELOPE_ID, library.getDefinitionId( MetaEnvelope.TYPENAME, VERSION ) );
 		map.map( ENCODED_ID, library.getDefinitionId( MetaEncoding.TYPENAME, VERSION ));
 
-		map.map( FIXED_WIDTH_ID, library.getDefinitionId( MetaAtom.TYPENAME, VERSION ));
-		map.map( FIXED_WIDTH_ATTRIBUTE_ID, library.getDefinitionId( MetaAtomAttribute.TYPENAME, VERSION ));
-		map.map( FIXED_WIDTH_ATTRIBUTE_SIZE_ID, library.getDefinitionId( MetaAtomAttributeSize.TYPENAME, VERSION ));
-		map.map( FIXED_WIDTH_ATTRIBUTE_UNSIGNED_ID, library.getDefinitionId( MetaAtomAttributeUnsigned.TYPENAME, VERSION ));
-		map.map( FIXED_WIDTH_ATTRIBUTE_INTEGER_ID, library.getDefinitionId( MetaAtomAttributeInteger.TYPENAME, VERSION ));
-		map.map( FIXED_WIDTH_ATTRIBUTE_BIGENDIAN_ID, library.getDefinitionId( MetaAtomAttributeBigEndian.TYPENAME, VERSION ));
+		map.map( META_ATOM_ID, library.getDefinitionId( MetaAtom.TYPENAME, VERSION ));
+		map.map( META_ATOM_ATTRIBUTE_ID, library.getDefinitionId( MetaAtomAttribute.TYPENAME, VERSION ));
+		map.map( META_ATTRIBUTE_ID, library.getTypeId( "meta.attribute" ));
+		map.map( META_ATTRIBUTE_SIZE_ID, library.getDefinitionId( MetaAtomAttributeSize.TYPENAME, VERSION ));
+		map.map( META_ATTRIBUTE_INTEGER_ID, library.getDefinitionId( MetaAtomAttributeInteger.TYPENAME, VERSION ));
+		map.map( META_ATTRIBUTE_UNSIGNED_ID, library.getDefinitionId( MetaAtomAttributeUnsigned.TYPENAME, VERSION ));
+		map.map( META_ATTRIBUTE_BIGENDIAN_ID, library.getDefinitionId( MetaAtomAttributeBigEndian.TYPENAME, VERSION ));
 
-	//	map.map( DICTIONARY_NAME_ID, library.getDefinitionId( DictionaryName.TYPENAME, VERSION ));
+		map.map( DICTIONARY_CLUSTER_ID, library.getTypeId("dictionary"));
+		map.map( DICTIONARY_BASE_ID, library.getDefinitionId( DictionaryBase.TYPENAME, VERSION ));
+		map.map( DICTIONARY_NAME_ID, library.getDefinitionId( DictionaryName.TYPENAME, VERSION ));
 		map.map( DICTIONARY_DEFINITION_ID, library.getDefinitionId( DictionaryDefinition.TYPENAME, VERSION ));
 		map.map( DICTIONARY_RELATION_ID, library.getDefinitionId( DictionaryRelation.TYPENAME, VERSION ));
 		map.map( DICTIONARY_LOCATION_ID, library.getDefinitionId( DictionaryLocation.TYPENAME, VERSION ));
 			
-		map.map( DEFINITION_ENVELOPE_ID, library.getDefinitionId( MetaDefinition.META_DEFINITION_ENVELOPE, VERSION ));
+		map.map( DICTIONARY_DEFINITION_ENVELOPE_ID, library.getDefinitionId( MetaDefinition.META_DEFINITION_ENVELOPE, VERSION ));
 		map.map( DICTIONARY_ENTRY_ID, library.getDefinitionId( Dictionary.DICTIONARY_ENTRY, VERSION ));
 		map.map( DICTIONARY_ENTRY_LIST_ID, library.getDefinitionId( Dictionary.DICTIONARY_ENTRY_LIST, VERSION ));		
 		
@@ -131,21 +135,22 @@ implements TypeMapper
 		List coreIds = new ArrayList();
 		
 		//entities
-	//	coreIds.add( new Integer( EMPTY_ID ) );
+		coreIds.add( new Integer( BASE_ID ) );
 		coreIds.add( new Integer( UINT8_ID ) );
 		coreIds.add( new Integer( UVINT28_ID ));
-		
-		//coreIds.add( new Integer( UINT16_ID ));
-		
+		coreIds.add( new Integer( META_GROUP_ID ));
 		coreIds.add( new Integer( META_ID ));
-		coreIds.add( new Integer( ABSTRACT_ID ));
+		
+		
+		coreIds.add( new Integer( META_CLUSTER_ID ));
 		coreIds.add( new Integer( ABSTRACT_MAP_ID ));
+		coreIds.add( new Integer( ABSTRACT_ID ));
 		coreIds.add( new Integer( U8UTF8_ID ));
-		coreIds.add( new Integer( NAME_PART_ID ));
 		coreIds.add( new Integer( NAME_ID ));
 		coreIds.add( new Integer( VERSION_ID ));
+		
+		
 		coreIds.add( new Integer( DEFINITION_ID ));
-	//	coreIds.add( new Integer( IDENTITY_ID ));
 		coreIds.add( new Integer( EXPRESSION_ID ));
 		coreIds.add( new Integer( REFERENCE_ID ));
 		coreIds.add( new Integer( TAG_ID ));
@@ -154,60 +159,70 @@ implements TypeMapper
 		coreIds.add( new Integer( ENVELOPE_ID ));
 		coreIds.add( new Integer( ENCODED_ID ));
 		
-		coreIds.add( new Integer( FIXED_WIDTH_ID ));
-		coreIds.add( new Integer( FIXED_WIDTH_ATTRIBUTE_ID ));
-		coreIds.add( new Integer( FIXED_WIDTH_ATTRIBUTE_SIZE_ID ));
-		coreIds.add( new Integer( FIXED_WIDTH_ATTRIBUTE_UNSIGNED_ID ));
-		coreIds.add( new Integer( FIXED_WIDTH_ATTRIBUTE_INTEGER_ID ));
-		coreIds.add( new Integer( FIXED_WIDTH_ATTRIBUTE_BIGENDIAN_ID ));
+		coreIds.add( new Integer( META_ATOM_ID ));
+		coreIds.add( new Integer( META_ATOM_ATTRIBUTE_ID ));
+		coreIds.add( new Integer( META_ATTRIBUTE_ID ));
+		coreIds.add( new Integer( META_ATTRIBUTE_SIZE_ID ));
+		coreIds.add( new Integer( META_ATTRIBUTE_INTEGER_ID ));
+		coreIds.add( new Integer( META_ATTRIBUTE_UNSIGNED_ID ));
+		coreIds.add( new Integer( META_ATTRIBUTE_BIGENDIAN_ID ));
 		
-		//coreIds.add( new Integer( DICTIONARY_NAME_ID ));
+		
+		coreIds.add( new Integer( DICTIONARY_CLUSTER_ID ));
+		coreIds.add( new Integer( DICTIONARY_BASE_ID ));		
+		coreIds.add( new Integer( DICTIONARY_NAME_ID ));
 		coreIds.add( new Integer( DICTIONARY_DEFINITION_ID ));
 		coreIds.add( new Integer( DICTIONARY_RELATION_ID ));
 		coreIds.add( new Integer( DICTIONARY_LOCATION_ID ));
 		
-		coreIds.add( new Integer( DEFINITION_ENVELOPE_ID ));
+		coreIds.add( new Integer( DICTIONARY_DEFINITION_ENVELOPE_ID ));
 		coreIds.add( new Integer( DICTIONARY_ENTRY_ID ));
 		coreIds.add( new Integer( DICTIONARY_ENTRY_LIST_ID ));
 		return coreIds;
 	}
 
-	public static int UINT8_ID = 1;
-	public static int UVINT28_ID = 2;
+	public static int BASE_ID = 1;
+	public static int UINT8_ID = 2;
+	public static int UVINT28_ID = 3;
+	public static int META_GROUP_ID = 4;
+	public static int META_ID = 5;
 	
-	public static int META_ID = 3;
-	public static int ABSTRACT_ID = 4;
-	public static int ABSTRACT_MAP_ID = 5;
-	public static int U8UTF8_ID = 6;
-	public static int NAME_PART_ID = 7;
-	public static int NAME_ID = 8;	
-	public static int VERSION_ID = 9;
+	public static int META_CLUSTER_ID = 6;
+	public static int ABSTRACT_MAP_ID = 7;
+	public static int ABSTRACT_ID = 8;
+	public static int U8UTF8_ID = 9;
+	public static int NAME_ID = 10;	
+	public static int VERSION_ID = 11;
 
-	public static int DEFINITION_ID = 10;
-	public static int EXPRESSION_ID = 11;
-	public static int REFERENCE_ID = 12;
-	public static int TAG_ID = 13;
-	public static int SEQUENCE_ID = 14;
-	public static int ARRAY_ID = 15;
-	public static int ENVELOPE_ID = 16;
-	public static int ENCODED_ID = 17;
+	public static int DEFINITION_ID = 12;
+	public static int EXPRESSION_ID = 13;
+	public static int REFERENCE_ID = 14;
+	public static int TAG_ID = 15;
+	public static int SEQUENCE_ID = 16;
+	public static int ARRAY_ID = 17;
+	public static int ENVELOPE_ID = 18;
+	public static int ENCODED_ID = 19;
 
-	public static int FIXED_WIDTH_ID = 18;
-	public static int FIXED_WIDTH_ATTRIBUTE_ID = 19;
-	public static int FIXED_WIDTH_ATTRIBUTE_SIZE_ID = 20;
-	public static int FIXED_WIDTH_ATTRIBUTE_UNSIGNED_ID = 21;
-	public static int FIXED_WIDTH_ATTRIBUTE_INTEGER_ID = 22;
-	public static int FIXED_WIDTH_ATTRIBUTE_BIGENDIAN_ID = 23;
+	public static int META_ATOM_ID = 20;
+	public static int META_ATOM_ATTRIBUTE_ID = 21;
+	public static int META_ATTRIBUTE_ID = 22;
+	public static int META_ATTRIBUTE_SIZE_ID = 23;
+	public static int META_ATTRIBUTE_INTEGER_ID = 24;
+	public static int META_ATTRIBUTE_UNSIGNED_ID = 25;
+	public static int META_ATTRIBUTE_BIGENDIAN_ID = 26;
 
-	public static int DICTIONARY_DEFINITION_ID = 24;
-	public static int DICTIONARY_RELATION_ID = 25;
-	public static int DICTIONARY_LOCATION_ID = 26;
+	public static int DICTIONARY_CLUSTER_ID = 27;
+	public static int DICTIONARY_BASE_ID = 28;
+	public static int DICTIONARY_NAME_ID = 29;
+	public static int DICTIONARY_DEFINITION_ID = 30;
+	public static int DICTIONARY_RELATION_ID = 31;
+	public static int DICTIONARY_LOCATION_ID = 32;
 	
-	public static int DEFINITION_ENVELOPE_ID = 27;
-	public static int DICTIONARY_ENTRY_ID = 28;
-	public static int DICTIONARY_ENTRY_LIST_ID = 29;	
+	public static int DICTIONARY_DEFINITION_ENVELOPE_ID = 33;
+	public static int DICTIONARY_ENTRY_ID = 34;
+	public static int DICTIONARY_ENTRY_LIST_ID = 35;	
 	
 
 	
-	public static int META_SIZE = 29;
+	public static int META_SIZE = 35;
 }

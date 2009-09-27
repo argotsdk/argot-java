@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import com.argot.ReferenceTypeMap;
 import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
@@ -34,6 +35,7 @@ import com.argot.common.UInt8;
 import com.argot.common.UInt16;
 import com.argot.meta.MetaDefinition;
 import com.argot.meta.MetaExpression;
+import com.argot.meta.MetaName;
 
 
 
@@ -215,6 +217,7 @@ implements MetaDefinition, TypeRelation
 			}
 			catch( TypeException e)
 			{
+				MetaName filedType = library.getName(requestTypes[x].getParamType());
 				throw new TypeException("Failed to bind method: " + metaMethod.getMethodName() + " arg: " + (x+1), e);
 			}
 		}
@@ -323,12 +326,14 @@ implements MetaDefinition, TypeRelation
 		public Object read(TypeInputStream in) 
 		throws TypeException, IOException 
 		{		
+			ReferenceTypeMap mapCore = (ReferenceTypeMap) in.getTypeMap();
+			
 			Short size = (Short) in.readObject( UInt8.TYPENAME );
 			int interfaces[] = new int[size.intValue()];
 			for ( int x=0; x<size.intValue(); x++ )
 			{
 				Integer id = (Integer) in.readObject( UInt16.TYPENAME );
-				interfaces[x] = in.getTypeMap().getDefinitionId( id.intValue() );
+				interfaces[x] = mapCore.referenceMap().getDefinitionId( id.intValue() );
 			}
 			
 			return new MetaInterface( interfaces );
@@ -342,13 +347,14 @@ implements MetaDefinition, TypeRelation
 		throws TypeException, IOException 
 		{
 			MetaInterface mc = (MetaInterface) o;
+			ReferenceTypeMap mapCore = (ReferenceTypeMap) out.getTypeMap();
 			
 			if ( mc.getInterfaces() != null )
 			{
 				out.writeObject( UInt8.TYPENAME, new Integer( mc.getInterfaces().length ));
 				for( int x=0 ;x < mc.getInterfaces().length; x++ )
 				{
-					int id = out.getTypeMap().getStreamId( mc.getInterfaces()[x]);
+					int id = mapCore.referenceMap().getStreamId( mc.getInterfaces()[x]);
 					out.writeObject( UInt16.TYPENAME, new Integer(id) );
 				}
 			}

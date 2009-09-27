@@ -35,7 +35,17 @@ implements TypeMapper
 	public int map(int definitionId) 
 	throws TypeException 
 	{
-		throw new TypeException("not mapped: " + _library.getName(definitionId));
+		String name = Integer.toString(definitionId);
+		try
+		{
+			name = _library.getName(definitionId).getFullName();
+		}
+		catch ( TypeException ex )
+		{
+			name += " - " + ex.getMessage();
+		}
+	
+		throw new TypeException("not mapped: " + name );
 	}
 
 	public int mapReverse(int streamId) 
@@ -48,7 +58,7 @@ implements TypeMapper
 	throws TypeException 
 	{
 		MetaName name = _library.getName(nameId);
-		throw new TypeException("not mapped: " + name );
+		throw new TypeException("not mapped: " + name.getFullName() );
 	}
 
 }

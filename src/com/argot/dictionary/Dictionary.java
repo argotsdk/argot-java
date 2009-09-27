@@ -39,6 +39,7 @@ import com.argot.TypeOutputStream;
 import com.argot.common.UInt16;
 import com.argot.common.UInt8;
 import com.argot.common.UVInt28;
+import com.argot.meta.DictionaryBase;
 import com.argot.meta.DictionaryDefinition;
 import com.argot.meta.DictionaryLocation;
 import com.argot.meta.DictionaryName;
@@ -57,7 +58,7 @@ public class Dictionary
 	public static final String DICTIONARY_ENTRY = "dictionary.entry";
 	public static final String DICTIONARY_ENTRY_VERSION = "1.3";
 	
-	public static final String DICTIONARY_ENTRY_LIST = "dictionary.entry.list";
+	public static final String DICTIONARY_ENTRY_LIST = "dictionary.entry_list";
 	public static final String DICTIONARY_ENTRY_LIST_VERSION = "1.3";
 		
 	public static void writeDictionary(  OutputStream fos, TypeMap map ) throws TypeException, IOException 
@@ -110,7 +111,7 @@ public class Dictionary
 			dictionaryObjectStream.writeObject( DICTIONARY_ENTRY_LIST, dynamicDictionaryMap );
 			dictionaryObjectStream.getStream().close();
 			dictionaryStream.close();
-			
+
 			count = dynamicDictionaryMap.size();		
 		}
 
@@ -338,6 +339,9 @@ public class Dictionary
 		int size = ((Integer)dictDataIn.readObject( UVInt28.TYPENAME )).intValue();
 		Triple newTypes[] = new Triple[size];
 		
+		dictDataIn.setTypeMap(coreMap);
+		coreMap.setReferenceMap(mapSpec);		
+		
 		// Step 1.  Read all the types in.
 		for ( int x = 0; x<size; x++ )
 		{
@@ -346,11 +350,43 @@ public class Dictionary
 			newType.location = (TypeLocation) dictDataIn.readObject(DictionaryLocation.TYPENAME);
 			newType.structure = (byte[]) dictDataIn.readObject( MetaDefinition.META_DEFINITION_ENVELOPE );
 			newTypes[x] = newType;
+			
+			// If its a dictionary base then it should be mapped straight away.
+			if (newTypes[x].location instanceof DictionaryBase)
+			{
+				int id = library.getTypeId(newTypes[x].location);
+				mapSpec.map( newTypes[x].id, id);
+			}
+			
+			// If its a name type, the structure needs to be read and registered.
+			if (newTypes[x].location instanceof DictionaryName)
+			{
+				newTypes[x].definition = (MetaDefinition) TypeHelper.readStructure( coreMap, newTypes[x].structure );
+				
+				if (library.getTypeState( newTypes[x].location ) == TypeLibrary.TYPE_NOT_DEFINED )
+				{
+					int typeId = library.register( newTypes[x].location, newTypes[x].definition );
+					mapSpec.map( newTypes[x].id, typeId );
+					
+				} else {
+					int typeId = library.getTypeId( newTypes[x].location );
+					mapSpec.map( newTypes[x].id, typeId );
+
+					try 
+					{
+						TypeHelper.isSame( mapSpec.getDefinitionId( newTypes[x].id ), newTypes[x].location, newTypes[x].structure, coreMap );					
+					} 
+					catch ( TypeException ex )
+					{
+						throw new TypeException( "type mismatch:", ex );
+					}
+					
+				}
+			}
 		}
 		
-		coreMap.setReferenceMap(mapSpec);		
-		
-		// Reserve and map all the named types.
+
+		// Reserve and map all the names for definition types.
 		for (int x= 0; x<size; x++)
 		{
 			if (newTypes[x].location instanceof DictionaryDefinition)

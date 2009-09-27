@@ -16,6 +16,7 @@
 package com.argot.meta;
 
 import com.argot.TypeException;
+import com.argot.TypeLibrary;
 import com.argot.TypeLocation;
 import com.argot.TypeLocationName;
 
@@ -39,10 +40,11 @@ implements TypeLocationName
 		_name = name;
 	}
 
-	public DictionaryName( String name ) 
+
+	public DictionaryName( TypeLibrary library, String name ) 
 	throws TypeException
 	{
-		this( MetaName.parseName(name) );
+		this( MetaName.parseName(library, name) );
 	}
 	
 	public MetaName getName()

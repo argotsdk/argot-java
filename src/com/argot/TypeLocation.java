@@ -17,6 +17,7 @@ package com.argot;
 
 public interface TypeLocation 
 {
+	public static final int BASE = 0;
 	public static final int NAME = 1;
 	public static final int DEFINITION = 2;
 	public static final int RELATION = 3;

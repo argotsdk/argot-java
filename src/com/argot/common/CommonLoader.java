@@ -194,7 +194,7 @@ extends ResourceDictionaryLoader
 		    library.bind( typeId, new MetaMarshaller(), new MetaMarshaller(), null );
 		}
 		
-		typeId = library.getTypeId( "date.java","1.3" );
+		typeId = library.getTypeId( "date_java","1.3" );
 		if ( library.getTypeState( typeId ) == TypeLibrary.TYPE_REGISTERED )
 		{
 		    id = library.bind( typeId, new TypeReaderAuto( Date.class ), new DateS64(), Date.class );

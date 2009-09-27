@@ -18,6 +18,6 @@ package com.argot.meta;
 public class MetaAtomAttributeSigned 
 extends MetaAtomAttribute
 {
-	public static final String TYPENAME = "meta.atom.attribute.signed";
+	public static final String TYPENAME = "meta.attribute.signed";
     public static final String VERSION = "1.3";
 }

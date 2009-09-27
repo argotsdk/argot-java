@@ -13,16 +13,12 @@
  * to the law of Victoria, Australia, and subject to exclusive 
  * jurisdiction of the Victorian courts.
  */
-package com.argot.meta;
+package com.argot;
 
-import com.argot.TypeElement;
+import com.argot.meta.MetaName;
 
-public interface MetaDefinition
-extends TypeElement
+public interface TypeLocationBase 
+extends TypeLocation
 {
-    public static String TYPENAME = "meta.definition";
-	public static String VERSION = "1.3";
-	
-	public static String META_DEFINITION_ENVELOPE = "dictionary.definition_envelope";
-	public static String META_DEFINITION_ENVELOPE_VERSION = "1.3";
+
 }

@@ -15,6 +15,7 @@
  */
 package com.argot.network;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -169,6 +170,8 @@ implements TypeTransport
 		
 	}
 
+
+	
 	public boolean checkMetaDictionary( byte[] metaDictionary )
 	throws IOException, TypeException
 	{
@@ -198,6 +201,15 @@ implements TypeTransport
 		
 	}
 	
+	private byte[] getLocationBytes(TypeLocation location) 
+	throws TypeException, IOException
+	{
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		TypeOutputStream tmos = new TypeOutputStream( out, _typeMap );
+		tmos.writeObject( DictionaryLocation.TYPENAME, location);
+		return out.toByteArray();
+	}	
+	
 	public int resolveType( TypeLocation location, byte[] definition )
 	throws IOException, TypeException
 	{
@@ -209,7 +221,8 @@ implements TypeTransport
 			OutputStream out = endPoint.getOutputStream();
 			TypeOutputStream tmos = new TypeOutputStream( out, _typeMap );
 			tmos.writeObject( "uint8", new Short(ProtocolTypeMapper.MAP) );
-			tmos.writeObject( DictionaryLocation.TYPENAME, location );
+			tmos.writeObject( "u16binary", getLocationBytes( location ) );
+			//tmos.writeObject( DictionaryLocation.TYPENAME, location );
 			tmos.writeObject( "u16binary", definition );		
 			tmos.getStream().flush();
 			
@@ -238,13 +251,18 @@ implements TypeTransport
 		{
 			// Write the name and definition to the request body.	
 			TypeOutputStream tmos = new TypeOutputStream( endPoint.getOutputStream(), _typeMap );
-			tmos.writeObject( "uint8", new Short(ProtocolTypeMapper.MAPDEF) );		
-			tmos.writeObject( DictionaryLocation.TYPENAME, location );
+			tmos.writeObject( "uint8", new Short(ProtocolTypeMapper.MAPDEF) );
+			tmos.writeObject( "u16binary", getLocationBytes( location ) );
+			//tmos.writeObject( DictionaryLocation.TYPENAME, location );
 			tmos.getStream().flush();
 			
 			TypeInputStream tmis = new TypeInputStream( endPoint.getInputStream(), _typeMap );
 			Short type = (Short) tmis.readObject( UInt8.TYPENAME );
-			if ( type.intValue() != ProtocolTypeMapper.MAPDEF )throw new TypeException("Bad Protocol Error");		
+			if ( type.intValue() != ProtocolTypeMapper.MAPDEF )
+			{
+				int id = _typeMap.getLibrary().getTypeId(location);
+				throw new TypeException("Failed to map - " + _typeMap.getLibrary().getName(id).getFullName());		
+			}
 			Integer mapId = (Integer) tmis.readObject( Int32.TYPENAME );
 			//Integer definitionId = (Integer) tmis.readObject( Int32.TYPENAME );
 			TypeLocation locationDefinition = (TypeLocation) tmis.readObject( DictionaryLocation.TYPENAME );

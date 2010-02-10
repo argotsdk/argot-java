@@ -34,8 +34,9 @@
 	<property name="base" location="..\.." />
 	<property name="argot" location="${base}\argot" />
 	<property name="argot-compiler" location="${base}\tools\argot_compiler" />
-	
-	<property name="emma.dir" value="C:\java\emma-2.0.5312" />
+
+	<--property name="emma.dir" value="C:\java\emma-2.0.5312" /-->
+	<property name="emma.dir" value="/Users/davidryan/Documents/java/emma-2.0.5312" />
 	<path id="emma.lib">
 		<pathelement location="${emma.dir}/lib/emma.jar" />
 		<pathelement location="${emma.dir}/lib/emma_ant.jar" />
@@ -73,10 +74,10 @@
 				debug="on" 
 				optimize="true" 
 				deprecation="true" 
-				bootclasspath="C:\Program Files\Java\jre1.5.0_14\lib\rt.jar"
+				bootclasspath="/System/Library/Frameworks/JavaVM.framework/Versions/1.4.2/Classes/classes.jar"
 				extdirs=""
-			    	source="1.5"
-			    	target="1.5"/>				
+			    	source="1.4"
+			    	target="1.4"/>				
 	</target>
 
 	<target name="compile-tests" depends="init,compile" description="compile the junit tests">
@@ -181,14 +182,14 @@
 	<target name="buildjar" depends="compile,argot-copy">
 		<!-- Put everything in ${build.bin} into the jar file -->
 		<copy file="LICENSE.TXT" tofile="${build.bin}/LICENSE.TXT" />
-		<copy todir="${build.bin}">
+		<!--copy todir="${build.bin}">
 			<fileset dir="argot">
 				<include name="*.dictionary"/>
 			</fileset>
-		</copy>
+		</copy-->
 
 		<mkdir dir="${release}/lib" />
-		<jar jarfile="${release}/lib/argot-${version}.jar" basedir="${build.bin}" />			
+		<jar jarfile="${build}/argot-${version}-base.jar" basedir="${build.bin}" />			
 	</target>
 
 	<target name="buildjar-with-dictionary" depends="compile,argot-copy">
@@ -207,7 +208,7 @@
 	<available file="../../tools/argot_compiler" type="dir" property="argot.compiler.present"/>	
 	<target name="get-argot-compiler" if="argot.compiler.present" depends="buildjar" description="build and copy argot compiler">
 		<ant antfile="../../tools/argot_compiler/build.xml" target="build-jar" inheritAll="false">
-			<property name="argot.jar" value="${release}/lib/argot-${version}.jar"/>
+			<property name="argot.jar" value="${build}/argot-${version}-base.jar"/>
 		</ant>
 		<mkdir dir="bin"/>
 		<copy file="../../tools/argot_compiler/bin/ac.bat" tofile="bin/ac.bat" />

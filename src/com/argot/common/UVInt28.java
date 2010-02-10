@@ -51,6 +51,10 @@ implements TypeReader, TypeWriter
 				value <<= 7;
 				
 				a = in.getStream().read();
+				if ( a == -1 )
+				{
+					throw new IOException("End of stream");
+				}
 			}
 			else
 			{

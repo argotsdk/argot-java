@@ -30,6 +30,9 @@ import com.argot.TypeLibrary;
 import com.argot.TypeLibraryReader;
 import com.argot.TypeLibraryWriter;
 import com.argot.TypeLocation;
+import com.argot.TypeLocationBase;
+import com.argot.TypeLocationDefinition;
+import com.argot.TypeLocationName;
 import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
@@ -253,20 +256,20 @@ implements MetaDefinition, TypeRelation
 	implements TypeReader
 	{
 		private MetaAbstract _metaAbstract;
-		private TypeReader _uint16;
+		private TypeReader _uvint28;
 		private Map _mapCache;
 		
-		public MetaAbstractReader(MetaAbstract metaAbstract, TypeReader uint16)
+		public MetaAbstractReader(MetaAbstract metaAbstract, TypeReader uvint28)
 		{
 			_metaAbstract = metaAbstract;
-			_uint16 = uint16;
+			_uvint28 = uvint28;
 			_mapCache = new HashMap();
 		}
 		
 		public Object read(TypeInputStream in)
 		throws TypeException, IOException 
 		{
-	        Integer type = (Integer) _uint16.read(in);
+	        Integer type = (Integer) _uvint28.read(in);
 	        TypeReader mappedReader = (TypeReader) _mapCache.get(type);
 	        if ( mappedReader == null )
 	        {
@@ -281,12 +284,30 @@ implements MetaDefinition, TypeRelation
 		throws TypeException
 		{
 	        int definitionId = map.getDefinitionId( type.intValue() );
-	        MetaName name = map.getLibrary().getName(definitionId);
-	        int identityId = map.getLibrary().getTypeId(name);
+	        TypeLocation location = map.getLibrary().getLocation(definitionId);
+	        int identityId = -1;
+	        if (location instanceof TypeLocationDefinition)
+	        {
+	        	TypeLocationDefinition definition = (TypeLocationDefinition) location;
+	        	identityId = definition.getId();
+	        }
+	        else if (location instanceof TypeLocationName)
+	        {
+	        	identityId = definitionId;
+	        }
+	        else if (location instanceof TypeLocationBase)
+	        {
+	        	identityId = definitionId;
+	        }
+	        else 
+	        {
+	        	throw new TypeException("Unknown location type");
+	        }
+	        
 			MetaMap concrete = (MetaMap) _metaAbstract._concreteToMap.get( new Integer( identityId ));
 	        if ( concrete == null )
 	        {
-	        	throw new TypeException("type not mapped:" + type.intValue() + " " + map.getName( type.intValue() ) ); 
+	        	throw new TypeException("type not mapped:" + type.intValue() + " " + map.getName( type.intValue() ).getFullName() ); 
 	        }
 			return type.intValue();
 		}
@@ -303,13 +324,13 @@ implements MetaDefinition, TypeRelation
     implements TypeWriter
     {
     	private MetaAbstract _metaAbstract;
-    	private TypeWriter _uint16;
+    	private TypeWriter _uvint28;
 		private Map _mapCache;
 		
-    	public MetaAbstractWriter(MetaAbstract metaAbstract, TypeWriter uint16)
+    	public MetaAbstractWriter(MetaAbstract metaAbstract, TypeWriter uvint28)
     	{
     		_metaAbstract = metaAbstract;
-    		_uint16 = uint16;
+    		_uvint28 = uvint28;
     		_mapCache = new HashMap();
     	}
     	
@@ -323,7 +344,7 @@ implements MetaDefinition, TypeRelation
 				entry = mapType(out.getTypeMap(), clss);
 				_mapCache.put(clss, entry);
 			}
-			_uint16.write(out, entry.mapId);
+			_uvint28.write(out, entry.mapId);
 			entry.idWriter.write(out, o);
 		}
     	

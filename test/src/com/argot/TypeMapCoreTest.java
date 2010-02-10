@@ -62,7 +62,7 @@ extends TestCase
 	        	
 	        	System.out.print( "" + value + " ");
         	}
-        	if (count>30)
+        	if (count>23)
         	{
         		count=0;
         		System.out.println("");

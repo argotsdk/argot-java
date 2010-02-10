@@ -20,6 +20,7 @@ import com.argot.TypeLibrary;
 import com.argot.TypeLocation;
 import com.argot.TypeMap;
 import com.argot.TypeMapper;
+import com.argot.meta.DictionaryBase;
 import com.argot.meta.DictionaryDefinition;
 import com.argot.meta.DictionaryLocation;
 import com.argot.meta.DictionaryName;
@@ -64,11 +65,12 @@ implements TypeMapper
 		map.setWriter( 7, new ChunkByteBuffer.ChunkByteBufferWriter() );
 		map.map( 8, library.getDefinitionId( "bool" , "1.3"));
 		map.map( 9, library.getDefinitionId( DictionaryLocation.TYPENAME, "1.3" ));
-		map.map( 10, library.getDefinitionId( DictionaryName.TYPENAME, "1.3" ));
-		map.map( 11, library.getDefinitionId( DictionaryDefinition.TYPENAME, "1.3" ));
-		map.map( 12, library.getDefinitionId( DictionaryRelation.TYPENAME, "1.3" ));
-		map.map( 13, library.getDefinitionId( "meta.abstract", "1.3"));
-		map.map( 14, library.getDefinitionId( "meta.id", "1.3"));
+		map.map( 10, library.getDefinitionId( DictionaryBase.TYPENAME, "1.3" ));
+		map.map( 11, library.getDefinitionId( DictionaryName.TYPENAME, "1.3" ));
+		map.map( 12, library.getDefinitionId( DictionaryDefinition.TYPENAME, "1.3" ));
+		map.map( 13, library.getDefinitionId( DictionaryRelation.TYPENAME, "1.3" ));
+		map.map( 14, library.getDefinitionId( "meta.abstract", "1.3"));
+		map.map( 15, library.getDefinitionId( "meta.id", "1.3"));
 		map.map( 16, library.getDefinitionId( "meta.name", "1.3"));
 		map.map( 17, library.getDefinitionId( "meta.version", "1.3"));
 		map.map( 18, library.getDefinitionId( "meta.tag", "1.3"));
@@ -83,7 +85,7 @@ implements TypeMapper
 	throws TypeException 
 	{
 		MetaName name = _library.getName(definitionId);
-		throw new TypeException("type not mapped:" + name );
+		throw new TypeException("type not mapped:" + name.getFullName() );
 	}
 
 	public int mapReverse(int streamId) 

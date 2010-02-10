@@ -24,7 +24,7 @@ import java.io.InputStream;
 
 import com.argot.dictionary.Dictionary;
 
-public abstract class ResourceDictionaryLoader
+public class ResourceDictionaryLoader
 implements TypeLibraryLoader
 {
 	private String _resource; 
@@ -84,7 +84,15 @@ implements TypeLibraryLoader
 		bind(library);
 	}
 	
-	public abstract void bind( TypeLibrary library ) 
-	throws TypeException;
+	public void bind( TypeLibrary library ) 
+	throws TypeException
+	{
+		
+	}
+
+	public String getName()
+	{
+		return _resource;
+	}
 
 }

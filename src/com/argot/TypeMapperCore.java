@@ -181,46 +181,46 @@ implements TypeMapper
 		return coreIds;
 	}
 
-	public static int BASE_ID = 1;
-	public static int UINT8_ID = 2;
-	public static int UVINT28_ID = 3;
-	public static int META_GROUP_ID = 4;
-	public static int META_ID = 5;
+	public static int BASE_ID = 0;
+	public static int UINT8_ID = 1;
+	public static int UVINT28_ID = 2;
+	public static int META_GROUP_ID = 3;
+	public static int META_ID = 4;
 	
-	public static int META_CLUSTER_ID = 6;
-	public static int ABSTRACT_MAP_ID = 7;
-	public static int ABSTRACT_ID = 8;
-	public static int U8UTF8_ID = 9;
-	public static int NAME_ID = 10;	
-	public static int VERSION_ID = 11;
+	public static int META_CLUSTER_ID = 5;
+	public static int ABSTRACT_MAP_ID = 6;
+	public static int ABSTRACT_ID = 7;
+	public static int U8UTF8_ID = 8;
+	public static int NAME_ID = 9;	
+	public static int VERSION_ID = 10;
 
-	public static int DEFINITION_ID = 12;
-	public static int EXPRESSION_ID = 13;
-	public static int REFERENCE_ID = 14;
-	public static int TAG_ID = 15;
-	public static int SEQUENCE_ID = 16;
-	public static int ARRAY_ID = 17;
-	public static int ENVELOPE_ID = 18;
-	public static int ENCODED_ID = 19;
+	public static int DEFINITION_ID = 11;
+	public static int EXPRESSION_ID = 12;
+	public static int REFERENCE_ID = 13;
+	public static int TAG_ID = 14;
+	public static int SEQUENCE_ID = 15;
+	public static int ARRAY_ID = 16;
+	public static int ENVELOPE_ID = 17;
+	public static int ENCODED_ID = 18;
 
-	public static int META_ATOM_ID = 20;
-	public static int META_ATOM_ATTRIBUTE_ID = 21;
-	public static int META_ATTRIBUTE_ID = 22;
-	public static int META_ATTRIBUTE_SIZE_ID = 23;
-	public static int META_ATTRIBUTE_INTEGER_ID = 24;
-	public static int META_ATTRIBUTE_UNSIGNED_ID = 25;
-	public static int META_ATTRIBUTE_BIGENDIAN_ID = 26;
+	public static int META_ATOM_ID = 19;
+	public static int META_ATOM_ATTRIBUTE_ID = 20;
+	public static int META_ATTRIBUTE_ID = 21;
+	public static int META_ATTRIBUTE_SIZE_ID = 22;
+	public static int META_ATTRIBUTE_INTEGER_ID = 23;
+	public static int META_ATTRIBUTE_UNSIGNED_ID = 24;
+	public static int META_ATTRIBUTE_BIGENDIAN_ID = 25;
 
-	public static int DICTIONARY_CLUSTER_ID = 27;
-	public static int DICTIONARY_BASE_ID = 28;
-	public static int DICTIONARY_NAME_ID = 29;
-	public static int DICTIONARY_DEFINITION_ID = 30;
-	public static int DICTIONARY_RELATION_ID = 31;
-	public static int DICTIONARY_LOCATION_ID = 32;
+	public static int DICTIONARY_CLUSTER_ID = 26;
+	public static int DICTIONARY_BASE_ID = 27;
+	public static int DICTIONARY_NAME_ID = 28;
+	public static int DICTIONARY_DEFINITION_ID = 29;
+	public static int DICTIONARY_RELATION_ID = 30;
+	public static int DICTIONARY_LOCATION_ID = 31;
 	
-	public static int DICTIONARY_DEFINITION_ENVELOPE_ID = 33;
-	public static int DICTIONARY_ENTRY_ID = 34;
-	public static int DICTIONARY_ENTRY_LIST_ID = 35;	
+	public static int DICTIONARY_DEFINITION_ENVELOPE_ID = 32;
+	public static int DICTIONARY_ENTRY_ID = 33;
+	public static int DICTIONARY_ENTRY_LIST_ID = 34;	
 	
 
 	

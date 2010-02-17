@@ -1,23 +1,33 @@
 <!--
- Copyright 2003-2007 (c) Live Media Pty Ltd. <argot@einet.com.au> 
- 
- This software is licensed under the Argot Public License 
- which may be found in the file LICENSE distributed 
- with this software.
- 
- More information about this license can be found at
- http://www.einet.com.au/License
-  
- The Developer of this software is Live Media Pty Ltd,
- PO Box 4591, Melbourne 3001, Australia.  The license is subject 
- to the law of Victoria, Australia, and subject to exclusive 
- jurisdiction of the Victorian courts.
+ Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ All rights reserved.
+
+ Redistribution and use in source and binary forms, with or without modification, are permitted
+ provided that the following conditions are met:
+
+  1. Redistributions of source code must retain the above copyright notice, this list of
+     conditions and the following disclaimer.
+  2. Redistributions in binary form must reproduce the above copyright notice, this list of
+     conditions and the following disclaimer in the documentation and/or other materials
+     provided with the distribution.
+  3. Neither the name of Live Media nor the names of its contributors may be used to endorse
+     or promote products derived from this software without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR 
+ IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+ AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER
+ OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
 <project name="argot" default="package" basedir=".">
 
 	<description>Argot build</description>
-    <property name="version" value="1.3.a"/>
+    <property name="version" value="1.3.b"/>
 	
 	<!-- set global properties for this build -->
 	<property name="src" location="src" />
@@ -35,7 +45,7 @@
 	<property name="argot" location="${base}\argot" />
 	<property name="argot-compiler" location="${base}\tools\argot_compiler" />
 
-	<--property name="emma.dir" value="C:\java\emma-2.0.5312" /-->
+	<!--property name="emma.dir" value="C:\java\emma-2.0.5312" /-->
 	<property name="emma.dir" value="/Users/davidryan/Documents/java/emma-2.0.5312" />
 	<path id="emma.lib">
 		<pathelement location="${emma.dir}/lib/emma.jar" />
@@ -74,10 +84,10 @@
 				debug="on" 
 				optimize="true" 
 				deprecation="true" 
-				bootclasspath="/System/Library/Frameworks/JavaVM.framework/Versions/1.4.2/Classes/classes.jar"
+				bootclasspath="/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Classes/classes.jar"
 				extdirs=""
-			    	source="1.4"
-			    	target="1.4"/>				
+			    	source="1.5"
+			    	target="1.5"/>				
 	</target>
 
 	<target name="compile-tests" depends="init,compile" description="compile the junit tests">
@@ -159,7 +169,7 @@
 	<target name="argot-compiler-config" description="setup argot compiler task definition">
 		<path id="argotc.lib">
 			<pathelement location="${build.bin}"/>
-			<pathelement location="lib/argot-compiler-1.3.a.jar"/>
+			<pathelement location="lib/argot-compiler-${version}.jar"/>
 			<pathelement location="lib/antlr-runtime-3.0.1.jar"/>
 		</path>
 		<taskdef name="argotc" classname="com.argot.compiler.ant.AntArgotCompiler" classpathref="argotc.lib"/>		
@@ -172,6 +182,7 @@
 		be built by Argot.
 	-->
 	<target name="argot-compile" depends="compile,argot-copy,argot-compiler-config" description="compiles dictionary files from argot">
+		<argotc input="argot/meta_extensions.argot" output="${build.bin}/meta_extensions.dictionary" loadExtensions="false"/>
 		<argotc input="argot/meta.argot" output="${build.bin}/meta.dictionary" loadCommon="false"/>
 		<argotc input="argot/common.argot" output="${build.bin}/common.dictionary" loadCommon="false"/>
 		<argotc input="argot/remote.argot" output="${build.bin}/remote.dictionary" loadRemote="false"/>

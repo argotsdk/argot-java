@@ -1,17 +1,27 @@
+Argot Java 1.3.0
+Copyright (c) 2003-2010, Live Media Pty. Ltd.
+All rights reserved.
 
-Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+Redistribution and use in source and binary forms, with or without modification, are permitted
+provided that the following conditions are met:
 
-This software is licensed under the Argot Public License 
-which may be found in the file LICENSE distributed 
-with this software.
+ 1. Redistributions of source code must retain the above copyright notice, this list of
+    conditions and the following disclaimer.
+ 2. Redistributions in binary form must reproduce the above copyright notice, this list of
+    conditions and the following disclaimer in the documentation and/or other materials
+    provided with the distribution.
+ 3. Neither the name of Live Media nor the names of its contributors may be used to endorse
+    or promote products derived from this software without specific prior written permission.
 
-More information about this license can be found at
-http://www.einet.com.au/License
-
-The Developer of this software is Live Media Pty Ltd,
-PO Box 4591, Melbourne 3001, Australia.  The license is subject 
-to the law of Victoria, Australia, and subject to exclusive 
-jurisdiction of the Victorian courts.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER
+OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ---------------------------------------------------------------------
 
@@ -50,6 +60,15 @@ Please view the example .argot files to see how argot is specified.
 
 Version History
 ---------------
+1.3.beta - 14 February 2010
+
+- Changed License to BSD and abandoned patent.
+
+TODO
+
+- Remove the concept of ReferenceTypeMap and replace with a more general approach to 
+  carrying information with the output stream or type map.
+
 1.3.alpha - 24 April 2009
 
 - Added meta data versioning.  This required a LOT of changes to support this.  Now each
@@ -62,11 +81,6 @@ Version History
   of the data dictionary. 
 - Change meta dictionary to not split meta identity with definition.  Will only allow
   a single version of a data type in a dictionary/message/communication.
-
-TODO
-
-- Remove the concept of ReferenceTypeMap and replace with a more general approach to 
-  carrying information with the output stream or type map.
 
 
 1.3.alpha - 22 June 2008

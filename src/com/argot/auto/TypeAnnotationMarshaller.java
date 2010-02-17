@@ -26,47 +26,7 @@
 
 package com.argot.auto;
 
-import com.argot.TypeBound;
-import com.argot.TypeElement;
-import com.argot.TypeException;
-import com.argot.TypeLibrary;
-import com.argot.TypeLibraryWriter;
-import com.argot.TypeMap;
-import com.argot.TypeWriter;
-
-public class TypeSimpleWriter 
-implements TypeLibraryWriter,TypeBound
+public class TypeAnnotationMarshaller
 {
-	private TypeWriter _writer;
-	
-	public TypeSimpleWriter(TypeWriter writer)
-	{
-		_writer = writer;
-	}
-	
-	protected TypeSimpleWriter()
-	{
-		_writer = null;
-	}
-	
-	public void bind(TypeLibrary library, int definitionId, TypeElement definition) 
-	throws TypeException 
-	{
-		if (_writer instanceof TypeBound && _writer != this)
-		{
-			((TypeBound)_writer).bind(library, definitionId, definition);
-		}		
-	}
-	
-	public TypeWriter getWriter(TypeMap map) 
-	throws TypeException 
-	{
-		return _writer;
-	}
-	
-	protected void setWriter(TypeWriter writer)
-	{
-		_writer = writer;
-	}
 
 }

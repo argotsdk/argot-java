@@ -1,17 +1,27 @@
 /*
- * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
- *
- * This software is licensed under the Argot Public License 
- * which may be found in the file LICENSE distributed 
- * with this software.
- *
- * More information about this license can be found at
- * http://www.einet.com.au/License
- * 
- * The Developer of this software is Live Media Pty Ltd,
- * PO Box 4591, Melbourne 3001, Australia.  The license is subject 
- * to the law of Victoria, Australia, and subject to exclusive 
- * jurisdiction of the Victorian courts.
+ * Copyright (c) 2003-2010, Live Media Pty. Ltd.\n
+* All rights reserved.\n
+*\n
+* Redistribution and use in source and binary forms, with or without modification, are permitted\n
+* provided that the following conditions are met:\n
+*\n
+*  1. Redistributions of source code must retain the above copyright notice, this list of\n
+*     conditions and the following disclaimer.\n
+*  2. Redistributions in binary form must reproduce the above copyright notice, this list of\n
+*     conditions and the following disclaimer in the documentation and/or other materials\n
+*     provided with the distribution.\n
+*  3. Neither the name of Live Media nor the names of its contributors may be used to endorse\n
+*     or promote products derived from this software without specific prior written permission.\n
+*\n
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR\n
+* IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY\n
+* AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER\n
+* OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR\n
+* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR\n
+* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON\n
+* ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING\n
+* NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF\n
+* ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package com.argot.meta;
 
@@ -212,13 +222,13 @@ implements MetaDefinition
 			CacheEntry entry = (CacheEntry) _mapCache.get(clss);
 			if (entry == null )
 			{
-				entry = mapType(out.getTypeMap(), clss);
+				//entry = mapType(out.getTypeMap(), clss);
 				_mapCache.put(clss, entry);
 			}
 			_uint16.write(out, entry.mapId);
 			entry.idWriter.write(out, o);
 		}
-    	
+    /*
 		private CacheEntry mapType(TypeMap map, Class clss)
 		throws TypeException
 		{
@@ -244,7 +254,7 @@ implements MetaDefinition
 	        entry.idWriter = map.getWriter(map.getStreamId( id ));
 			return entry;
 		}
-		
+		*/
     }
  
 	public boolean isMapped( int id )

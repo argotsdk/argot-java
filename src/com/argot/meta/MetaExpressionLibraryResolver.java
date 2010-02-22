@@ -38,8 +38,14 @@ implements MetaExpressionResolver
 	public TypeReader getExpressionReader( TypeMap map, MetaExpression expression ) 
 	throws TypeException
 	{
-		int id = map.getStreamId(expression.getTypeId());
+		// The expression.getTypeId() returns meta identity(un-versioned identifier) of
+		// the expression type. Using the map to return the stream identifier will get
+		// the mapped specific version of the identifier.
 		
+		// TODO Needs to be fixed.  This should get the expressionReader from somewhere
+		// else.  Going via the map requires all meta types to be mapped which is not ideal.
+		int id = map.getStreamId(expression.getTypeId());
+
     	TypeLibraryReader reader = map.getLibrary().getReader(map.getDefinitionId(id));
 		if(!(reader instanceof MetaExpressionReader))
 		{
@@ -54,6 +60,7 @@ implements MetaExpressionResolver
 	{
 		int id = map.getStreamId(expression.getTypeId());
 		TypeLibraryWriter writer = map.getLibrary().getWriter(map.getDefinitionId(id));
+		//TypeLibraryWriter writer = map.getLibrary().getWriter(expression.getTypeId());
 		if(!(writer instanceof MetaExpressionWriter))
 		{
 			throw new TypeException("MetaExpressionWriter expected. Found: " + writer.getClass().getName() );

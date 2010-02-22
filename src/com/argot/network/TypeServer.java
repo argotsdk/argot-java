@@ -25,6 +25,7 @@
  */
 package com.argot.network;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
@@ -207,10 +208,19 @@ implements TypeLink
 		out.flush();
 	}
 	
+	private TypeLocation getLocation(byte[] buffer) 
+	throws TypeException, IOException
+	{
+		ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
+		TypeInputStream tis = new TypeInputStream(bais, _typeMap);
+		return (TypeLocation) tis.readObject( DictionaryLocation.TYPENAME );
+	}
+	
 	private void processMapDefault( TypeInputStream in, OutputStream out )
 	throws TypeException, IOException
 	{
-		TypeLocation location = (TypeLocation) in.readObject( DictionaryLocation.TYPENAME );
+		byte[] buffer = (byte[]) in.readObject("u16binary");
+		TypeLocation location = getLocation(buffer);
 		location = TypeTriple.fixLocation(location, _refMap);
 
 		TypeOutputStream sout = new TypeOutputStream( out, _typeMap );
@@ -255,7 +265,8 @@ implements TypeLink
 	private void processMap( TypeInputStream in, OutputStream out )
 	throws TypeException, IOException
 	{
-		TypeLocation location = (TypeLocation) in.readObject( DictionaryLocation.TYPENAME );
+		byte[] buffer = (byte[]) in.readObject("u16binary");
+		TypeLocation location = getLocation(buffer);
 		location = TypeTriple.fixLocation(location, _refMap);
 		
 		byte[] def = (byte[]) in.readObject( "u16binary" );

@@ -87,8 +87,14 @@ implements IBookstore
 		TypeMap map = new TypeMap( library, new TypeMapperError() );
 		map.map( 1, library.getDefinitionId( "book", "1.0" ) );
 		map.map( 2, library.getDefinitionId( "booklist", "1.0" ));
-		map.map( 3, library.getDefinitionId( "u8ascii", "1.0"));
-		map.map( 4, library.getDefinitionId( "uint8", "1.0"));
+		map.map( 3, library.getDefinitionId( "u8ascii", "1.3"));
+		map.map( 4, library.getDefinitionId( "uint8", "1.3"));
+		
+		// TODO The following mappings are required due to the current design of 
+		// MetaExpressionLibraryResolver.  This needs to be refactored to use
+		// a different method to pickup the correct readers for parts of expressions.
+		map.map( 5, library.getDefinitionId( "meta.reference", "1.3"));
+		map.map( 6, library.getDefinitionId( "meta.tag", "1.3"));
 		return map;    	
 	}
 

@@ -15,6 +15,7 @@ import com.argot.TypeLibrary;
 import com.argot.TypeLibraryLoader;
 import com.argot.common.CommonLoader;
 import com.argot.dictionary.DictionaryLoader;
+import com.argot.meta.MetaExtensionLoader;
 import com.argot.meta.MetaLoader;
 
 public class LocalBookstore
@@ -36,6 +37,7 @@ public class LocalBookstore
 	{
 		TypeLibraryLoader libraryLoaders[] = {
 				new MetaLoader(),
+				new MetaExtensionLoader(),
 				new DictionaryLoader(),
 				new CommonLoader(),
 				new BookLoader()

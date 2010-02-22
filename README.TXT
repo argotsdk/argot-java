@@ -31,13 +31,13 @@ Argot
 The Argot library provides a programming language neutral method of 
 describing, reading and writing information in a binary format.  Argot 
 is currently available for Java, C and .Net(C#), allowing for easy 
-data integration between hetrogenous systems.
+data integration between heterogeneous systems.
 
 Argot provides binary meta data able to describe, read and write any 
 well structured binary data.  Argot's ability to work directly with 
 binary data makes it an ideal solution where bandwidth and computing 
 power need to be conserved. With a unique dictionary and data mapping 
-system, it can be used to build flexible heterogenous distributed 
+system, it can be used to build flexible heterogeneous distributed 
 systems. It is a perfect alternative to XML where speed, data size, 
 and data integrity are required.
 
@@ -60,14 +60,27 @@ Please view the example .argot files to see how argot is specified.
 
 Version History
 ---------------
-1.3.beta - 14 February 2010
+1.3.beta - 22 February 2010
 
 - Changed License to BSD and abandoned patent.
+- Introduced uvint28 (unsigned variable length integer) type to meta dictionary. 
+  The uvint28 type significantly reduces the size of the meta dictionary.
+- Created the meta_extensions.dictionary which defines two types required to
+  define the common.dictionary.  These will likely be folded back into the 
+  meta.dictionary.  It increases the size of the meta.dictionary, but reduces
+  overall complexity.
+ 
 
 TODO
 
 - Remove the concept of ReferenceTypeMap and replace with a more general approach to 
   carrying information with the output stream or type map.
+- com.argot.peer package is added to develop a two way type agreement protocol. This
+  code is not yet finished.
+- TypeAnnotationMarshaller added to com.argot.auto, however, no code developed yet.
+- com.argot.model provides a method of reading a type directly into a DOM style object.
+  This needs more testing and work.  This also relates to MetaExpressionLibraryResolver
+  which needs to be refactored.  
 
 1.3.alpha - 24 April 2009
 

@@ -28,5 +28,5 @@ package com.argot.auto;
 
 public class TypeAnnotationMarshaller
 {
-
+   // TODO Build an annotation based marshaller.
 }

@@ -74,7 +74,7 @@ public class TypeInputStream
 		}
 		catch (IOException ioEx )
 		{
-			throw new TypeStreamException( _map.getName(streamId).toString(), ioEx );
+			throw new TypeStreamException( _map.getName(streamId).getFullName(), ioEx );
 		}
 	}
 

@@ -34,12 +34,9 @@ import com.argot.TypeException;
 import com.argot.TypeHelper;
 import com.argot.TypeLibrary;
 import com.argot.TypeLocation;
-import com.argot.TypeLocationDefinition;
 import com.argot.TypeMap;
 import com.argot.TypeMapper;
 import com.argot.dictionary.Dictionary;
-import com.argot.meta.DictionaryDefinition;
-import com.argot.meta.DictionaryRelation;
 
 
 public class DynamicClientTypeMapper 
@@ -63,9 +60,8 @@ implements TypeMapper
 	{
 		_typeClient = client;
 		_resolveStack = new Stack();		
-
 		_metaDictionaryChecked = false;
-		_metaDictionaryOk = false;
+		_metaDictionaryOk = false; 
 	}
 
 	public void initialise(TypeMap map) 
@@ -75,6 +71,13 @@ implements TypeMapper
 		_library = map.getLibrary();
 		_typeClient.initialise(map);
 	}
+	
+	public void disableMetaDictionaryCheck()
+	{
+		_metaDictionaryChecked = true;
+		_metaDictionaryOk = true;
+	}
+	
 	
 	private void checkMetaDictionary() 
 	throws TypeException
@@ -266,5 +269,6 @@ implements TypeMapper
 		_map.map((int)typeInfo.getId(), definitionId);
 		return (int) typeInfo.getId();
 	}
+
 
 }

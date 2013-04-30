@@ -60,6 +60,31 @@ Please view the example .argot files to see how argot is specified.
 
 Version History
 ---------------
+1.3.0 Unreleased
+
+- Removed the ReferenceTypeMap and added functionality to TypeMap to hold additional
+  reference information.
+- Added a basic TypeAnnotationMarshaller.  Uses java annotations to allow class Fields
+  to be mapped to Argot sequence elements.
+- Started using generic types. Updated source accordingly.  Must use Java 1.5+.
+
+
+
+TODO
+
+- com.argot.peer package is added to develop a two way type agreement protocol. This
+  code is not yet finished.
+- com.argot.model provides a method of reading a type directly into a DOM style object.
+  This needs more testing and work.  This also relates to MetaExpressionLibraryResolver
+  which needs to be refactored.  
+- Modify format of message to allow optional removal of core dictionary.
+- Introduce in-line definition of types.
+- MetaChoice and MetaChoiceMap is not implemented
+- Define a type of lambda expression in the meta dictionary
+
+
+
+
 1.3.beta - 22 February 2010
 
 - Changed License to BSD and abandoned patent.
@@ -69,18 +94,6 @@ Version History
   define the common.dictionary.  These will likely be folded back into the 
   meta.dictionary.  It increases the size of the meta.dictionary, but reduces
   overall complexity.
- 
-
-TODO
-
-- Remove the concept of ReferenceTypeMap and replace with a more general approach to 
-  carrying information with the output stream or type map.
-- com.argot.peer package is added to develop a two way type agreement protocol. This
-  code is not yet finished.
-- TypeAnnotationMarshaller added to com.argot.auto, however, no code developed yet.
-- com.argot.model provides a method of reading a type directly into a DOM style object.
-  This needs more testing and work.  This also relates to MetaExpressionLibraryResolver
-  which needs to be refactored.  
 
 1.3.alpha - 24 April 2009
 
@@ -94,7 +107,6 @@ TODO
   of the data dictionary. 
 - Change meta dictionary to not split meta identity with definition.  Will only allow
   a single version of a data type in a dictionary/message/communication.
-
 
 1.3.alpha - 22 June 2008
 
@@ -137,12 +149,12 @@ TODO
 
 - Many changes to improve performance
 - Added TypeLibraryReader & TypeLibraryWriter
-- Added TypeSimpleReader & TypeSimpleWriter for compatability.
+- Added TypeSimpleReader & TypeSimpleWriter for compatibility.
 - Modified TypeMap iterator to return list in order.
 - Ensured compatibility with JRE 1.5
-   Note:  Can be downgraded to JRE 1.4 without too much trouble.
+   Note:  Can be down-graded to JRE 1.4 without too much trouble.
           Requires 1.5 so that remove exceptions stack traces can be created.
-          Remove StackTraceElement construction to downgrade to 1.4
+          Remove StackTraceElement construction to down-grade to 1.4
 
 1.2.1a - 14 October 2007
 

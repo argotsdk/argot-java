@@ -24,14 +24,14 @@ import com.argot.TypeLibrary;
 public class Bookstore 
 implements IBookstore
 {
-	private List books;
-	private Map isbnMap;
+	private List<Book> books;
+	private Map<String,Book> isbnMap;
 	private TypeLibrary library;
 		
 	public Bookstore( TypeLibrary library )
 	{
-		books = new ArrayList();
-		isbnMap = new HashMap();
+		books = new ArrayList<Book>();
+		isbnMap = new HashMap<String,Book>();
 		this.library = library;
 	}
 	
@@ -122,7 +122,7 @@ implements IBookstore
 	
 	public Book[] findBooksByAuthor( String name )
 	{
-		List results = new ArrayList();
+		List<Book> results = new ArrayList<Book>();
 		
 		for (int x=0; x< books.size();x++ )
 		{

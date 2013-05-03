@@ -87,7 +87,7 @@ implements TypeBound,TypeLibraryReader
 	public static void configureTypeMap( TypeMap map )
 	throws TypeException
 	{
-		Iterator iter = map.getIdList().iterator();
+		Iterator<Integer> iter = map.getIdList().iterator();
 		while (iter.hasNext())
 		{
 			int id = ((Integer) iter.next()).intValue();

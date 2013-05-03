@@ -285,7 +285,7 @@ extends TestCase
     {
         try
 		{
-			TypeElement elem = _library.getStructure( 10 );
+			_library.getStructure( 10 );
 			fail("shouldn't get here");
 		}
 		catch (TypeException e)
@@ -385,7 +385,7 @@ extends TestCase
         //int id = _library.register( "test","1.0", new TestTypeElement(), new TestReader(), writer, writer.getClass() );
         int id = _library.register( new DictionaryName(_library,"test"),new TestTypeElement(), new TestReader(), writer, writer.getClass() );
         
-        Class clss = _library.getClass( id );
+        Class<?> clss = _library.getClass( id );
         assertEquals( clss, writer.getClass() );      
     }
 
@@ -393,7 +393,7 @@ extends TestCase
     {
         try
 		{
-			Class clss = _library.getClass( 10 );
+			_library.getClass( 10 );
 			fail("shouldn't get here");
 		}
 		catch (TypeException e)
@@ -410,7 +410,7 @@ extends TestCase
 
         try
 		{
-			Class clss = _library.getClass( id );
+			_library.getClass( id );
 			fail("shouldn't get here");
 		}
 		catch (TypeException e)
@@ -457,7 +457,7 @@ extends TestCase
     {
         try
 		{
-			MetaName name = _library.getName(40);
+			_library.getName(40);
 			fail("shouldn't get here");
 		}
 		catch (TypeException e)
@@ -554,9 +554,9 @@ extends TestCase
     {
         TestWriter writer = new TestWriter();
         //int id = _library.register( "test","1.0", new TestTypeElement(), new TestReader(), writer, writer.getClass() );
-        int id = _library.register( new DictionaryName(_library,"test"), new TestTypeElement(), new TestReader(), writer, writer.getClass() );
+        _library.register( new DictionaryName(_library,"test"), new TestTypeElement(), new TestReader(), writer, writer.getClass() );
 
-        Set set = _library.getNames();
+        Set<String> set = _library.getNames();
         assertEquals( set.size(), 1 );
     }
 }

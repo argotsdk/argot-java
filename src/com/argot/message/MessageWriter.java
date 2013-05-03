@@ -31,7 +31,6 @@ import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.List;
 
-import com.argot.ReferenceTypeMap;
 import com.argot.TypeException;
 import com.argot.TypeLocation;
 import com.argot.TypeMap;
@@ -59,13 +58,14 @@ public class MessageWriter
     {
 		
 		// write out the dictionary used to write the content.
-		ReferenceTypeMap refCore = new ReferenceTypeMap( _library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperError())));
+		TypeMap refCore = new TypeMap( _library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperError())));
 
 		// write out the dictionary used to write the content.
-		ReferenceTypeMap core = new ReferenceTypeMap( _library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperError())), refCore);
+		TypeMap core = new TypeMap( _library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperError())));
+		core.setReference(TypeMap.REFERENCE_MAP, refCore);
 	
 		// create a dynamic type map.
-		ReferenceTypeMap dtm = new ReferenceTypeMap( _library, new TypeMapperDynamic( new TypeMapperError() ));
+		TypeMap dtm = new TypeMap( _library, new TypeMapperDynamic( new TypeMapperError() ));
 		
 		// get the id of the object on the stream.
 		int streamId = dtm.getStreamId(id);
@@ -81,13 +81,13 @@ public class MessageWriter
 		// need to be dynamically added.  Simple solution is to 
 		// write it twice.
 
-		core.setReferenceMap( dtm );
+		core.setReference( TypeMap.REFERENCE_MAP, dtm );
 		ByteArrayOutputStream dictionaryStream = new ByteArrayOutputStream(); 
 		TypeOutputStream dictionaryObjectStream = new TypeOutputStream( dictionaryStream , core );
 		int count = dtm.size();
 		int lastCount = 0;
 		
-		dtm.setReferenceMap(dtm);
+		dtm.setReference( TypeMap.REFERENCE_MAP, dtm);
 		while( count != lastCount )
 		{
 			lastCount = count;
@@ -112,7 +112,7 @@ public class MessageWriter
 		
 		
 		// write out the core used to write the message dictionary.
-		core.setReferenceMap( refCore );
+		core.setReference( TypeMap.REFERENCE_MAP, refCore );
 		ByteArrayOutputStream baos3 = new ByteArrayOutputStream(); 
 		TypeOutputStream tmos3 = new TypeOutputStream( baos3 , core );
 		writeCoreMap( tmos3, core );
@@ -124,7 +124,8 @@ public class MessageWriter
 		out.write( baos.toByteArray() );      
     }
     
-	private static void writeCoreMap( TypeOutputStream out, ReferenceTypeMap map ) throws TypeException, IOException
+	private static void writeCoreMap( TypeOutputStream out, TypeMap map ) 
+	throws TypeException, IOException
 	{
 		// writing out the core and then the extensions.
 		out.writeObject( UInt8.TYPENAME , new Integer( 2 ));
@@ -142,8 +143,8 @@ public class MessageWriter
 			lastCount = count;
 
 			// count the number of extensions
-			List coreIds = TypeMapperCore.getCoreIdentifiers();
-			Iterator i = coreIds.iterator();	
+			List<Integer> coreIds = TypeMapperCore.getCoreIdentifiers();
+			Iterator<Integer> i = coreIds.iterator();	
 			int extensionCount = 0;
 			i = map.getIdList().iterator();
 			while (i.hasNext() )

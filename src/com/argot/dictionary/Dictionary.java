@@ -35,7 +35,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import com.argot.ReferenceTypeMap;
 import com.argot.TypeException;
 import com.argot.TypeHelper;
 import com.argot.TypeInputStream;
@@ -46,7 +45,6 @@ import com.argot.TypeMapperCore;
 import com.argot.TypeMapperDynamic;
 import com.argot.TypeMapperError;
 import com.argot.TypeOutputStream;
-import com.argot.common.UInt16;
 import com.argot.common.UInt8;
 import com.argot.common.UVInt28;
 import com.argot.meta.DictionaryBase;
@@ -76,13 +74,15 @@ public class Dictionary
 		TypeLibrary library = map.getLibrary();
 		
 		// write out the dictionary used to write the content.
-		ReferenceTypeMap refCore = new ReferenceTypeMap( library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperError())));
+		TypeMap refCore = new TypeMap( library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperError())));
 
 		// get the core type map.
-		ReferenceTypeMap core = new ReferenceTypeMap( library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperError())), refCore);
+		TypeMap core = new TypeMap( library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperError())) );
+		core.setReference( TypeMap.REFERENCE_MAP, refCore );
 
 		// create a dynamic type map.	
-		ReferenceTypeMap dynamicDictionaryMap = new ReferenceTypeMap( library, new TypeMapperDynamic(new TypeMapperError()), map);
+		TypeMap dynamicDictionaryMap = new TypeMap( library, new TypeMapperDynamic(new TypeMapperError()));
+		dynamicDictionaryMap.setReference( TypeMap.REFERENCE_MAP, map );
 
 		ByteArrayOutputStream messageData = new ByteArrayOutputStream();
 		int count = map.size();
@@ -104,13 +104,13 @@ public class Dictionary
 		// need to be dynamically added.  Simple solution is to 
 		// write it out until the size stablises.
 		// Going Backwards, this writes out the data dictionary.
-		core.setReferenceMap( dynamicDictionaryMap );
+		core.setReference( TypeMap.REFERENCE_MAP, dynamicDictionaryMap );
 		ByteArrayOutputStream dictionaryStream = new ByteArrayOutputStream(); 
 		TypeOutputStream dictionaryObjectStream = new TypeOutputStream( dictionaryStream , core );
 		count = dynamicDictionaryMap.size();
 		lastCount = 0;
 		
-		dynamicDictionaryMap.setReferenceMap(dynamicDictionaryMap);
+		dynamicDictionaryMap.setReference( TypeMap.REFERENCE_MAP, dynamicDictionaryMap);
 		while( count != lastCount )
 		{
 			lastCount = count;
@@ -134,7 +134,7 @@ public class Dictionary
 		
 		
 		// write out the core meta dictionary used to write the message dictionary.
-		core.setReferenceMap( core );
+		core.setReference( TypeMap.REFERENCE_MAP, core );
 		ByteArrayOutputStream baos3 = new ByteArrayOutputStream(); 
 		TypeOutputStream tmos3 = new TypeOutputStream( baos3 , core );
 		writeCoreMap( tmos3, core );
@@ -165,7 +165,7 @@ public class Dictionary
  * 
  */
 	
-	private static void writeCoreMap( TypeOutputStream out, ReferenceTypeMap map ) throws TypeException, IOException
+	private static void writeCoreMap( TypeOutputStream out, TypeMap map ) throws TypeException, IOException
 	{
 		// writing out the core and then the extensions.
 		out.writeObject( UInt8.TYPENAME , new Integer( 2 ));
@@ -183,8 +183,8 @@ public class Dictionary
 			lastCount = count;
 
 			// count the number of extensions
-			List coreIds = TypeMapperCore.getCoreIdentifiers();
-			Iterator i = coreIds.iterator();	
+			List<Integer> coreIds = TypeMapperCore.getCoreIdentifiers();
+			Iterator<Integer> i = coreIds.iterator();	
 			int extensionCount = 0;
 			i = map.getIdList().iterator();
 			while (i.hasNext() )
@@ -239,6 +239,7 @@ public class Dictionary
 	public static byte[] writeCore( TypeMap map ) throws TypeException, IOException
 	{
 		TypeMap refCore = new TypeMap(map.getLibrary(), new TypeMapperCore(new TypeMapperError()));
+		refCore.setReference(TypeMap.REFERENCE_MAP, refCore);
 		ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
 		TypeOutputStream coreObjectStream = new TypeOutputStream( baos1, map );
 		coreObjectStream.writeObject( DICTIONARY_ENTRY_LIST, refCore );
@@ -257,14 +258,15 @@ public class Dictionary
 	public static TypeMap readDictionary( TypeLibrary library, InputStream fis) throws TypeException, IOException
 	{
 		TypeMap refCore = new TypeMap(library, new TypeMapperCore(new TypeMapperError()));
-		ReferenceTypeMap core = new ReferenceTypeMap(library, new TypeMapperCore(new TypeMapperError()), refCore);		
+		TypeMap core = new TypeMap(library, new TypeMapperCore(new TypeMapperError()));
+		core.setReference(TypeMap.REFERENCE_MAP, refCore);
 		TypeInputStream tmis = new TypeInputStream( fis, core );      
         
 		// read the core map.
-		ReferenceTypeMap coreMap = readCore( library, tmis );
+		TypeMap coreMap = readCore( library, tmis );
 		// read the message map using the core map.   
 		
-		ReferenceTypeMap messageMap = readMessageMap( tmis, coreMap );
+		TypeMap messageMap = readMessageMap( tmis, coreMap );
 		// read the final dictionary. register types if needed.
 
 		Integer ident = (Integer) tmis.readObject( UVInt28.TYPENAME );
@@ -278,10 +280,12 @@ public class Dictionary
 		return finalMap;
 	}
 
-	private static ReferenceTypeMap readCore( TypeLibrary library, TypeInputStream tmis ) throws TypeException, IOException
+	private static TypeMap readCore( TypeLibrary library, TypeInputStream tmis ) 
+	throws TypeException, IOException
 	{
 		TypeMap refCore = new TypeMap(library, new TypeMapperCore(new TypeMapperError()));
-		ReferenceTypeMap core = new ReferenceTypeMap( library, new TypeMapperCore(new TypeMapperError()), refCore);
+		TypeMap core = new TypeMap( library, new TypeMapperCore(new TypeMapperError()));
+		core.setReference(TypeMap.REFERENCE_MAP, refCore);
 		
 		// read the core array size.  expect = 2.
 		Short arraySize = (Short) tmis.readObject( UInt8.TYPENAME );
@@ -322,9 +326,11 @@ public class Dictionary
 		return core;
 	}
 	
-	private static ReferenceTypeMap readMessageMap( TypeInputStream tmis, ReferenceTypeMap coreMap ) throws TypeException, IOException
+	private static TypeMap readMessageMap( TypeInputStream tmis, TypeMap coreMap ) 
+	throws TypeException, IOException
 	{
-		ReferenceTypeMap mapSpec = new ReferenceTypeMap( coreMap.getLibrary(), new TypeMapperError(), coreMap );
+		TypeMap mapSpec = new TypeMap( coreMap.getLibrary(), new TypeMapperError() );
+		mapSpec.setReference(TypeMap.REFERENCE_MAP, coreMap);
 		
 		// read the data dictionary array size.  expect = 1.
 		Short arraySize = (Short) tmis.readObject( UInt8.TYPENAME );
@@ -341,7 +347,7 @@ public class Dictionary
 	// This reads the contents of the data dictionary and sets this
 	// map up using the data contained.  It checks all data with the
 	// internal library.
-	private static TypeMap setMap( TypeInputStream dictDataIn, ReferenceTypeMap coreMap, TypeMap mapSpec )
+	private static TypeMap setMap( TypeInputStream dictDataIn, TypeMap coreMap, TypeMap mapSpec )
 	throws TypeException, IOException
 	{
 		TypeLibrary library = mapSpec.getLibrary();
@@ -350,7 +356,7 @@ public class Dictionary
 		Triple newTypes[] = new Triple[size];
 		
 		dictDataIn.setTypeMap(coreMap);
-		coreMap.setReferenceMap(mapSpec);		
+		coreMap.setReference( TypeMap.REFERENCE_MAP, mapSpec);		
 		
 		// Step 1.  Read all the types in.
 		for ( int x = 0; x<size; x++ )
@@ -437,6 +443,7 @@ public class Dictionary
 		{
 			if (newTypes[x].location instanceof DictionaryDefinition)
 			{				
+				@SuppressWarnings("unused")
 				DictionaryDefinition dd = (DictionaryDefinition) newTypes[x].location;
 				
 				// The target needs to be mapped back to the library identifier.

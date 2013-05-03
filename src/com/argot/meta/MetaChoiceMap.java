@@ -27,7 +27,6 @@ package com.argot.meta;
 
 import java.io.IOException;
 
-import com.argot.ReferenceTypeMap;
 import com.argot.TypeBound;
 import com.argot.TypeElement;
 import com.argot.TypeException;
@@ -154,20 +153,20 @@ implements MetaDefinition
 			// before we return this we need to change the
 			// values from the mapped to the internal values.
 			
-			ReferenceTypeMap mapCore = (ReferenceTypeMap) in.getTypeMap();
+			TypeMap refMap = (TypeMap) in.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
 					
-			if (  mapCore.referenceMap().isValid( map.getAbstractType() ) )
+			if (  refMap.isValid( map.getAbstractType() ) )
 			{
-				map.setAbstractType( mapCore.referenceMap().getDefinitionId( map.getAbstractType () ));
+				map.setAbstractType( refMap.getDefinitionId( map.getAbstractType () ));
 			}
 			else
 			{
 				throw new TypeException( "TypeReference: invalid id " );
 			}
 			
-			if (  mapCore.referenceMap().isValid( map.getConcreteType() ) )
+			if (  refMap.isValid( map.getConcreteType() ) )
 			{
-				map.setConcreteType( mapCore.referenceMap().getDefinitionId( map.getConcreteType () ));
+				map.setConcreteType( refMap.getDefinitionId( map.getConcreteType () ));
 			}
 			else
 			{
@@ -183,10 +182,10 @@ implements MetaDefinition
 	    public void write(TypeOutputStream out, Object o) throws TypeException, IOException
 	    {
 			MetaChoiceMap tr = (MetaChoiceMap) o;
-			ReferenceTypeMap mapCore = (ReferenceTypeMap) out.getTypeMap();
-			int abstractId = mapCore.referenceMap().getStreamId( tr._abstractType );
+			TypeMap refMap = (TypeMap) out.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
+			int abstractId = refMap.getStreamId( tr._abstractType );
 			out.writeObject( UInt16.TYPENAME, new Integer( abstractId ));
-			int concreteId = mapCore.referenceMap().getStreamId( tr._concreteType );
+			int concreteId = refMap.getStreamId( tr._concreteType );
 			out.writeObject( UInt16.TYPENAME, new Integer( concreteId ) );
 	    }   
 	}

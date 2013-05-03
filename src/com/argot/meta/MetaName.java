@@ -26,10 +26,7 @@
 package com.argot.meta;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-import com.argot.ReferenceTypeMap;
 import com.argot.TypeBound;
 import com.argot.TypeElement;
 import com.argot.TypeException;
@@ -45,7 +42,6 @@ import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
 import com.argot.common.U8Utf8;
-import com.argot.common.UInt8;
 
 public class MetaName 
 {
@@ -114,8 +110,12 @@ public class MetaName
 			MetaName mn = (MetaName) obj;
 			//String[] nameParts = mn.getParts();
 			
-			ReferenceTypeMap mapCore = (ReferenceTypeMap) out.getTypeMap();
-			int streamId = mapCore.referenceMap().getStreamId(mn.getGroup());
+			TypeMap refMap = (TypeMap) out.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
+			if (refMap==null)
+			{
+				throw new TypeException("Reference map not set");
+			}
+			int streamId = refMap.getStreamId(mn.getGroup());
 			out.writeObject( "meta.id", new Integer(streamId) );
 			out.writeObject(  U8Utf8.TYPENAME, mn.getName() );
 		}
@@ -163,11 +163,11 @@ public class MetaName
 			Integer groupId = (Integer) object[0];
 			String name = (String) object[1];
 
-			ReferenceTypeMap mapCore = (ReferenceTypeMap) in.getTypeMap();
+			TypeMap refMap = (TypeMap) in.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
 			
-			int defId = mapCore.referenceMap().getDefinitionId(groupId.intValue());
+			int defId = refMap.getDefinitionId(groupId.intValue());
 			
-			TypeLocation location = mapCore.referenceMap().getLocation(groupId.intValue());
+			TypeLocation location = refMap.getLocation(groupId.intValue());
 			if (location instanceof TypeLocationName) 
 			{
 				TypeLocationName locName = (TypeLocationName) location;

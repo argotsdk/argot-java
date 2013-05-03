@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Stack;
 
-import com.argot.ReferenceTypeMap;
 import com.argot.TypeException;
 import com.argot.TypeHelper;
 import com.argot.TypeLibrary;
@@ -43,7 +42,7 @@ public class DynamicClientTypeMapper
 implements TypeMapper
 {
 	private TypeClient _typeClient;
-	private ReferenceTypeMap _map;
+	private TypeMap _map;
 	private TypeLibrary _library;
 	
 	// This resolveStack is used to look for ensuring that we don't
@@ -67,7 +66,7 @@ implements TypeMapper
 	public void initialise(TypeMap map) 
 	throws TypeException 
 	{
-		_map = (ReferenceTypeMap) map;
+		_map = (TypeMap) map;
 		_library = map.getLibrary();
 		_typeClient.initialise(map);
 	}

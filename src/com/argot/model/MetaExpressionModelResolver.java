@@ -40,27 +40,27 @@ import com.argot.meta.MetaExpressionWriter;
 public class MetaExpressionModelResolver 
 extends MetaExpressionLibraryResolver
 {
-	private Map _readerMap;
-	private Map _writerMap;
+	private Map<Class<?>,MetaExpressionReader> _readerMap;
+	private Map<Class<?>,MetaExpressionWriter> _writerMap;
 	
 	public MetaExpressionModelResolver()
 	{
-		_readerMap = new HashMap();
-		_writerMap = new HashMap();
+		_readerMap = new HashMap<Class<?>,MetaExpressionReader>();
+		_writerMap = new HashMap<Class<?>,MetaExpressionWriter>();
 	}
 	
-	public void addExpressionMap( Class clss, MetaExpressionReader reader, MetaExpressionWriter writer)
+	public void addExpressionMap( Class<?> clss, MetaExpressionReader reader, MetaExpressionWriter writer)
 	{
 		_readerMap.put(clss, reader);
 		_writerMap.put(clss, writer);
 	}
 
-	private MetaExpressionReader getReader(Class clss)
+	private MetaExpressionReader getReader(Class<?> clss)
 	{
 		return  (MetaExpressionReader) _readerMap.get(clss);
 	}
 	
-	private MetaExpressionWriter getWriter(Class clss)
+	private MetaExpressionWriter getWriter(Class<?> clss)
 	{
 		return  (MetaExpressionWriter) _writerMap.get(clss);
 	}	

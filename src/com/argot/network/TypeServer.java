@@ -30,7 +30,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
 
-import com.argot.ReferenceTypeMap;
+import com.argot.TypeMap;
 import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeHelper;
@@ -48,24 +48,24 @@ import com.argot.remote.MetaObject;
 public class TypeServer
 implements TypeLink
 {
-	private ReferenceTypeMap _typeMap;
-	private ReferenceTypeMap _refMap;
+	private TypeMap _typeMap;
+	private TypeMap _refMap;
 	private TypeLibrary _library;
 	private MetaObject _object;
 	private TypeLink _service;
 	
 
-	public TypeServer( TypeLibrary library, ReferenceTypeMap refMap, TypeLink service )
+	public TypeServer( TypeLibrary library, TypeMap refMap, TypeLink service )
 	throws TypeException
 	{
-		_typeMap = new ReferenceTypeMap( library, new ProtocolTypeMapper() );
+		_typeMap = new TypeMap( library, new ProtocolTypeMapper() );
 		_refMap = refMap;
-		_typeMap.setReferenceMap(_refMap);
+		_typeMap.setReference(TypeMap.REFERENCE_MAP,_refMap);
 		_library = library;
 		_service = service;
 	}
 
-	public TypeServer( TypeLibrary library, ReferenceTypeMap refMap )
+	public TypeServer( TypeLibrary library, TypeMap refMap )
 	throws TypeException
 	{
 		this( library, refMap, null );

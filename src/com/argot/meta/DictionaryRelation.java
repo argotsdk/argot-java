@@ -27,7 +27,6 @@ package com.argot.meta;
 
 import java.io.IOException;
 
-import com.argot.ReferenceTypeMap;
 import com.argot.TypeBound;
 import com.argot.TypeElement;
 import com.argot.TypeException;
@@ -42,7 +41,6 @@ import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
 import com.argot.auto.TypeBeanMarshaller;
-import com.argot.common.UInt16;
 
 public class DictionaryRelation 
 extends DictionaryLocation
@@ -111,10 +109,10 @@ implements TypeLocationRelation
 			
 			// Check that what its referencing exists and convert from
 			// external mapping to internal mapping.
-			ReferenceTypeMap mapCore = (ReferenceTypeMap) in.getTypeMap();
+			TypeMap refMap = (TypeMap) in.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
 						
-			if (  mapCore.referenceMap().isValid( rel.getId() ) )
-				rel.setId( mapCore.referenceMap().getDefinitionId( rel.getId() ));
+			if (  refMap.isValid( rel.getId() ) )
+				rel.setId( refMap.getDefinitionId( rel.getId() ));
 			else
 				throw new TypeException( "DictionaryDefinition: invalid id " + rel.getId() );
 
@@ -130,8 +128,8 @@ implements TypeLocationRelation
 	    public void write(TypeOutputStream out, Object o) throws TypeException, IOException
 	    {
 			DictionaryRelation dd = (DictionaryRelation) o;
-			ReferenceTypeMap mapCore = (ReferenceTypeMap) out.getTypeMap();
-			int id = mapCore.referenceMap().getStreamId( dd.getId() );
+			TypeMap refMap = (TypeMap) out.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
+			int id = refMap.getStreamId( dd.getId() );
 			DictionaryRelation dr = new DictionaryRelation(id, dd._tag);
 			_writer.getWriter(out.getTypeMap()).write(out, dr);
 	    }

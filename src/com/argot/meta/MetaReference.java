@@ -27,7 +27,6 @@ package com.argot.meta;
 
 import java.io.IOException;
 
-import com.argot.ReferenceTypeMap;
 import com.argot.TypeBound;
 import com.argot.TypeElement;
 import com.argot.TypeException;
@@ -40,7 +39,6 @@ import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
 import com.argot.auto.TypeReaderAuto;
-import com.argot.common.UInt16;
 import com.argot.common.UVInt28;
 
 public class MetaReference
@@ -98,10 +96,10 @@ implements MetaDefinition
 			
 			// Check that what its referencing exists and convert from
 			// external mapping to internal mapping.
-			ReferenceTypeMap mapCore = (ReferenceTypeMap) in.getTypeMap();
+			TypeMap refMap = (TypeMap) in.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
 						
-			if (  mapCore.referenceMap().isValid( ref.getType() ) )
-				ref.setType( mapCore.referenceMap().getNameId( ref.getType() ));
+			if (  refMap.isValid( ref.getType() ) )
+				ref.setType( refMap.getNameId( ref.getType() ));
 			else
 				throw new TypeException( "TypeReference: invalid id " + ref.getType() );
 
@@ -123,8 +121,8 @@ implements MetaDefinition
 	    public void write(TypeOutputStream out, Object o) throws TypeException, IOException
 	    {
 			MetaReference tr = (MetaReference) o;
-			ReferenceTypeMap mapCore = (ReferenceTypeMap) out.getTypeMap();
-			int id = mapCore.referenceMap().getStreamId( tr._type );
+			TypeMap refMap = (TypeMap) out.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
+			int id = refMap.getStreamId( tr._type );
 			out.writeObject( UVInt28.TYPENAME, new Integer( id ));
 	    }
 

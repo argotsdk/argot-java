@@ -64,7 +64,7 @@ public class ChunkByteBuffer
 {
 
 	private static final int CHUNKSIZE = 2048;    
-	private static Vector _freeChunks = new Vector();
+	private static Vector<ByteBuffer> _freeChunks = new Vector<ByteBuffer>();
 	private static int _chunkCount = 0;
     
 	private static synchronized ByteBuffer getChunk()
@@ -103,7 +103,7 @@ public class ChunkByteBuffer
 		}
 	}
 
-	private Vector _dataChunks;
+	private Vector<ByteBuffer> _dataChunks;
 	private int _length;
 	private boolean _closed;
 	private boolean _gotOutputStream;
@@ -117,7 +117,7 @@ public class ChunkByteBuffer
 		_length = 0;
 		_closed = false;
 		_gotOutputStream = false;
-		_dataChunks = new Vector();
+		_dataChunks = new Vector<ByteBuffer>();
 		_dataChunks.add( getChunk() );	
 	}
 

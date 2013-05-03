@@ -60,7 +60,7 @@ public class MetaRemoteException
 	{
 		TypeConstructorAuto _autoConstructor;
 		
-		public ExceptionConstructor(Class clazz)
+		public ExceptionConstructor(Class<?> clazz)
 		throws TypeException
 		{
 			_autoConstructor = new TypeConstructorAuto(clazz);
@@ -99,7 +99,7 @@ public class MetaRemoteException
 	{
 		private TypeReaderAuto _autoReader;
 		
-		public Reader(Class clazz) 
+		public Reader(Class<?> clazz) 
 		throws TypeException
 		{
 			if (clazz.isAssignableFrom(Exception.class))

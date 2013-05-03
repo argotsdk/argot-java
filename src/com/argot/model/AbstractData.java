@@ -83,13 +83,13 @@ extends ModelData
 	{
 		private MetaAbstract _metaAbstract;
 		private TypeReader _uint16;
-		private Map _mapCache;
+		private Map<Integer,TypeReader> _mapCache;
 		
 		public AbstractDataReader(MetaAbstract metaAbstract, TypeReader uint16)
 		{
 			_metaAbstract = metaAbstract;
 			_uint16 = uint16;
-			_mapCache = new HashMap();
+			_mapCache = new HashMap<Integer,TypeReader>();
 		}
 		
 		public Object read(TypeInputStream in)
@@ -121,8 +121,8 @@ extends ModelData
 		throws TypeException
 		{
 	        int mapId = map.getDefinitionId( type.intValue() );
-			Integer concrete = (Integer) _metaAbstract.getConcreteToMap().get( new Integer( mapId ));
-	        if ( concrete == null )
+			int concrete = _metaAbstract.getConcreteId( mapId );
+	        if ( concrete == -1 )
 	        {
 	        	throw new TypeException("type not mapped:" + type.intValue() + " " + map.getName( type.intValue() ) ); 
 	        }
@@ -154,13 +154,13 @@ extends ModelData
     {
     	private MetaAbstract _metaAbstract;
     	private TypeWriter _uint16;
-		private Map _mapCache;
+		private Map<Integer,CacheEntry> _mapCache;
 		
     	public AbstractDataWriter(MetaAbstract metaAbstract, TypeWriter uint16)
     	{
     		_metaAbstract = metaAbstract;
     		_uint16 = uint16;
-    		_mapCache = new HashMap();
+    		_mapCache = new HashMap<Integer,CacheEntry>();
     	}
     	
 		public void write(TypeOutputStream out, Object o)
@@ -187,8 +187,8 @@ extends ModelData
 		private CacheEntry mapType(TypeMap map, int type)
 		throws TypeException
 		{
-			Integer mapId = (Integer) _metaAbstract.getConcreteToMap().get( new Integer( type ));
-	        if ( mapId == null )
+			int mapId = _metaAbstract.getConcreteId( type );
+	        if ( mapId == -1 )
 	        {
 				throw new TypeException( "can't write abstract type directly.:" );
 			}
@@ -199,7 +199,7 @@ extends ModelData
 	        // that the server also has the mapping from concrete to map value.  By 
 	        // getting the System Id of the MapId it will automatically resolve if the
 	        // server has the correct value.
-	        map.getStreamId(mapId.intValue());
+	        map.getStreamId(mapId);
 	        
 	        // The Id written to file is the mapped concrete id.
 	        entry.mapId = new Integer(map.getStreamId(type));

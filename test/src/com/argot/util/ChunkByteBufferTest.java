@@ -9,17 +9,13 @@ import junit.framework.TestCase;
 public class ChunkByteBufferTest
 extends TestCase
 {
-	public void testContructor()
-	{
-		ChunkByteBuffer buffer = new ChunkByteBuffer();
-	}
 	
 	public void testGetInputStream() throws Exception
 	{
 		ChunkByteBuffer buffer = new ChunkByteBuffer();
 		try
 		{
-			InputStream in = buffer.getInputStream();
+			buffer.getInputStream();
 			fail("input before output");
 		}
 		catch (IOException e)
@@ -32,15 +28,17 @@ extends TestCase
 	{
 		ChunkByteBuffer buffer = new ChunkByteBuffer();
 		OutputStream out = buffer.getOutputStream();
+		assertNotNull(out);
 	}
 
 	public void testGetOutputSecond() throws Exception
 	{
 		ChunkByteBuffer buffer = new ChunkByteBuffer();
 		OutputStream out = buffer.getOutputStream();
+		assertNotNull(out);
 		try
 		{
-			OutputStream out2 = buffer.getOutputStream();
+			buffer.getOutputStream();
 			fail("should fail");
 		}
 		catch (IOException e)

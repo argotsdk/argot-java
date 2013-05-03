@@ -5,10 +5,7 @@ import junit.framework.TestCase;
 public class TwoWayHashMapTest
 extends TestCase
 {
-	public void testConstructor()
-	{
-		TwoWayHashMap map = new TwoWayHashMap();
-	}
+
 	
 	public void testAddItem()
 	{
@@ -31,22 +28,6 @@ extends TestCase
 		}
 	}
 
-/*
-	public void testAddDuplicateValueItem()
-	{
-		TwoWayHashMap map = new TwoWayHashMap();
-		map.add( 1, 1, new Integer(1));
-		try
-		{
-			map.add( 2, 1, new Integer(1));
-			fail("should throw exception");
-		}
-		catch (IllegalArgumentException e)
-		{
-			//ignore.
-		}
-	}
-*/
 	public void testAddNullItem()
 	{
 		TwoWayHashMap map = new TwoWayHashMap();
@@ -73,7 +54,8 @@ extends TestCase
 	{
 		TwoWayHashMap map = new TwoWayHashMap();
 		map.add( 100, 50, new Integer(1));
-		int x = map.findKey(100);		
+		int x = map.findKey(100);
+		assertEquals(x,50);
 	}
 	
 	public void testRemoveItem()
@@ -82,6 +64,7 @@ extends TestCase
 		map.add( 100, 50, new Integer(1));
 		map.remove( 100 );
 		Object o = map.getObjectFromKey(100);
+		assertEquals(o, new Integer(1));
 	}
 
 	public void testRemoveInvalid()
@@ -97,5 +80,6 @@ extends TestCase
 		TwoWayHashMap map = new TwoWayHashMap();
 		map.add( 100, 50, new Integer(1));
 		int x = map.findValue(10);
+		assertEquals(x,-1);
 	}
 }

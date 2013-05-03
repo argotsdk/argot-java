@@ -69,7 +69,7 @@ extends TestCase
 		ByteArrayInputStream bais = new ByteArrayInputStream( coreMapBytes );
 		TypeMap mapRead = Dictionary.readDictionary( _library, bais );
 		
-		Iterator iter1 = mapRead.getIdList().iterator();
+		Iterator<Integer> iter1 = mapRead.getIdList().iterator();
 
 		while( iter1.hasNext() )
 		{			

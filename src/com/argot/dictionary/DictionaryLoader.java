@@ -29,7 +29,6 @@ package com.argot.dictionary;
 import com.argot.TypeException;
 import com.argot.TypeLibrary;
 import com.argot.TypeLibraryLoader;
-import com.argot.common.UInt16;
 import com.argot.common.UVInt28;
 import com.argot.meta.DictionaryDefinition;
 import com.argot.meta.DictionaryName;

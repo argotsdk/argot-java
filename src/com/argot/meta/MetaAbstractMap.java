@@ -27,7 +27,6 @@ package com.argot.meta;
 
 import java.io.IOException;
 
-import com.argot.ReferenceTypeMap;
 import com.argot.TypeBound;
 import com.argot.TypeElement;
 import com.argot.TypeException;
@@ -40,7 +39,6 @@ import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
 import com.argot.auto.TypeReaderAuto;
-import com.argot.common.UInt16;
 import com.argot.common.UVInt28;
 
 
@@ -173,11 +171,11 @@ implements MetaDefinition
 			// before we return this we need to change the
 			// values from the mapped to the internal values.
 			
-			ReferenceTypeMap mapCore = (ReferenceTypeMap) in.getTypeMap();
+			TypeMap refMap = (TypeMap) in.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
 			
-			if (  mapCore.referenceMap().isValid( map.getConcreteType() ) )
+			if (  refMap.isValid( map.getConcreteType() ) )
 			{
-				map.setConcreteType( mapCore.referenceMap().getNameId( map.getConcreteType () ));
+				map.setConcreteType( refMap.getNameId( map.getConcreteType () ));
 			}
 			else
 			{
@@ -193,8 +191,8 @@ implements MetaDefinition
 	    public void write(TypeOutputStream out, Object o) throws TypeException, IOException
 	    {
 			MetaAbstractMap tr = (MetaAbstractMap) o;
-			ReferenceTypeMap mapCore = (ReferenceTypeMap) out.getTypeMap();
-			int concreteId = mapCore.referenceMap().getStreamId( tr._concreteType );
+			TypeMap refMap = (TypeMap) out.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
+			int concreteId = refMap.getStreamId( tr._concreteType );
 			out.writeObject( UVInt28.TYPENAME, new Integer( concreteId ) );
 	    }   
 	}

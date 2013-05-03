@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import com.argot.ReferenceTypeMap;
 import com.argot.TypeBound;
 import com.argot.TypeElement;
 import com.argot.TypeException;
@@ -37,6 +36,7 @@ import com.argot.TypeInputStream;
 import com.argot.TypeLibrary;
 import com.argot.TypeLocation;
 import com.argot.TypeLocationRelation;
+import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
@@ -110,7 +110,7 @@ implements MetaDefinition
 				
 	}
 	
-	public MetaMethod( String name, List requestList, List responseList, List errorTypes )
+	public MetaMethod( String name, List<MetaParameter> requestList, List<MetaParameter> responseList, List<Integer> errorTypes )
 	{
 		this( name, requestList.toArray(), responseList.toArray(), errorTypes.toArray() );
 	}
@@ -237,14 +237,14 @@ implements MetaDefinition
 		public Object read(TypeInputStream in) 
 		throws TypeException, IOException 
 		{
-			ReferenceTypeMap mapCore = (ReferenceTypeMap) in.getTypeMap();
+			TypeMap refMap = (TypeMap) in.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
 			
 			TypeReader reader = _reader.getReader(in.getTypeMap());
 			MetaMethod mm = (MetaMethod) reader.read( in );
-			mm._interfaceId = mapCore.referenceMap().getDefinitionId( mm._interfaceId );
+			mm._interfaceId = refMap.getDefinitionId( mm._interfaceId );
 			for ( int x=0 ; x< mm._errorTypes.length ; x++ )
 			{
-				mm._errorTypes[x] = mapCore.referenceMap().getDefinitionId( mm._errorTypes[x] );
+				mm._errorTypes[x] = refMap.getDefinitionId( mm._errorTypes[x] );
 			}
 			return mm;
 		}
@@ -259,10 +259,10 @@ implements MetaDefinition
 			MetaMethod mm = (MetaMethod) o;
 			int x;
 			
-			ReferenceTypeMap mapCore = (ReferenceTypeMap) out.getTypeMap();
+			TypeMap refMap = (TypeMap) out.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
 			
 			// write interface id.
-			int id = mapCore.referenceMap().getStreamId( mm.getInterfaceType() );
+			int id = refMap.getStreamId( mm.getInterfaceType() );
 			out.writeObject( U8Ascii.TYPENAME, mm.getMethodName() );
 			
 			if ( mm.getRequestTypes() != null )
@@ -296,7 +296,7 @@ implements MetaDefinition
 				out.writeObject( UInt8.TYPENAME, new Integer( mm.getErrorTypes().length ));
 				for( x=0 ;x < mm.getErrorTypes().length; x++ )
 				{
-					id = mapCore.referenceMap().getStreamId( mm.getErrorTypes()[x]);
+					id = refMap.getStreamId( mm.getErrorTypes()[x]);
 					out.writeObject( UInt16.TYPENAME, new Integer(id) );
 				}
 			}

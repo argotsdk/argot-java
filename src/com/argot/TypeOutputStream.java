@@ -39,6 +39,9 @@ public class TypeOutputStream
 	
 	public TypeOutputStream( OutputStream out, TypeMap map )
 	{
+		if (out==null) throw new IllegalArgumentException();
+		if (map==null) throw new IllegalArgumentException();
+		
 		_out = out;
 		_map = map;	
 	}

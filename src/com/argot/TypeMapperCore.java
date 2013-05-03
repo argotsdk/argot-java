@@ -26,11 +26,9 @@
 package com.argot;
 
 import java.util.ArrayList;
-
 import java.util.List;
-import com.argot.common.Empty;
+
 import com.argot.common.U8Utf8;
-import com.argot.common.UInt16;
 import com.argot.common.UInt8;
 import com.argot.common.UVInt28;
 import com.argot.dictionary.Dictionary;
@@ -42,10 +40,6 @@ import com.argot.meta.DictionaryRelation;
 import com.argot.meta.MetaAbstract;
 import com.argot.meta.MetaAbstractMap;
 import com.argot.meta.MetaArray;
-import com.argot.meta.MetaDefinition;
-import com.argot.meta.MetaEncoding;
-import com.argot.meta.MetaEnvelope;
-import com.argot.meta.MetaExpression;
 import com.argot.meta.MetaAtom;
 import com.argot.meta.MetaAtomAttribute;
 import com.argot.meta.MetaAtomAttributeBigEndian;
@@ -53,8 +47,10 @@ import com.argot.meta.MetaAtomAttributeInteger;
 import com.argot.meta.MetaAtomAttributeSize;
 import com.argot.meta.MetaAtomAttributeUnsigned;
 import com.argot.meta.MetaCluster;
-import com.argot.meta.MetaIdentity;
-import com.argot.meta.MetaName;
+import com.argot.meta.MetaDefinition;
+import com.argot.meta.MetaEncoding;
+import com.argot.meta.MetaEnvelope;
+import com.argot.meta.MetaExpression;
 import com.argot.meta.MetaReference;
 import com.argot.meta.MetaSequence;
 import com.argot.meta.MetaTag;
@@ -140,9 +136,9 @@ implements TypeMapper
 	}
 
 	
-	public static List getCoreIdentifiers()
+	public static List<Integer> getCoreIdentifiers()
 	{
-		List coreIds = new ArrayList();
+		List<Integer> coreIds = new ArrayList<Integer>();
 		
 		//entities
 		coreIds.add( new Integer( BASE_ID ) );

@@ -38,7 +38,6 @@ import com.argot.TypeLocation;
 import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeWriter;
-import com.argot.common.U8Ascii;
 
 public class MetaIdentity 
 extends MetaExpression
@@ -46,11 +45,11 @@ implements MetaDefinition
 {
 	public static final String TYPENAME = "meta.identity";
 	
-	private Map _versions;
+	private Map<MetaVersion,Integer> _versions;
 	
 	public MetaIdentity()
 	{
-		_versions = new HashMap();
+		_versions = new HashMap<MetaVersion,Integer>();
 
 	}
 	
@@ -78,7 +77,7 @@ implements MetaDefinition
 		return value.intValue();
 	}
 	
-	public Set getVersions()
+	public Set<MetaVersion> getVersions()
 	{
 		return _versions.keySet();
 	}
@@ -90,7 +89,7 @@ implements MetaDefinition
 		public void write(TypeOutputStream out, Object o ) 
 		throws TypeException, IOException
 		{
-			MetaIdentity mn = (MetaIdentity) o;
+			//MetaIdentity mn = (MetaIdentity) o;
 		}
 		
 		public TypeWriter getWriter(TypeMap map) 

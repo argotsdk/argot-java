@@ -49,7 +49,7 @@ public class TypeArrayMarshaller
 implements TypeLibraryWriter, TypeLibraryReader, TypeBound
 {	
 	private MetaExpressionResolver _resolver;
-	private Class _typeClass;
+	private Class<?> _typeClass;
 	private MetaExpression _sizeExpression;
 	private MetaExpression _dataExpression;
 	
@@ -77,7 +77,7 @@ implements TypeLibraryWriter, TypeLibraryReader, TypeBound
 		MetaArray array = (MetaArray) expression;
 		_sizeExpression = array.getSizeExpression();
 		_dataExpression = array.getTypeExpression();
-		Class arrayClass = library.getClass(definitionId);
+		Class<?> arrayClass = library.getClass(definitionId);
 		if (!arrayClass.isArray())
 		{
 			throw new TypeException("TypeArrayMarshaller: not bound to array data type");
@@ -88,11 +88,11 @@ implements TypeLibraryWriter, TypeLibraryReader, TypeBound
 	private static class TypeArrayMarshallerReader
 	implements TypeReader
 	{
-		private Class _typeClass;
+		private Class<?> _typeClass;
 		private TypeReader _size;
 		private TypeReader _data;
 		
-		public TypeArrayMarshallerReader( Class typeClass, TypeReader size, TypeReader data )
+		public TypeArrayMarshallerReader( Class<?> typeClass, TypeReader size, TypeReader data )
 		{
 			_typeClass = typeClass;
 			_size = size;

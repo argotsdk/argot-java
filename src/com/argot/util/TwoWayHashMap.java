@@ -203,13 +203,13 @@ public class TwoWayHashMap
 		_count--;  	
 	}
 
-	public Iterator iterator()
+	public Iterator<Integer> iterator()
 	{
 		return new TwoWayHashMapIterator(this);
 	}
 
 	public class TwoWayHashMapIterator
-	implements Iterator
+	implements Iterator<Integer>
 	{
 		private TwoWayHashMap _map;
 		private int _index;
@@ -256,7 +256,7 @@ public class TwoWayHashMap
 			return true;
 		}
 		
-		public Object next()
+		public Integer next()
 		{
 			return new Integer( _current.key );
 		}

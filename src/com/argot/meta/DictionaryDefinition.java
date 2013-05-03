@@ -27,7 +27,6 @@ package com.argot.meta;
 
 import java.io.IOException;
 
-import com.argot.ReferenceTypeMap;
 import com.argot.TypeBound;
 import com.argot.TypeElement;
 import com.argot.TypeException;
@@ -42,7 +41,6 @@ import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
 import com.argot.auto.TypeBeanMarshaller;
-import com.argot.common.UInt16;
 
 public class DictionaryDefinition 
 extends DictionaryLocation
@@ -132,7 +130,7 @@ implements TypeLocationDefinition
 			
 			// Check that what its referencing exists and convert from
 			// external mapping to internal mapping.
-			ReferenceTypeMap mapCore = (ReferenceTypeMap) in.getTypeMap();
+			TypeMap mapCore = in.getTypeMap();
 			
 			def._id = mapCore.getLibrary().getTypeId(def.getName());
 

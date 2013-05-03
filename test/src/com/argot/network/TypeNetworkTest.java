@@ -27,7 +27,6 @@ package com.argot.network;
 
 import junit.framework.TestCase;
 
-import com.argot.ReferenceTypeMap;
 import com.argot.TypeLibrary;
 import com.argot.TypeLibraryLoader;
 import com.argot.TypeMap;
@@ -64,8 +63,9 @@ extends TestCase
 
     public void testClientMetaDictionaryUsage() throws Exception
     {
-    	ReferenceTypeMap serverMap = new ReferenceTypeMap( _library, new TypeMapperDynamic( new TypeMapperCore(new TypeMapperError() )));
-		//TypeMapCore.mapMeta( serverMap, _library );
+    	TypeMap serverMap = new TypeMap( _library, new TypeMapperDynamic( new TypeMapperCore(new TypeMapperError() )));
+    	serverMap.setReference(TypeMap.REFERENCE_MAP, serverMap);
+    	//TypeMapCore.mapMeta( serverMap, _library );
 		//serverMap.map( 42, _library.getDefinitionId("dictionary.words","1.3"));
 		
     	TypeServer typeServer = new TypeServer( _library, serverMap );
@@ -73,7 +73,8 @@ extends TestCase
     	// server will need to operate on different thread.
     	TestTypeTransport transport = new TestTypeTransport( typeServer );
     	TypeClient typeClient = new TypeClient( _library, transport );
-    	ReferenceTypeMap clientMap = new ReferenceTypeMap( _library, new TypeMapperCore( new DynamicClientTypeMapper( typeClient ) ) );
+    	TypeMap clientMap = new TypeMap( _library, new TypeMapperCore( new DynamicClientTypeMapper( typeClient ) ) );
+    	clientMap.setReference(TypeMap.REFERENCE_MAP, clientMap);
     	
     	int cid = clientMap.getStreamId( UInt32.TYPENAME );
     	int sid = serverMap.getStreamId( UInt32.TYPENAME );
@@ -86,15 +87,17 @@ extends TestCase
     
     public void testClientResolutionGetIdName() throws Exception
     {
-       	ReferenceTypeMap serverMap = new ReferenceTypeMap( _library, new TypeMapperDynamic( new TypeMapperCore(new TypeMapperError() )));
+    	TypeMap serverMap = new TypeMap( _library, new TypeMapperDynamic( new TypeMapperCore(new TypeMapperError() )));
+    	serverMap.setReference(TypeMap.REFERENCE_MAP, serverMap);
 		
     	TypeServer typeServer = new TypeServer( _library, serverMap );
     	// client will write to server and expect a response.
     	// server will need to operate on different thread.
     	TestTypeTransport transport = new TestTypeTransport( typeServer );
     	TypeClient typeClient = new TypeClient( _library, transport );
-    	ReferenceTypeMap clientMap = new ReferenceTypeMap( _library, new TypeMapperCore( new DynamicClientTypeMapper( typeClient ) ) );
-    	
+    	TypeMap clientMap = new TypeMap( _library, new TypeMapperCore( new DynamicClientTypeMapper( typeClient ) ) );
+       	clientMap.setReference(TypeMap.REFERENCE_MAP, clientMap);
+            	
     	int cid = clientMap.getStreamId( UInt32.TYPENAME );
     	int sid = serverMap.getStreamId( UInt32.TYPENAME );
     	assertEquals( sid, cid ); 	
@@ -102,13 +105,15 @@ extends TestCase
 
     public void testClientResolutionReverse() throws Exception
     {
-       	ReferenceTypeMap serverMap = new ReferenceTypeMap( _library, new TypeMapperDynamic( new TypeMapperCore(new TypeMapperError() )));
+    	TypeMap serverMap = new TypeMap( _library, new TypeMapperDynamic( new TypeMapperCore(new TypeMapperError() )));
+    	serverMap.setReference(TypeMap.REFERENCE_MAP, serverMap);
 		
     	TypeServer typeServer = new TypeServer( _library, serverMap );
     	TestTypeTransport transport = new TestTypeTransport( typeServer );
     	TypeClient typeClient = new TypeClient( _library, transport );
-    	ReferenceTypeMap clientMap = new ReferenceTypeMap( _library, new TypeMapperCore( new DynamicClientTypeMapper( typeClient ) ) );
-    	
+    	TypeMap clientMap = new TypeMap( _library, new TypeMapperCore( new DynamicClientTypeMapper( typeClient ) ) );
+       	clientMap.setReference(TypeMap.REFERENCE_MAP, clientMap);
+           	
     	serverMap.map( 84, _library.getDefinitionId( Int32.TYPENAME, Int32.VERSION ));
     	int cid = clientMap.getDefinitionId( 84 );
     	int sid = _library.getDefinitionId( Int32.TYPENAME, Int32.VERSION );
@@ -117,13 +122,15 @@ extends TestCase
 
     public void testClientResolutionLibraryId() throws Exception
     {
-       	ReferenceTypeMap serverMap = new ReferenceTypeMap( _library, new TypeMapperDynamic( new TypeMapperCore(new TypeMapperError() )));
-   	
+    	TypeMap serverMap = new TypeMap( _library, new TypeMapperDynamic( new TypeMapperCore(new TypeMapperError() )));
+    	serverMap.setReference(TypeMap.REFERENCE_MAP, serverMap);
+
     	TypeServer typeServer = new TypeServer( _library, serverMap );
     	TestTypeTransport transport = new TestTypeTransport( typeServer );
     	TypeClient typeClient = new TypeClient( _library, transport );
-    	ReferenceTypeMap clientMap = new ReferenceTypeMap( _library, new TypeMapperCore( new DynamicClientTypeMapper( typeClient ) ) );
-    	
+    	TypeMap clientMap = new TypeMap( _library, new TypeMapperCore( new DynamicClientTypeMapper( typeClient ) ) );
+       	clientMap.setReference(TypeMap.REFERENCE_MAP, clientMap);
+          	
     	int cid = clientMap.getStreamId( _library.getDefinitionId( UInt32.TYPENAME, UInt32.VERSION));
     	int sid = serverMap.getStreamId( _library.getDefinitionId(UInt32.TYPENAME, UInt32.VERSION));
     	assertEquals( sid, cid );    	
@@ -131,13 +138,13 @@ extends TestCase
 
     public void testClientResolutionReader() throws Exception
     {
-       	ReferenceTypeMap serverMap = new ReferenceTypeMap( _library, new TypeMapperDynamic( new TypeMapperCore(new TypeMapperError() )));
-   	
+    	TypeMap serverMap = new TypeMap( _library, new TypeMapperDynamic( new TypeMapperCore(new TypeMapperError() )));
+  	
     	TypeServer typeServer = new TypeServer( _library, serverMap );
     	TestTypeTransport transport = new TestTypeTransport( typeServer );
     	TypeClient typeClient = new TypeClient( _library, transport );
-    	ReferenceTypeMap clientMap = new ReferenceTypeMap( _library, new TypeMapperCore( new DynamicClientTypeMapper( typeClient ) ) );
-    	
+    	TypeMap clientMap = new TypeMap( _library, new TypeMapperCore( new DynamicClientTypeMapper( typeClient ) ) );
+  	
     	TypeReader cReader = clientMap.getReader( clientMap.getStreamId( UInt8.TYPENAME ) );
     	TypeReader sReader = serverMap.getReader( serverMap.getStreamId( UInt8.TYPENAME ) );
     	assertEquals( cReader, sReader );    	
@@ -145,13 +152,13 @@ extends TestCase
 
     public void testClientResolutionWriter() throws Exception
     {
-       	ReferenceTypeMap serverMap = new ReferenceTypeMap( _library, new TypeMapperDynamic( new TypeMapperCore(new TypeMapperError() )));
-   	
+    	TypeMap serverMap = new TypeMap( _library, new TypeMapperDynamic( new TypeMapperCore(new TypeMapperError() )));
+ 	
     	TypeServer typeServer = new TypeServer( _library, serverMap );
     	TestTypeTransport transport = new TestTypeTransport( typeServer );
     	TypeClient typeClient = new TypeClient( _library, transport );
-    	ReferenceTypeMap clientMap = new ReferenceTypeMap( _library, new TypeMapperCore( new DynamicClientTypeMapper( typeClient ) ) );
-    	
+    	TypeMap clientMap = new TypeMap( _library, new TypeMapperCore( new DynamicClientTypeMapper( typeClient ) ) );
+  	
     	TypeWriter cWriter = clientMap.getWriter( clientMap.getStreamId( UInt8.TYPENAME ) );
     	TypeWriter sWriter = serverMap.getWriter( serverMap.getStreamId( UInt8.TYPENAME ) );
     	assertEquals( cWriter, sWriter );    	    	
@@ -159,7 +166,7 @@ extends TestCase
     
     public void testProcessServiceMessage() throws Exception
     {
-    	ReferenceTypeMap serverMap = new ReferenceTypeMap( _library, new TypeMapperDynamic( new TypeMapperError() ) );
+    	TypeMap serverMap = new TypeMap( _library, new TypeMapperDynamic( new TypeMapperCore(new TypeMapperError() )));
     	TestService service = new TestService();
     	TypeServer typeServer = new TypeServer( _library, serverMap, service );
     	TestTypeTransport transport = new TestTypeTransport( typeServer );

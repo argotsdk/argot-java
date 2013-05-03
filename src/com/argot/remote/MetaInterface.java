@@ -31,12 +31,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import com.argot.ReferenceTypeMap;
 import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
 import com.argot.TypeLibrary;
 import com.argot.TypeLocation;
+import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeRelation;
@@ -57,12 +57,12 @@ implements MetaDefinition, TypeRelation
 	public static final String VERSION = "1.3";
 	
 	// TODO Need a two way map here.
-	private HashMap _methodToMetaMethod;
-	private HashMap _metaMethodToMethod;
+	private HashMap<Method,MetaMethod> _methodToMetaMethod;
+	private HashMap<MetaMethod,Method> _metaMethodToMethod;
 	
-	private HashMap _nameToMetaMethod;
+	private HashMap<String,MetaMethod> _nameToMetaMethod;
 	
-	private HashMap _relations;
+	private HashMap<String,Integer> _relations;
 
 	private int[] _parentInterfaceTypes;
 	private MetaInterface[] _parentInterfaces;
@@ -71,10 +71,10 @@ implements MetaDefinition, TypeRelation
 	{
 		_parentInterfaceTypes = new int[0];
 		_parentInterfaces = new MetaInterface[0];
-		_nameToMetaMethod = new HashMap();
-		_methodToMetaMethod = new HashMap();
-		_metaMethodToMethod = new HashMap();
-		_relations = new HashMap();
+		_nameToMetaMethod = new HashMap<String,MetaMethod>();
+		_methodToMetaMethod = new HashMap<Method,MetaMethod>();
+		_metaMethodToMethod = new HashMap<MetaMethod,Method>();
+		_relations = new HashMap<String,Integer>();
 	}	
 	
 	public MetaInterface( Object[] interfaces )
@@ -91,7 +91,7 @@ implements MetaDefinition, TypeRelation
 		}
 	}
 
-	public MetaInterface( List interfaces )
+	public MetaInterface( List<Integer> interfaces )
 	{
 		this( interfaces.toArray() );
 	}
@@ -125,7 +125,7 @@ implements MetaDefinition, TypeRelation
 		
 		// bind the java methods to MetaMethods.
 		// If no class is bound then do nothing.
-		Class clss;
+		Class<?> clss;
 		try 
 		{
 			clss = library.getClass(memberTypeId);
@@ -178,7 +178,7 @@ implements MetaDefinition, TypeRelation
 		_nameToMetaMethod.put( method.getMethodName(), method );
 	}
 	
-	public Iterator getMetaMethodIterator()
+	public Iterator<MetaMethod> getMetaMethodIterator()
 	{
 		return _nameToMetaMethod.values().iterator();
 	}
@@ -188,10 +188,10 @@ implements MetaDefinition, TypeRelation
 		return _parentInterfaceTypes;
 	}
 
-	private void bindMethods( TypeLibrary library, Class clss ) 
+	private void bindMethods( TypeLibrary library, Class<?> clss ) 
 	throws TypeException
 	{
-		Iterator iter = _nameToMetaMethod.values().iterator();
+		Iterator<MetaMethod> iter = _nameToMetaMethod.values().iterator();
 		while ( iter.hasNext() )
 		{
 			Object o = iter.next();
@@ -209,14 +209,14 @@ implements MetaDefinition, TypeRelation
 	 * @param request
 	 * @throws SomException
 	 */
-	private Method findMethod( TypeLibrary library, Class proxyClass, MetaMethod metaMethod )
+	private Method findMethod( TypeLibrary library, Class<?> proxyClass, MetaMethod metaMethod )
 	throws TypeException
 	{
 		String name = metaMethod.getMethodName();
 		MetaParameter[] requestTypes = metaMethod.getRequestTypes();
 		
 		// Setup the objects used to invoke the request.
-		Class[] args = new Class[ metaMethod.getRequestTypes().length ];
+		Class<?>[] args = new Class[ metaMethod.getRequestTypes().length ];
 		
 		// Pop the args back into the Arrays from the Request.
 		for ( int x = 0 ; x < metaMethod.getRequestTypes().length ; x++ )
@@ -227,6 +227,7 @@ implements MetaDefinition, TypeRelation
 			}
 			catch( TypeException e)
 			{
+				@SuppressWarnings("unused")
 				MetaName filedType = library.getName(requestTypes[x].getParamType());
 				throw new TypeException("Failed to bind method: " + metaMethod.getMethodName() + " arg: " + (x+1), e);
 			}
@@ -254,7 +255,7 @@ implements MetaDefinition, TypeRelation
 					continue;
 					
 				// Now check we have the same parameter length
-				Class[] paramTypes = methods[y].getParameterTypes();
+				Class<?>[] paramTypes = methods[y].getParameterTypes();
 				if ( paramTypes.length != requestTypes.length )
 					continue;
 
@@ -336,14 +337,14 @@ implements MetaDefinition, TypeRelation
 		public Object read(TypeInputStream in) 
 		throws TypeException, IOException 
 		{		
-			ReferenceTypeMap mapCore = (ReferenceTypeMap) in.getTypeMap();
+			TypeMap refMap = (TypeMap) in.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
 			
 			Short size = (Short) in.readObject( UInt8.TYPENAME );
 			int interfaces[] = new int[size.intValue()];
 			for ( int x=0; x<size.intValue(); x++ )
 			{
 				Integer id = (Integer) in.readObject( UInt16.TYPENAME );
-				interfaces[x] = mapCore.referenceMap().getDefinitionId( id.intValue() );
+				interfaces[x] = refMap.getDefinitionId( id.intValue() );
 			}
 			
 			return new MetaInterface( interfaces );
@@ -357,14 +358,14 @@ implements MetaDefinition, TypeRelation
 		throws TypeException, IOException 
 		{
 			MetaInterface mc = (MetaInterface) o;
-			ReferenceTypeMap mapCore = (ReferenceTypeMap) out.getTypeMap();
+			TypeMap refMap = (TypeMap) out.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
 			
 			if ( mc.getInterfaces() != null )
 			{
 				out.writeObject( UInt8.TYPENAME, new Integer( mc.getInterfaces().length ));
 				for( int x=0 ;x < mc.getInterfaces().length; x++ )
 				{
-					int id = mapCore.referenceMap().getStreamId( mc.getInterfaces()[x]);
+					int id = refMap.getStreamId( mc.getInterfaces()[x]);
 					out.writeObject( UInt16.TYPENAME, new Integer(id) );
 				}
 			}

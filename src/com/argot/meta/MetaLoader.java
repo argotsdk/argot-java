@@ -36,9 +36,7 @@ import com.argot.auto.TypeBeanMarshaller;
 import com.argot.auto.TypeReaderAuto;
 import com.argot.auto.TypeSimpleReader;
 import com.argot.auto.TypeSimpleWriter;
-import com.argot.common.Empty;
 import com.argot.common.U8Utf8;
-import com.argot.common.UInt16;
 import com.argot.common.UInt8;
 import com.argot.common.UVInt28;
 import com.argot.dictionary.Dictionary;
@@ -60,6 +58,7 @@ implements TypeLibraryLoader
 		int id;
 		
 		// 1. baseId
+		@SuppressWarnings("unused")
 		int baseGroupId = library.register( new DictionaryBase( ), new MetaCluster() );
 		
 		// 2. uint8
@@ -68,6 +67,7 @@ implements TypeLibraryLoader
 		int uvint28Id = library.register( new DictionaryName( library, UVInt28.TYPENAME), new MetaIdentity() );  
 
 		// 4. meta group
+		@SuppressWarnings("unused")
 		int metaClusterId = library.register( new DictionaryName(library,"meta"),  new MetaCluster() );
 		
 		// 5. meta.id		
@@ -107,6 +107,7 @@ implements TypeLibraryLoader
 		// 21. meta.atom_attribute
 		int metaFixedWidthAttributeId = library.register( new DictionaryName( library, MetaAtomAttribute.TYPENAME ), new MetaIdentity() );
 		// 22. meta.attribute cluster
+		@SuppressWarnings("unused")
 		int metaAtomAttributeClusterId = library.register( new DictionaryName( library, "meta.attribute"), new MetaCluster() );
 		// 23. meta.attribute.size
 		int metaFixedWidthAttributeSizeId = library.register( new DictionaryName( library, MetaAtomAttributeSize.TYPENAME ), new MetaIdentity() );
@@ -117,6 +118,7 @@ implements TypeLibraryLoader
 		// 26. meta.attribute.bigendian
 		int metaFixedWidthAttributeBigEndianId = library.register( new DictionaryName( library, MetaAtomAttributeBigEndian.TYPENAME ), new MetaIdentity() );
 		// 27. dictionary cluster
+		@SuppressWarnings("unused")
 		int dictionaryClusterId = library.register( new DictionaryName( library, "dictionary"), new MetaCluster() );
 		// 28. dictionary.base
 		int dictionaryBaseId = library.register( new DictionaryName( library, DictionaryBase.TYPENAME), new MetaIdentity() );

@@ -25,8 +25,6 @@
  */
 package com.argot;
 
-import com.argot.meta.MetaName;
-
 public interface TypeLocationBase 
 extends TypeLocation
 {

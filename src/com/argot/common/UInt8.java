@@ -59,7 +59,7 @@ implements TypeReader, TypeWriter
 		{
 			int b = ((Integer) o).intValue();
 			if ( b < 0 || b > MAX )
-				throw new TypeException( "U8B: out of range: " + b );
+				throw new TypeException( "uint8: out of range: " + b );
 				
 			out.getStream().write( b );
 		}
@@ -67,7 +67,7 @@ implements TypeReader, TypeWriter
 		{
 			int b = ((Short) o).intValue();
 			if ( b < 0 || b > MAX )
-				throw new TypeException( "U8B: out of range: " + b );
+				throw new TypeException( "uint8: out of range: " + b );
 
 			out.getStream().write( b );
 		}
@@ -75,7 +75,7 @@ implements TypeReader, TypeWriter
 		{
 			int b = ((Byte)o).intValue();
 			if ( b < MIN || b > MAX )
-				throw new TypeException( "U8B: out of range: " + b );
+				throw new TypeException( "uint8: out of range: " + b );
 				
 			out.getStream().write( b );
 		}

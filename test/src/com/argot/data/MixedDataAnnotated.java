@@ -26,15 +26,10 @@
 
 package com.argot.data;
 
-import java.io.IOException;
-
 import com.argot.TypeException;
 import com.argot.TypeLibrary;
-import com.argot.TypeLibraryWriter;
-import com.argot.TypeMap;
-import com.argot.TypeOutputStream;
-import com.argot.TypeWriter;
-import com.argot.auto.TypeReaderAuto;
+import com.argot.auto.ArgotTag;
+import com.argot.auto.TypeAnnotationMarshaller;
 import com.argot.meta.DictionaryDefinition;
 import com.argot.meta.DictionaryName;
 import com.argot.meta.MetaExpression;
@@ -49,22 +44,33 @@ import com.argot.meta.MetaVersion;
 /*
  * A simple mixed data used for testing purposes.
  */
-public class MixedData 
+
+public class MixedDataAnnotated 
 {
 	public static final String TYPENAME = "mixeddata";
 	public static final String VERSION = "1.0";
 	
-	private int _anInt;
-	private short _aShort;
-	private String _anAscii;
+	@ArgotTag("uint16")
+	public int _anInt;
 	
-	public MixedData( int anInt, short aShort, String anAscii )
+	@ArgotTag("uint8")
+	public short _aShort;
+	
+	@ArgotTag("u8ascii")
+	public String _anAscii;
+	
+	public MixedDataAnnotated()
 	{
-		_anInt = anInt;
-		_aShort = aShort;
-		_anAscii = anAscii;
+		this(0,(short)0,"");
 	}
 	
+	public MixedDataAnnotated(int i, short s, String string)
+	{
+		_anInt = i;
+		_aShort = s;
+		_anAscii = string;
+	}
+
 	public int getInt()
 	{
 		return _anInt;
@@ -80,24 +86,7 @@ public class MixedData
 		return _anAscii;
 	}
 	
-	public static class MixedDataWriter
-	implements TypeLibraryWriter,TypeWriter
-	{
-		public void write(TypeOutputStream out, Object o) 
-		throws TypeException, IOException 
-		{
-			MixedData data = (MixedData) o;
-			out.writeObject("uint16", new Integer( data._anInt ));
-			out.writeObject("uint8", new Short( data._aShort ));
-			out.writeObject("u8ascii", data._anAscii );
-		}
-		
-		public TypeWriter getWriter(TypeMap map) 
-		throws TypeException 
-		{
-			return this;
-		}		
-	}
+
 
 	/*
 	 * This should be contained in a dictionary file instead
@@ -109,7 +98,7 @@ public class MixedData
 		int id = library.register( new DictionaryName(MetaName.parseName(library,TYPENAME)), new MetaIdentity() );
 		
 		return library.register( 
-				new DictionaryDefinition(id, MetaName.parseName(library,TYPENAME), MetaVersion.parseVersion("1.0")),
+				new DictionaryDefinition(id, MetaName.parseName(library,TYPENAME), MetaVersion.parseVersion(VERSION)),
 				new MetaSequence(
 					new MetaExpression[]{
 					    new MetaTag( "uint16", new MetaReference( library.getTypeId("uint16"))),
@@ -117,9 +106,9 @@ public class MixedData
 					    new MetaTag( "u8ascii", new MetaReference( library.getTypeId("u8ascii")))
 					}
 				),
-			new TypeReaderAuto( MixedData.class ),
-			new MixedDataWriter(),
-			MixedData.class
+			new TypeAnnotationMarshaller(),
+			new TypeAnnotationMarshaller(),
+			MixedDataAnnotated.class
 		);
 	}
 }

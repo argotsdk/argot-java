@@ -56,11 +56,11 @@ public class TypeLibrary
     
     public static final String[] typeStates = {"Type not defined","type reserved","type registered","type complete"};
     
-	private ArrayList _types;    // index(nameId) to TypeNameEntry
+	private ArrayList<TypeDefinitionEntry> _types;    // index(nameId) to TypeNameEntry
 	
-	private HashMap _names;  // name to TypeNameEntry
+	private HashMap<String,TypeDefinitionEntry> _names;  // name to TypeNameEntry
 
-	private HashMap _classes;  // class to TypeDefinitionEntry
+	private HashMap<Class<?>,List<TypeDefinitionEntry>> _classes;  // class to TypeDefinitionEntry
 	
 	//private TreeItem _tree;
 	private MetaCluster _tree;
@@ -74,7 +74,7 @@ public class TypeLibrary
 		public String version;
 		public TypeLibraryReader reader;
 		public TypeLibraryWriter writer;
-		public Class clss;
+		public Class<?> clss;
 		public TypeLocation location;
 		public TypeElement structure;
 		public boolean isSimple;
@@ -86,9 +86,9 @@ public class TypeLibrary
 		System.out.println("Copyright 2003-2010 (C) Live Media Pty Ltd.");
 		System.out.println("www.einet.com.au\n");
 		
-		_types = new ArrayList();
-		_names = new HashMap();
-		_classes = new HashMap();
+		_types = new ArrayList<TypeDefinitionEntry>();
+		_names = new HashMap<String,TypeDefinitionEntry>();
+		_classes = new HashMap<Class<?>,List<TypeDefinitionEntry>>();
 		_tree = null;
 		_primed = false;
 	}
@@ -115,16 +115,16 @@ public class TypeLibrary
 		_primed = true;
 	}
 	
-	private void addClass( TypeDefinitionEntry definition, Class clss)
+	private void addClass( TypeDefinitionEntry definition, Class<?> clss)
 	throws TypeException
 	{
-        List list = (List) _classes.get( clss);
+        List<TypeDefinitionEntry> list =  _classes.get( clss);
         if ( list == null )
         {
-        	list = new ArrayList();
+        	list = new ArrayList<TypeDefinitionEntry>();
         	_classes.put(clss, list);
         } else {
-        	Iterator iter = list.iterator();
+        	Iterator<TypeDefinitionEntry> iter = list.iterator();
         	while (iter.hasNext())
         	{
         		TypeDefinitionEntry entry = (TypeDefinitionEntry) iter.next();
@@ -137,12 +137,6 @@ public class TypeLibrary
         }
         list.add( definition );
 		
-	}
-	
-	static private class TreeItem
-	{
-		public MetaCluster cluster;
-		public TypeDefinitionEntry entry;
 	}
 	
 	
@@ -454,7 +448,7 @@ public class TypeLibrary
      * @return
      * @throws TypeException
      */
-	public int register( TypeLocation location, TypeElement structure, TypeLibraryReader reader, TypeLibraryWriter writer, Class clss )
+	public int register( TypeLocation location, TypeElement structure, TypeLibraryReader reader, TypeLibraryWriter writer, Class<?> clss )
 	throws TypeException
 	{
 		// check for valid parameters
@@ -625,7 +619,7 @@ public class TypeLibrary
 	/*
 	 * requires version
 	 */
-	public int bind( int typeId, TypeLibraryReader reader, TypeLibraryWriter writer, Class clss )
+	public int bind( int typeId, TypeLibraryReader reader, TypeLibraryWriter writer, Class<?> clss )
 	throws TypeException
 	{
 	    int state = getTypeState( typeId );
@@ -880,7 +874,7 @@ public class TypeLibrary
 	 * @return
 	 * @throws TypeException
 	 */
-	public Class getClass( int typeId )
+	public Class<?> getClass( int typeId )
 	throws TypeException
 	{
 		if ( !isTypeIdInRange(typeId) )
@@ -903,10 +897,10 @@ public class TypeLibrary
 	 * @throws TypeException
 	 */
 
-	public int[] getId( Class clss )
+	public int[] getId( Class<?> clss )
 	throws TypeException
 	{
-		Class searchClass = clss;
+		Class<?> searchClass = clss;
 		
 		if ( clss.getName().equals( "long") )
 			searchClass = Long.class;
@@ -924,17 +918,17 @@ public class TypeLibrary
 			searchClass = Float.class;	
 		
 			
-		List list = (List) _classes.get( searchClass );
+		List<TypeDefinitionEntry> list = _classes.get( searchClass );
 		if ( list == null )
 			throw new TypeException( "no id for class: " + searchClass.getName() );
 		
 
 		int[] values = new int[list.size()];
-		Iterator iter = list.iterator();
+		Iterator<TypeDefinitionEntry> iter = list.iterator();
 		int x=0;
 		while(iter.hasNext())
 		{
-			values[x] = ((TypeDefinitionEntry) iter.next()).id;
+			values[x] = iter.next().id;
 			x++;
 		}
 		return values;
@@ -946,7 +940,7 @@ public class TypeLibrary
 	 * @param clss
 	 * @throws TypeException
 	 */
-	public void addClassAlias( int typeId, Class clss ) throws TypeException
+	public void addClassAlias( int typeId, Class<?> clss ) throws TypeException
 	{
 		if ( !isTypeIdInRange(typeId) )
 			throw new TypeNotDefinedException( "type id not in range");
@@ -959,7 +953,7 @@ public class TypeLibrary
 	}
 	
 
-    public Set getNames()
+    public Set<String> getNames()
     {
     	return _names.keySet();
     }

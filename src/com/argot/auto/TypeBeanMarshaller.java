@@ -50,7 +50,7 @@ public class TypeBeanMarshaller
 implements TypeLibraryReader, TypeLibraryWriter, TypeBound
 {
 	MetaExpressionResolver _expressionResolver;
-	Class _typeClass;
+	Class<?> _typeClass;
 	Method[] _getMethods;
 	Method[] _setMethods;	
 	MetaSequence _sequence;
@@ -93,7 +93,7 @@ implements TypeLibraryReader, TypeLibraryWriter, TypeBound
 			String method = "get" + firstChar + description.substring(1);
 			try 
 			{
-				Class[] empty = new Class[0];
+				Class<?>[] empty = new Class[0];
 				_getMethods[x] = _typeClass.getDeclaredMethod(method, empty);
 			} 
 			catch (SecurityException e) 
@@ -117,7 +117,7 @@ implements TypeLibraryReader, TypeLibraryWriter, TypeBound
 	 * take the first method with the correct name and one argument.  We assume
 	 * that the argument will match what we read off the wire.
 	 */
-	private Method resolveSetMethod( Class typeClass, String method ) 
+	private Method resolveSetMethod( Class<?> typeClass, String method ) 
 	throws TypeException
 	{
 		Method[] methods = typeClass.getMethods();

@@ -29,7 +29,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import com.argot.dictionary.Dictionary;
-import com.argot.meta.MetaAtom;
 import com.argot.meta.MetaLoader;
 
 import junit.framework.TestCase;
@@ -49,7 +48,8 @@ extends TestCase
     public void testTypeMapCore() throws Exception
     {
 		TypeMap baseMap = new TypeMap( _library, new TypeMapperCore(new TypeMapperError()));
-		ReferenceTypeMap coreMap = new ReferenceTypeMap( _library, new TypeMapperCore(new TypeMapperError()), baseMap);
+		TypeMap coreMap = new TypeMap( _library, new TypeMapperCore(new TypeMapperError()));
+		coreMap.setReference(TypeMap.REFERENCE_MAP, baseMap);
   	
         byte[] core = writeCore(coreMap);
         
@@ -104,39 +104,5 @@ extends TestCase
 		baos1.close();		
 		return baos1.toByteArray();
 	}    
-	
-	private static class CheckArrayOutputStream
-	extends ByteArrayOutputStream
-	{
-		static int blah = 0;
-		@Override
-		public synchronized void write(byte[] b, int off, int len)
-		{
-			for (int x=off; x<len;x++)
-			{
-				if (b[x]==0)
-				{
-					blah++;
-					if (blah==4)
-					{
-						throw new RuntimeException("Attempting to write zero!!");
-					}
-				}
-			}
-			super.write(b, off, len);
-		}
-
-		@Override
-		public synchronized void write(int b)
-		{
-			System.out.println("blah!");
-			if (b==0)
-			{
-				throw new RuntimeException("Attempting to write Zero!!!");
-			}
-			super.write(b);
-		}
-		
-	}
 
 }

@@ -66,20 +66,23 @@ public class TypeMap
 	TwoWayHashMap _map;
 	
 	// mapping between names and stream id.
-	Map _nameMap;
+	Map<String,Integer> _nameMap;
 
 	// mapping between name id and stream id
 	TwoWayHashMap _nameIdMap;
+	
+	// reference map.
+	Map<String,Object> _refMap;
 
 	public int size()
 	{
 		return _map.size();
 	}
 	
-	public List getIdList()
+	public List<Integer> getIdList()
 	{
-		List list = new ArrayList();
-		Iterator i = _map.iterator();
+		List<Integer> list = new ArrayList<Integer>();
+		Iterator<Integer> i = _map.iterator();
 		while ( i.hasNext() )
 		{
 			list.add( i.next() );
@@ -89,11 +92,10 @@ public class TypeMap
 	}
 	
 	private class IntegerComparator
-	implements Comparator
+	implements Comparator<Integer>
 	{
-		public int compare(Object arg0, Object arg1) {
-			Integer i1 = (Integer) arg0;
-			Integer i2 = (Integer) arg1;	
+		public int compare(Integer i1, Integer i2) 
+		{
 			return i1.intValue() - i2.intValue();
 		}	
 	}
@@ -110,8 +112,9 @@ public class TypeMap
 		_library = library;
 		_mapper = mapper;
 		_map = new TwoWayHashMap();
-		_nameMap = new HashMap();
+		_nameMap = new HashMap<String,Integer>();
 		_nameIdMap = new TwoWayHashMap();
+		_refMap = new HashMap<String,Object>();
 		
 		_mapper.initialise(this);
 	}
@@ -245,12 +248,12 @@ public class TypeMap
 	 * @throws TypeException
 	 */
 
-	public int[] getStreamId( Class clss) 
+	public int[] getStreamId( Class<?> clss) 
 	throws TypeException
 	{
 		int[] definitionIds = _library.getId(clss);
 
-		List list = new ArrayList();
+		List<Integer> list = new ArrayList<Integer>();
 		
 		for (int x=0;x<definitionIds.length;x++)
 		{
@@ -435,7 +438,7 @@ public class TypeMap
 		return _library.getStructure( getDefinitionId(streamId) );
 	}
 
-	public Class getClass( int streamId )
+	public Class<?> getClass( int streamId )
 	throws TypeException
 	{
 		return _library.getClass( getDefinitionId(streamId ));
@@ -481,6 +484,22 @@ public class TypeMap
 		public TypeLibraryWriter writer;		
 		public boolean writerBound;
 		public int version;
+	}
+
+	public static final String REFERENCE_MAP = "reference_map";
+	
+	public void setReference(String key, Object value) 
+	throws TypeException
+	{
+		if (key==null) throw new TypeException("Invalid key");
+		if (value==null) throw new TypeException("Invalid value");
+		
+		_refMap.put(key, value);
+	}
+	
+	public Object getReference(String key)
+	{
+		return _refMap.get(key);
 	}
 	
 }

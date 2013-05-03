@@ -39,7 +39,7 @@ implements TypeLibraryReader, TypeBound
 {
 	TypeReaderAuto _auto;
 	
-	public MetaExpressionReaderAuto(Class clss)
+	public MetaExpressionReaderAuto(Class<?> clss)
 	{
 		_auto = new TypeReaderAuto(clss);
 	}

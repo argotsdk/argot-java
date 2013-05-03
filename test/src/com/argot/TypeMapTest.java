@@ -82,15 +82,15 @@ extends TestCase
     	_map.map( 20, _library.getTypeId( MetaTag.TYPENAME, "1.3") );
     	_map.map( 45, _library.getTypeId( MetaSequence.TYPENAME, "1.3") );
     	
-    	Iterator iter = _map.getIdList().iterator();
+    	Iterator<Integer> iter = _map.getIdList().iterator();
     	
-    	Integer i = (Integer) iter.next();
+    	Integer i = iter.next();
     	assertEquals( 20, i.intValue() );
 
-    	i = (Integer) iter.next();
+    	i = iter.next();
     	assertEquals( 34, i.intValue() );
 
-    	i = (Integer) iter.next();
+    	i = iter.next();
     	assertEquals( 45, i.intValue() );
     	
     	assertFalse( iter.hasNext() );

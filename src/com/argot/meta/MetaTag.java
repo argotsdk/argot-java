@@ -36,7 +36,6 @@ import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
-import com.argot.common.U8Ascii;
 import com.argot.common.U8Utf8;
 
 public class MetaTag

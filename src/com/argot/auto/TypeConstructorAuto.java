@@ -36,10 +36,10 @@ import com.argot.TypeStreamException;
 public class TypeConstructorAuto 
 implements TypeConstructor
 {
-	private Class _clss;
-	private Constructor _constructor;
+	private Class<?> _clss;
+	private Constructor<?> _constructor;
 	
-	public TypeConstructorAuto( Class clss )
+	public TypeConstructorAuto( Class<?> clss )
 	{
 		_clss = clss;
 		_constructor = null;
@@ -85,7 +85,7 @@ implements TypeConstructor
     private void resolveConstructor(Object[] objects)
     throws TypeException
     {    
-		Constructor constructors[] = _clss.getConstructors();
+		Constructor<?> constructors[] = _clss.getConstructors();
 
 		// Loop through all the constructors on the class.
 		for ( int x=0; x < constructors.length; x++ )
@@ -96,7 +96,7 @@ implements TypeConstructor
 			
 			// Assume the parameters are the same until we find a parameter that doesn't match.
 			boolean found = true;
-			Class[] paramTypes = constructors[x].getParameterTypes();
+			Class<?>[] paramTypes = constructors[x].getParameterTypes();
 			for ( int y=0; y < paramTypes.length; y++ )
 			{
 				// If a parameter is null we must assume that this constructor is ok.

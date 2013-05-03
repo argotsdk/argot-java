@@ -34,13 +34,13 @@ import com.argot.meta.MetaDefinition;
 
 public final class TypeHelper
 {
-	public static byte[] toByteArray( ReferenceTypeMap core , TypeElement definition )
+	public static byte[] toByteArray( TypeMap core , TypeElement definition )
 	throws TypeException
 	{
 		return resolveStructure( core, definition );
 	}
 	
-	public static boolean structureMatches( ReferenceTypeMap core, TypeElement definition1, byte[] definition2 )
+	public static boolean structureMatches( TypeMap core, TypeElement definition1, byte[] definition2 )
 	{
 		try
 		{
@@ -54,7 +54,7 @@ public final class TypeHelper
 		}	    
 	}
 	
-	public static boolean structureMatches( ReferenceTypeMap core, TypeElement definition1, TypeElement definition2 )
+	public static boolean structureMatches( TypeMap core, TypeElement definition1, TypeElement definition2 )
 	{
 		try
 		{
@@ -70,7 +70,7 @@ public final class TypeHelper
 		}
 	}
 	
-	private static byte[] resolveStructure( ReferenceTypeMap refMap, TypeElement definition )
+	private static byte[] resolveStructure( TypeMap refMap, TypeElement definition )
 	throws TypeException
 	{
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -98,7 +98,7 @@ public final class TypeHelper
 	 * This is like the register version below, however in some cases
 	 * like a protocol you just need to check if the id's are the same.
 	 */
-	public static void isSame( int id, TypeLocation location, byte[] structure, ReferenceTypeMap coreMap )
+	public static void isSame( int id, TypeLocation location, byte[] structure, TypeMap coreMap )
 	throws TypeException
 	{
 		TypeLibrary library = coreMap.getLibrary();
@@ -125,7 +125,7 @@ public final class TypeHelper
 		}
 	}
 
-	public static TypeElement readStructure( ReferenceTypeMap core, byte[] structure )
+	public static TypeElement readStructure( TypeMap core, byte[] structure )
 	throws TypeException
 	{
 		ByteArrayInputStream bais = new ByteArrayInputStream( structure );

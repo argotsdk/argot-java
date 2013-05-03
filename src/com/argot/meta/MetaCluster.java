@@ -39,12 +39,12 @@ implements MetaDefinition
 {
 	public static final String TYPENAME = "meta.cluster";
 	
-	private Map _cluster;
+	private Map<String,Object> _cluster;
 	private Object _entry;
 	
 	public MetaCluster()
 	{
-		_cluster = new HashMap();
+		_cluster = new HashMap<String,Object>();
 
 	}
 	

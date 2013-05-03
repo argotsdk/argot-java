@@ -48,7 +48,7 @@ implements TypeBound,TypeLibraryReader
 	private TypeConstructor _constructor;
 	private MetaSequence _metaSequence;
 	
-	public TypeReaderAuto( Class clss )
+	public TypeReaderAuto( Class<?> clss )
 	{
 		_resolver = new MetaExpressionLibraryResolver();
 		_constructor = new TypeConstructorAuto( clss );

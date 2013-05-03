@@ -48,8 +48,6 @@ import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeRelation;
 import com.argot.TypeWriter;
-import com.argot.auto.TypeArrayMarshaller;
-import com.argot.common.UInt16;
 import com.argot.common.UInt8;
 import com.argot.common.UVInt28;
 
@@ -60,14 +58,14 @@ implements MetaDefinition, TypeRelation
     public static final String TYPENAME = "meta.abstract";
 	public static final String VERSION = "1.3";
 
-	private Map _concreteToMap;
+	private Map<Integer,MetaMap> _concreteToMap;
 	//private Map _mapToConcrete;
-	private Map _relationMap;
+	private Map<String,Integer> _relationMap;
 	
 	private MetaAbstractMap _defaultMappings[];
 	
 	// This keeps a list of any abstract types we've mapped.
-	private List _abstractParentMap;
+	private List<MetaAbstract> _abstractParentMap;
 	
 	private class MetaMap
 	{
@@ -77,10 +75,10 @@ implements MetaDefinition, TypeRelation
 	
 	public MetaAbstract()
 	{
-		_concreteToMap = new HashMap();
+		_concreteToMap = new HashMap<Integer,MetaMap>();
 		//_mapToConcrete = new HashMap();
-		_relationMap = new HashMap();
-		_abstractParentMap = new ArrayList();
+		_relationMap = new HashMap<String,Integer>();
+		_abstractParentMap = new ArrayList<MetaAbstract>();
 		_defaultMappings = null;
 	}
 	
@@ -131,19 +129,26 @@ implements MetaDefinition, TypeRelation
         return TYPENAME;
     }
     
-    public Map getConcreteToMap()
-    {
-    	return _concreteToMap;
-    }
+	
+	public int getConcreteId(int id)
+	{
+		MetaMap m = _concreteToMap.get(id);
+		if (m == null ) return -1;
+		return m.mapTypeId;
+	}
+ //   public Map<Integer,MetaMap> getConcreteToMap()
+ //   {
+ //   	return _concreteToMap;
+ //   }
 
     public void addAbstractMap( MetaAbstract parent )
     {
     	_abstractParentMap.add( parent );
     	
-    	Iterator i = _concreteToMap.keySet().iterator();
+    	Iterator<Integer> i = _concreteToMap.keySet().iterator();
     	while( i.hasNext())
     	{
-    		Integer c = (Integer) i.next();
+    		Integer c = i.next();
     		MetaMap m = (MetaMap) _concreteToMap.get(c);
     		
     		parent.addMap( c.intValue(), m.mapTypeId, m.isHidden);
@@ -159,10 +164,10 @@ implements MetaDefinition, TypeRelation
 		
 		_concreteToMap.put( new Integer( concreteType ), metaMap);
 		
-    	Iterator i = _abstractParentMap.iterator();
+    	Iterator<MetaAbstract> i = _abstractParentMap.iterator();
     	while( i.hasNext())
     	{
-    		MetaAbstract p = (MetaAbstract) i.next();
+    		MetaAbstract p = i.next();
     		
     		p.addMap( concreteType, mapType, isHidden);
     	}		
@@ -267,13 +272,13 @@ implements MetaDefinition, TypeRelation
 	{
 		private MetaAbstract _metaAbstract;
 		private TypeReader _uvint28;
-		private Map _mapCache;
+		private Map<Integer,TypeReader> _mapCache;
 		
 		public MetaAbstractReader(MetaAbstract metaAbstract, TypeReader uvint28)
 		{
 			_metaAbstract = metaAbstract;
 			_uvint28 = uvint28;
-			_mapCache = new HashMap();
+			_mapCache = new HashMap<Integer,TypeReader>();
 		}
 		
 		public Object read(TypeInputStream in)
@@ -335,19 +340,19 @@ implements MetaDefinition, TypeRelation
     {
     	private MetaAbstract _metaAbstract;
     	private TypeWriter _uvint28;
-		private Map _mapCache;
+		private Map<Class<?>,CacheEntry> _mapCache;
 		
     	public MetaAbstractWriter(MetaAbstract metaAbstract, TypeWriter uvint28)
     	{
     		_metaAbstract = metaAbstract;
     		_uvint28 = uvint28;
-    		_mapCache = new HashMap();
+    		_mapCache = new HashMap<Class<?>,CacheEntry>();
     	}
     	
 		public void write(TypeOutputStream out, Object o)
 		throws TypeException, IOException 
 		{
-			Class clss = o.getClass();
+			Class<?> clss = o.getClass();
 			CacheEntry entry = (CacheEntry) _mapCache.get(clss);
 			if (entry == null )
 			{
@@ -358,7 +363,7 @@ implements MetaDefinition, TypeRelation
 			entry.idWriter.write(out, o);
 		}
     	
-		private CacheEntry mapType(TypeMap map, Class clss)
+		private CacheEntry mapType(TypeMap map, Class<?> clss)
 		throws TypeException
 		{
 			// assumes class is bound to definition, not identity.

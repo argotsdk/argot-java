@@ -120,7 +120,7 @@ implements TypeMapper
 		_map.getStreamId(name.getGroup());
 		
 		MetaIdentity metaName = (MetaIdentity) elemStructure;
-		Iterator iter = metaName.getVersions().iterator();
+		Iterator<MetaVersion> iter = metaName.getVersions().iterator();
 		if (!iter.hasNext())
 			throw new TypeException("Type has no versions " + name  );
 		

@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.argot.ReferenceTypeMap;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
 import com.argot.TypeLocation;
@@ -49,7 +48,7 @@ public class TypeClient
 implements TypeTransport
 {
 	private TypeTransport _link;
-	private ReferenceTypeMap _typeMap;
+	private TypeMap _typeMap;
 	private TypeMap _linkMap;
 	private TypeWriter _uint8;
 
@@ -57,13 +56,14 @@ implements TypeTransport
 	throws TypeException
 	{
 		_link = link;
-		_typeMap = new ReferenceTypeMap( library, new ProtocolTypeMapper() );
+		_typeMap = new TypeMap( library, new ProtocolTypeMapper() );
 		_uint8 = library.getWriter(library.getDefinitionId("uint8","1.3")).getWriter(_typeMap);
 	}
 
 	public void initialise(TypeMap map)
+	throws TypeException
 	{
-		_typeMap.setReferenceMap(map);
+		_typeMap.setReference( TypeMap.REFERENCE_MAP,map);
 		_linkMap = map;
 	}
 	
@@ -330,7 +330,10 @@ implements TypeTransport
 			
 			TypeInputStream tmis = new TypeInputStream( endPoint.getInputStream(), _typeMap );
 			Short type = (Short) tmis.readObject( UInt8.TYPENAME );
-			if ( type.intValue() != ProtocolTypeMapper.MAPREV )throw new TypeException("Unable to resolve reverse id: " + id);		
+			if ( type.intValue() != ProtocolTypeMapper.MAPREV )
+			{
+				throw new TypeException("Unable to resolve reverse id: " + id + " result:" + type);		
+			}
 			TypeLocation location = (TypeLocation) tmis.readObject( DictionaryLocation.TYPENAME );
 			byte[] definition = (byte[]) tmis.readObject( "u16binary" );
 			

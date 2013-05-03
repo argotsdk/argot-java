@@ -32,13 +32,13 @@ extends TypeException
 {
 	private static final long serialVersionUID = 2156978146821573623L;
 	
-	private Stack _stack;
+	private Stack<String> _stack;
 	
 	public TypeStreamException( String reason )
 	{
 		super(reason);
 		
-		_stack = new Stack();
+		_stack = new Stack<String>();
 		_stack.push( reason );
 	}
 
@@ -46,7 +46,7 @@ extends TypeException
 	{
 		super(reason,cause);
 
-		_stack = new Stack();
+		_stack = new Stack<String>();
 		_stack.push( reason );
 	}
 	

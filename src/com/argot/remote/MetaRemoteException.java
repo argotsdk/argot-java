@@ -71,13 +71,22 @@ public class MetaRemoteException
 		{
 			// the elements are wrapped in a sequence array.
 			Object[] stackTrace = (Object[]) parameters[0];
+
+			// To keep a local exception, create another exception in the chain
+			// and swap the stack trace.  Local stack trace first, then remote.
+			Throwable localException = new Exception("Remote", (Throwable) stackTrace[1]);
+			StackTraceElement[] localStack = localException.getStackTrace();
 			
 			Object[] exceptionParams = new Object[2];
 			exceptionParams[0] = stackTrace[0];
-			exceptionParams[1] = stackTrace[1];
+			exceptionParams[1] = localException;
 			
 			Throwable ex = (Throwable) _autoConstructor.construct(sequence, exceptionParams);
-			ex.setStackTrace(convertStackTrace((Object[]) stackTrace[2]));
+			ex.setStackTrace(localStack);
+			
+			localException.setStackTrace(convertStackTrace((Object[]) stackTrace[2]));
+			
+			
 			return ex;
 		}
 		

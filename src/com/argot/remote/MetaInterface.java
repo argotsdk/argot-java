@@ -196,9 +196,13 @@ implements MetaDefinition, TypeRelation
 		{
 			Object o = iter.next();
 			MetaMethod metaMethod = (MetaMethod) o;
-			Method method = findMethod( library, clss, metaMethod );
-			_methodToMetaMethod.put( method, metaMethod );
-			_metaMethodToMethod.put( metaMethod, method );
+			try {
+				Method method = findMethod( library, clss, metaMethod );
+				_methodToMetaMethod.put( method, metaMethod );
+				_metaMethodToMethod.put( metaMethod, method );
+			} catch (Exception e) {
+				System.err.println("WARNING: " + e.getMessage());
+			}
 		}
 	}
 	

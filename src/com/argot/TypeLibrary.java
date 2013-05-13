@@ -31,8 +31,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.argot.auto.ArgotMarshaller;
+import com.argot.auto.ArgotMarshaller.Marshaller;
+import com.argot.auto.TypeAnnotationMarshaller;
+import com.argot.auto.TypeBeanMarshaller;
+import com.argot.common.CommonLoader;
+import com.argot.dictionary.DictionaryLoader;
 import com.argot.meta.MetaCluster;
+import com.argot.meta.MetaExtensionLoader;
 import com.argot.meta.MetaIdentity;
+import com.argot.meta.MetaLoader;
 import com.argot.meta.MetaName;
 import com.argot.meta.MetaVersion;
 
@@ -81,10 +89,38 @@ public class TypeLibrary
 	}
 	
 	public TypeLibrary()
+	throws TypeException
+	{
+		init();
+		loadBaseTypes();
+	}
+	
+
+	
+	public TypeLibrary( boolean loadBaseTypes )
+	throws TypeException
+	{
+		init();
+		
+		if (loadBaseTypes)
+		{
+			loadBaseTypes();
+		}
+	}
+	
+	public TypeLibrary( TypeLibraryLoader[] loaders )
+	throws TypeException
+	{
+		init();
+		
+		loadLibraries(loaders);
+	}
+	
+	private void init()
 	{
 		System.out.println("\nArgot Version 1.3.b");
-		System.out.println("Copyright 2003-2010 (C) Live Media Pty Ltd.");
-		System.out.println("www.einet.com.au\n");
+		System.out.println("Copyright 2003-2013 (C) Live Media Pty Ltd.");
+		System.out.println("www.argot-sdk.org\n");
 		
 		_types = new ArrayList<TypeDefinitionEntry>();
 		_names = new HashMap<String,TypeDefinitionEntry>();
@@ -92,18 +128,30 @@ public class TypeLibrary
 		_tree = null;
 		_primed = false;
 	}
-
-	public TypeLibrary( TypeLibraryLoader[] loaders )
+	
+	private void loadBaseTypes()
 	throws TypeException
 	{
-		this();
+		TypeLibraryLoader libraryLoaders[] = 
+		{
+				new MetaLoader(),
+				new MetaExtensionLoader(),
+				new DictionaryLoader(),
+				new CommonLoader()
+		};
 		
+		loadLibraries( libraryLoaders );
+	}
+
+	public void loadLibraries( TypeLibraryLoader[] loaders )
+	throws TypeException
+	{
 		for(int x=0;x<loaders.length;x++)
 		{
 			loadLibrary(loaders[x]);
 		}
 	}
-
+	
 	public void loadLibrary( TypeLibraryLoader loader ) 
 	throws TypeException
 	{
@@ -654,6 +702,25 @@ public class TypeLibrary
 	    return def.id;
 	}
 
+	public int bind( int typeId, Class<?> clss )
+	throws TypeException
+	{
+		ArgotMarshaller marshallerType = clss.getAnnotation(ArgotMarshaller.class);
+		if (marshallerType == null )
+		{
+			throw new TypeException("Error: ArgotMarshaller annotation not set for " + clss.getName());
+		}
+		if (marshallerType.value() == Marshaller.ANNOTATION )
+		{
+			return bind( typeId, new TypeAnnotationMarshaller(), new TypeAnnotationMarshaller(), clss );
+		}
+		else if (marshallerType.value() == Marshaller.BEAN )
+		{
+			return bind( typeId, new TypeBeanMarshaller(), new TypeBeanMarshaller(), clss );
+		}
+		throw new TypeException("Error: Unknown marshaller set for ArgotMarshaller annotation");
+	}
+	
 	/*
 	 * returns the structure identifier
 	 */

@@ -148,7 +148,7 @@ implements TypeLibraryReader, TypeLibraryWriter, TypeBound
 			} 
 			catch (InstantiationException e) 
 			{
-				throw new TypeException(e.getMessage(),e);
+				throw new TypeException("Error: No empty constructor for class ",e);
 			} 
 			catch (IllegalAccessException e) 
 			{

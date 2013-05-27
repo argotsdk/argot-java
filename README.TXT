@@ -67,8 +67,10 @@ Version History
 - Added a basic TypeAnnotationMarshaller.  Uses java annotations to allow class Fields
   to be mapped to Argot sequence elements.
 - Started using generic types. Updated source accordingly.  Must use Java 1.5+.
-
-
+- Modified MetaRemoteException to allow both local and remote stack traces to be shown.
+- Motified MetaInterface to only warn of methods it couldn't bind.  
+  Required when overriding method signatures.
+- Added TypeAnnotationMarshaller and simpler bind method.
 
 TODO
 

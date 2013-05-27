@@ -118,7 +118,7 @@ public class TypeLibrary
 	
 	private void init()
 	{
-		System.out.println("\nArgot Version 1.3.b");
+		System.out.println("\nArgot Version 1.3.b2");
 		System.out.println("Copyright 2003-2013 (C) Live Media Pty Ltd.");
 		System.out.println("www.argot-sdk.org\n");
 		

@@ -77,21 +77,6 @@ Version History
 - Removed Message, model, network and remote packages.  They will move to Argot extensions.
 - Removed bookstore example.  Not relevant to Internet of Things.  Better examples coming.
 
-TODO
-
-- com.argot.peer package is added to develop a two way type agreement protocol. This
-  code is not yet finished.
-- com.argot.model provides a method of reading a type directly into a DOM style object.
-  This needs more testing and work.  This also relates to MetaExpressionLibraryResolver
-  which needs to be refactored.  
-- Modify format of message to allow optional removal of core dictionary.
-- Introduce in-line definition of types.
-- MetaChoice and MetaChoiceMap is not implemented
-- Define a type of lambda expression in the meta dictionary
-
-
-
-
 1.3.beta - 22 February 2010
 
 - Changed License to BSD and abandoned patent.

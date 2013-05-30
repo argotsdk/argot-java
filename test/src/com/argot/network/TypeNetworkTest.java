@@ -39,8 +39,6 @@ import com.argot.common.CommonLoader;
 import com.argot.common.Int32;
 import com.argot.common.UInt32;
 import com.argot.common.UInt8;
-import com.argot.dictionary.DictionaryLoader;
-import com.argot.meta.MetaExtensionLoader;
 import com.argot.meta.MetaLoader;
 
 public class TypeNetworkTest
@@ -50,8 +48,6 @@ extends TestCase
 	
 	TypeLibraryLoader libraryLoaders[] = {
 		new MetaLoader(),
-		new DictionaryLoader(),
-		new MetaExtensionLoader(),
 		new CommonLoader()
 	};
 	

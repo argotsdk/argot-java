@@ -73,7 +73,7 @@ implements TypeMapper
 		map.map( 7, library.getDefinitionId( "u32binary", "1.3" ));
 		map.setReader( 7, new ChunkByteBuffer.ChunkByteBufferReader() );
 		map.setWriter( 7, new ChunkByteBuffer.ChunkByteBufferWriter() );
-		map.map( 8, library.getDefinitionId( "bool" , "1.3"));
+		map.map( 8, library.getDefinitionId( "boolean" , "1.3"));
 		map.map( 9, library.getDefinitionId( DictionaryLocation.TYPENAME, "1.3" ));
 		map.map( 10, library.getDefinitionId( DictionaryBase.TYPENAME, "1.3" ));
 		map.map( 11, library.getDefinitionId( DictionaryName.TYPENAME, "1.3" ));

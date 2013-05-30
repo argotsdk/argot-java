@@ -46,8 +46,7 @@ extends TestCase
 	private TypeLibrary _library;
 
 	TypeLibraryLoader libraryLoaders[] = {
-		new MetaLoader(),
-		new DictionaryLoader()
+		new MetaLoader()
 	};
 	
     protected void setUp() throws Exception

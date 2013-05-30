@@ -43,7 +43,9 @@ import com.argot.meta.MetaArray;
 import com.argot.meta.MetaAtom;
 import com.argot.meta.MetaAtomAttribute;
 import com.argot.meta.MetaAtomAttributeBigEndian;
+import com.argot.meta.MetaAtomAttributeIEEE756;
 import com.argot.meta.MetaAtomAttributeInteger;
+import com.argot.meta.MetaAtomAttributeSigned;
 import com.argot.meta.MetaAtomAttributeSize;
 import com.argot.meta.MetaAtomAttributeUnsigned;
 import com.argot.meta.MetaCluster;
@@ -51,6 +53,7 @@ import com.argot.meta.MetaDefinition;
 import com.argot.meta.MetaEncoding;
 import com.argot.meta.MetaEnvelope;
 import com.argot.meta.MetaExpression;
+import com.argot.meta.MetaIdentified;
 import com.argot.meta.MetaReference;
 import com.argot.meta.MetaSequence;
 import com.argot.meta.MetaTag;
@@ -94,6 +97,7 @@ implements TypeMapper
 		map.map( ARRAY_ID, library.getDefinitionId( MetaArray.TYPENAME, VERSION ) );
 		map.map( ENVELOPE_ID, library.getDefinitionId( MetaEnvelope.TYPENAME, VERSION ) );
 		map.map( ENCODED_ID, library.getDefinitionId( MetaEncoding.TYPENAME, VERSION ));
+		map.map( IDENTIFIED_ID, library.getDefinitionId( MetaIdentified.TYPENAME, MetaIdentified.VERSION));
 
 		map.map( META_ATOM_ID, library.getDefinitionId( MetaAtom.TYPENAME, VERSION ));
 		map.map( META_ATOM_ATTRIBUTE_ID, library.getDefinitionId( MetaAtomAttribute.TYPENAME, VERSION ));
@@ -102,6 +106,8 @@ implements TypeMapper
 		map.map( META_ATTRIBUTE_INTEGER_ID, library.getDefinitionId( MetaAtomAttributeInteger.TYPENAME, VERSION ));
 		map.map( META_ATTRIBUTE_UNSIGNED_ID, library.getDefinitionId( MetaAtomAttributeUnsigned.TYPENAME, VERSION ));
 		map.map( META_ATTRIBUTE_BIGENDIAN_ID, library.getDefinitionId( MetaAtomAttributeBigEndian.TYPENAME, VERSION ));
+		map.map( META_ATTRIBUTE_SIGNED_ID, library.getDefinitionId( MetaAtomAttributeSigned.TYPENAME, MetaAtomAttributeSigned.VERSION ));
+		map.map( META_ATTRIBUTE_IEEE756_ID, library.getDefinitionId( MetaAtomAttributeIEEE756.TYPENAME, MetaAtomAttributeIEEE756.VERSION)); 
 
 		map.map( DICTIONARY_CLUSTER_ID, library.getTypeId("dictionary"));
 		map.map( DICTIONARY_BASE_ID, library.getDefinitionId( DictionaryBase.TYPENAME, VERSION ));
@@ -109,10 +115,11 @@ implements TypeMapper
 		map.map( DICTIONARY_DEFINITION_ID, library.getDefinitionId( DictionaryDefinition.TYPENAME, VERSION ));
 		map.map( DICTIONARY_RELATION_ID, library.getDefinitionId( DictionaryRelation.TYPENAME, VERSION ));
 		map.map( DICTIONARY_LOCATION_ID, library.getDefinitionId( DictionaryLocation.TYPENAME, VERSION ));
-			
+
 		map.map( DICTIONARY_DEFINITION_ENVELOPE_ID, library.getDefinitionId( MetaDefinition.META_DEFINITION_ENVELOPE, VERSION ));
 		map.map( DICTIONARY_ENTRY_ID, library.getDefinitionId( Dictionary.DICTIONARY_ENTRY, VERSION ));
 		map.map( DICTIONARY_ENTRY_LIST_ID, library.getDefinitionId( Dictionary.DICTIONARY_ENTRY_LIST, VERSION ));		
+		map.map( DICTIONARY_FILE_ID, library.getDefinitionId( Dictionary.DICTIONARY_FILE, Dictionary.DICTIONARY_FILE_VERSION));
 		
 		_chain.initialise(map);
 	}
@@ -164,6 +171,7 @@ implements TypeMapper
 		coreIds.add( new Integer( ARRAY_ID ));
 		coreIds.add( new Integer( ENVELOPE_ID ));
 		coreIds.add( new Integer( ENCODED_ID ));
+		coreIds.add( new Integer( IDENTIFIED_ID ));
 		
 		coreIds.add( new Integer( META_ATOM_ID ));
 		coreIds.add( new Integer( META_ATOM_ATTRIBUTE_ID ));
@@ -172,7 +180,8 @@ implements TypeMapper
 		coreIds.add( new Integer( META_ATTRIBUTE_INTEGER_ID ));
 		coreIds.add( new Integer( META_ATTRIBUTE_UNSIGNED_ID ));
 		coreIds.add( new Integer( META_ATTRIBUTE_BIGENDIAN_ID ));
-		
+		coreIds.add( new Integer( META_ATTRIBUTE_SIGNED_ID ));
+		coreIds.add( new Integer( META_ATTRIBUTE_IEEE756_ID ));
 		
 		coreIds.add( new Integer( DICTIONARY_CLUSTER_ID ));
 		coreIds.add( new Integer( DICTIONARY_BASE_ID ));		
@@ -184,6 +193,8 @@ implements TypeMapper
 		coreIds.add( new Integer( DICTIONARY_DEFINITION_ENVELOPE_ID ));
 		coreIds.add( new Integer( DICTIONARY_ENTRY_ID ));
 		coreIds.add( new Integer( DICTIONARY_ENTRY_LIST_ID ));
+		coreIds.add( new Integer( DICTIONARY_FILE_ID ));
+		
 		return coreIds;
 	}
 
@@ -208,27 +219,31 @@ implements TypeMapper
 	public static int ARRAY_ID = 16;
 	public static int ENVELOPE_ID = 17;
 	public static int ENCODED_ID = 18;
+	public static int IDENTIFIED_ID = 19;
 
-	public static int META_ATOM_ID = 19;
-	public static int META_ATOM_ATTRIBUTE_ID = 20;
-	public static int META_ATTRIBUTE_ID = 21;
-	public static int META_ATTRIBUTE_SIZE_ID = 22;
-	public static int META_ATTRIBUTE_INTEGER_ID = 23;
-	public static int META_ATTRIBUTE_UNSIGNED_ID = 24;
-	public static int META_ATTRIBUTE_BIGENDIAN_ID = 25;
+	public static int META_ATOM_ID = 20;
+	public static int META_ATOM_ATTRIBUTE_ID = 21;
+	public static int META_ATTRIBUTE_ID = 22;
+	public static int META_ATTRIBUTE_SIZE_ID = 23;
+	public static int META_ATTRIBUTE_INTEGER_ID = 24;
+	public static int META_ATTRIBUTE_UNSIGNED_ID = 25;
+	public static int META_ATTRIBUTE_BIGENDIAN_ID = 26;
+	public static int META_ATTRIBUTE_SIGNED_ID = 27;
+	public static int META_ATTRIBUTE_IEEE756_ID = 28;
+	
+	public static int DICTIONARY_CLUSTER_ID = 29;
+	public static int DICTIONARY_BASE_ID = 30;
+	public static int DICTIONARY_NAME_ID = 31;
+	public static int DICTIONARY_DEFINITION_ID = 32;
+	public static int DICTIONARY_RELATION_ID = 33;
+	public static int DICTIONARY_LOCATION_ID = 34;
+	
+	public static int DICTIONARY_DEFINITION_ENVELOPE_ID = 35;
+	public static int DICTIONARY_ENTRY_ID = 36;
+	public static int DICTIONARY_ENTRY_LIST_ID = 37;	
+	public static int DICTIONARY_FILE_ID = 38;
+	
 
-	public static int DICTIONARY_CLUSTER_ID = 26;
-	public static int DICTIONARY_BASE_ID = 27;
-	public static int DICTIONARY_NAME_ID = 28;
-	public static int DICTIONARY_DEFINITION_ID = 29;
-	public static int DICTIONARY_RELATION_ID = 30;
-	public static int DICTIONARY_LOCATION_ID = 31;
 	
-	public static int DICTIONARY_DEFINITION_ENVELOPE_ID = 32;
-	public static int DICTIONARY_ENTRY_ID = 33;
-	public static int DICTIONARY_ENTRY_LIST_ID = 34;	
-	
-
-	
-	public static int META_SIZE = 35;
+	public static int META_SIZE = 39;
 }

@@ -38,8 +38,6 @@ import com.argot.TypeMapperDynamic;
 import com.argot.TypeMapperError;
 import com.argot.TypeOutputStream;
 import com.argot.TypeLibrary;
-import com.argot.dictionary.DictionaryLoader;
-import com.argot.meta.MetaExtensionLoader;
 import com.argot.meta.MetaLoader;
 
 public class CommonTest
@@ -52,8 +50,6 @@ extends TestCase
 
 	TypeLibraryLoader libraryLoaders[] = {
 		new MetaLoader(),
-		new DictionaryLoader(),
-		new MetaExtensionLoader(),
 		new CommonLoader()
 	};
 

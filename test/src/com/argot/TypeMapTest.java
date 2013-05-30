@@ -44,7 +44,7 @@ extends TestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        _library = new TypeLibrary();
+        _library = new TypeLibrary(false);
         _library.loadLibrary( new MetaLoader() );
 		_map = new TypeMap( _library, new TypeMapperCore(new TypeMapperError()));
     }

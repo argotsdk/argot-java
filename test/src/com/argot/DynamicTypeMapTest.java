@@ -27,8 +27,6 @@
 package com.argot;
 
 import com.argot.common.CommonLoader;
-import com.argot.dictionary.DictionaryLoader;
-import com.argot.meta.MetaExtensionLoader;
 import com.argot.meta.MetaLoader;
 import com.argot.meta.MetaSequence;
 
@@ -42,8 +40,6 @@ extends TestCase
 	
 	TypeLibraryLoader libraryLoaders[] = {
 		new MetaLoader(),
-		new DictionaryLoader(),
-		new MetaExtensionLoader(),
 		new CommonLoader()
 	};
 	

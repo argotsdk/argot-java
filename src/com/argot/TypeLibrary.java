@@ -135,8 +135,6 @@ public class TypeLibrary
 		TypeLibraryLoader libraryLoaders[] = 
 		{
 				new MetaLoader(),
-				new MetaExtensionLoader(),
-				new DictionaryLoader(),
 				new CommonLoader()
 		};
 		

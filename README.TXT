@@ -1,5 +1,5 @@
 Argot Java 1.3.0
-Copyright (c) 2003-2010, Live Media Pty. Ltd.
+Copyright (c) 2003-2013, Live Media Pty. Ltd.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -71,6 +71,9 @@ Version History
 - Motified MetaInterface to only warn of methods it couldn't bind.  
   Required when overriding method signatures.
 - Added TypeAnnotationMarshaller and simpler bind method.
+- Removed meta_extension and dictionary dictionaries.  Now part of meta dictionary.
+- Changed bool to boolean.
+- Added additional information to TypeMapMarshaller exceptions.
 
 TODO
 

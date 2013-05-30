@@ -54,8 +54,8 @@ extends TestCase
 	{
 		TwoWayHashMap map = new TwoWayHashMap();
 		map.add( 100, 50, new Integer(1));
-		int x = map.findKey(100);
-		assertEquals(x,50);
+		int x = map.findKey(50);
+		assertEquals(x,100);
 	}
 	
 	public void testRemoveItem()
@@ -64,7 +64,7 @@ extends TestCase
 		map.add( 100, 50, new Integer(1));
 		map.remove( 100 );
 		Object o = map.getObjectFromKey(100);
-		assertEquals(o, new Integer(1));
+		assertEquals(o, null);
 	}
 
 	public void testRemoveInvalid()

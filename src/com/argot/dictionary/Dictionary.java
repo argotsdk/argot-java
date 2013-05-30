@@ -45,6 +45,8 @@ import com.argot.TypeMapperCore;
 import com.argot.TypeMapperDynamic;
 import com.argot.TypeMapperError;
 import com.argot.TypeOutputStream;
+import com.argot.TypeReader;
+import com.argot.TypeWriter;
 import com.argot.common.UInt8;
 import com.argot.common.UVInt28;
 import com.argot.meta.DictionaryBase;
@@ -63,12 +65,39 @@ import com.argot.meta.MetaIdentity;
  */
 public class Dictionary
 {
+	public static final String DICTIONARY_FILE = "dictionary.file";
+	public static final String DICTIONARY_FILE_VERSION = "1.3";
+	
 	public static final String DICTIONARY_ENTRY = "dictionary.entry";
 	public static final String DICTIONARY_ENTRY_VERSION = "1.3";
 	
 	public static final String DICTIONARY_ENTRY_LIST = "dictionary.entry_list";
 	public static final String DICTIONARY_ENTRY_LIST_VERSION = "1.3";
+	
+	public static class DictionaryWriter
+	implements TypeWriter
+	{
+		public void write(TypeOutputStream out, Object o) 
+		throws TypeException,IOException 
+		{
+			// TODO Move writeDictionary to here.
+			throw new TypeException("TODO: Move writeDictionary to here");
+		}
+	}
+	
+	public static class DictionaryReader
+	implements TypeReader
+	{
+
+		public Object read(TypeInputStream in) 
+		throws TypeException,IOException 
+		{
+			// TODO Move readDictionary to here.
+			throw new TypeException("TODO: Move readDictionary to here");
+		}
 		
+	}
+	
 	public static void writeDictionary(  OutputStream fos, TypeMap map ) throws TypeException, IOException 
 	{
 		TypeLibrary library = map.getLibrary();

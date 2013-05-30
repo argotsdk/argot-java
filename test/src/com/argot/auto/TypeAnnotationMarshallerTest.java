@@ -33,10 +33,8 @@ import com.argot.TypeLibrary;
 import com.argot.TypeLibraryLoader;
 import com.argot.common.CommonLoader;
 import com.argot.data.MixedDataAnnotated;
-import com.argot.dictionary.DictionaryLoader;
 import com.argot.message.MessageReader;
 import com.argot.message.MessageWriter;
-import com.argot.meta.MetaExtensionLoader;
 import com.argot.meta.MetaLoader;
 
 import junit.framework.TestCase;
@@ -49,8 +47,6 @@ extends TestCase
 	
 	TypeLibraryLoader libraryLoaders[] = {
 		new MetaLoader(),
-		new DictionaryLoader(),
-		new MetaExtensionLoader(),
 		new CommonLoader(),
 	};
 	

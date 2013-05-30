@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2013, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -59,17 +59,14 @@ implements TypeLibraryLoader
 		
 		// 1. baseId
 		@SuppressWarnings("unused")
-		int baseGroupId = library.register( new DictionaryBase( ), new MetaCluster() );
-		
+		int baseGroupId = library.register( new DictionaryBase( ), new MetaCluster() );		
 		// 2. uint8
 		int uint8Id = library.register( new DictionaryName( library, UInt8.TYPENAME), new MetaIdentity() );  
 		// 3. uvint28
 		int uvint28Id = library.register( new DictionaryName( library, UVInt28.TYPENAME), new MetaIdentity() );  
-
 		// 4. meta group
 		@SuppressWarnings("unused")
-		int metaClusterId = library.register( new DictionaryName(library,"meta"),  new MetaCluster() );
-		
+		int metaClusterId = library.register( new DictionaryName(library,"meta"),  new MetaCluster() );		
 		// 5. meta.id		
 		int metaId = library.register( new DictionaryName( library, "meta.id" ), new MetaIdentity() );  
 		// 6. meta.cluster
@@ -80,8 +77,6 @@ implements TypeLibraryLoader
 		int abstractId = library.register( new DictionaryName( library, MetaAbstract.TYPENAME ), new MetaIdentity() );  
 		// 9. u8utf8
 		int u8utf8Id = library.register( new DictionaryName( library, U8Utf8.TYPENAME ), new MetaIdentity() );
-		//. meta.name_part
-		//int metaNamePartId = library.register( new DictionaryName( library, "meta.name_part" ), new MetaIdentity() );
 		// 10. meta.name
 		int metaNameId = library.register( new DictionaryName( library, "meta.name" ), new MetaIdentity() );
 		// 11. meta.version
@@ -102,41 +97,48 @@ implements TypeLibraryLoader
 		int metaEnvelopId = library.register( new DictionaryName( library, MetaEnvelope.TYPENAME ), new MetaIdentity() );
 		// 19. meta.encoding
 		int metaEncodingId = library.register( new DictionaryName( library, MetaEncoding.TYPENAME ), new MetaIdentity() );
-		// 20. meta.atom
+		// 20. meta.identified
+		int metaIdentifiedId = library.register( new DictionaryName( library, MetaIdentified.TYPENAME), new MetaIdentity() );
+		// 21. meta.atom
 		int metaFixedWidthId = library.register( new DictionaryName( library, MetaAtom.TYPENAME ), new MetaIdentity() );
-		// 21. meta.atom_attribute
+		// 22. meta.atom_attribute
 		int metaFixedWidthAttributeId = library.register( new DictionaryName( library, MetaAtomAttribute.TYPENAME ), new MetaIdentity() );
-		// 22. meta.attribute cluster
+		// 23. meta.attribute cluster
 		@SuppressWarnings("unused")
 		int metaAtomAttributeClusterId = library.register( new DictionaryName( library, "meta.attribute"), new MetaCluster() );
-		// 23. meta.attribute.size
+		// 24. meta.attribute.size
 		int metaFixedWidthAttributeSizeId = library.register( new DictionaryName( library, MetaAtomAttributeSize.TYPENAME ), new MetaIdentity() );
-		// 24. meta.attribute.integer
+		// 25. meta.attribute.integer
 		int metaFixedWidthAttributeIntegerId = library.register( new DictionaryName( library, MetaAtomAttributeInteger.TYPENAME ), new MetaIdentity() );
-		// 25. meta.attribute.unsigned
+		// 26. meta.attribute.unsigned
 		int metaFixedWidthAttributeUnsignedId = library.register( new DictionaryName( library, MetaAtomAttributeUnsigned.TYPENAME ), new MetaIdentity() );
-		// 26. meta.attribute.bigendian
+		// 27. meta.attribute.bigendian
 		int metaFixedWidthAttributeBigEndianId = library.register( new DictionaryName( library, MetaAtomAttributeBigEndian.TYPENAME ), new MetaIdentity() );
-		// 27. dictionary cluster
+		// 28. meta.attribute.signed
+		int metaFixedWidthAttributeSignedId = library.register( new DictionaryName( library, MetaAtomAttributeSigned.TYPENAME), new MetaIdentity() );
+		// 29. meta.attribute.iee756
+		int metaFixedWidthAttributeIeee756Id = library.register( new DictionaryName( library, MetaAtomAttributeIEEE756.TYPENAME), new MetaIdentity() );
+		// 30. dictionary cluster
 		@SuppressWarnings("unused")
 		int dictionaryClusterId = library.register( new DictionaryName( library, "dictionary"), new MetaCluster() );
-		// 28. dictionary.base
+		// 31. dictionary.base
 		int dictionaryBaseId = library.register( new DictionaryName( library, DictionaryBase.TYPENAME), new MetaIdentity() );
-		// 29. dictionary.name 
+		// 32. dictionary.name 
 		int dictionaryNameId = library.register( new DictionaryName( library, DictionaryName.TYPENAME), new MetaIdentity() );
-		// 30. dictionary.definition		
+		// 33. dictionary.definition		
 		int dictionaryDefinitionId = library.register( new DictionaryName( library, DictionaryDefinition.TYPENAME), new MetaIdentity() );
-		// 31. dictionary.relation
+		// 34. dictionary.relation
 		int dictionaryRelationId = library.register( new DictionaryName( library, DictionaryRelation.TYPENAME), new MetaIdentity() );
-		// 32. dictionary.location
+		// 35. dictionary.location
 		int dictionaryLocationId = library.register( new DictionaryName( library, DictionaryLocation.TYPENAME), new MetaIdentity() );
-		// 33. dictionary.definition_envelop
+		// 36. dictionary.definition_envelop
 		int metaDefinitionEnvelopId = library.register( new DictionaryName( library, "dictionary.definition_envelope" ), new MetaIdentity() );
-		// 34. dictionary.entry
+		// 37. dictionary.entry
 		int dictionaryEntryId = library.register( new DictionaryName( library, "dictionary.entry"), new MetaIdentity() );
-		// 35. dictionary.entry.list
+		// 38. dictionary.entry.list
 		int dictionaryEntryListId = library.register( new DictionaryName( library, "dictionary.entry_list"), new MetaIdentity() );
-		
+		// 39. dictionary.file
+		int dictionaryFileId = library.register( new DictionaryName( library, "dictionary.file"), new MetaIdentity() );
 
 		// 2. uint8
 		UInt8 bbe = new UInt8();
@@ -192,7 +194,7 @@ implements TypeLibraryLoader
 		library.register( new DictionaryDefinition(library, abstractId,MetaAbstract.TYPENAME, "1.3"), abstractDef, (TypeLibraryReader) new MetaAbstract.MetaAbstractTypeReader(), (TypeLibraryWriter) new MetaAbstract.MetaAbstractTypeWriter(), MetaAbstract.class );
 	    
 
-		// 9. u8ascii
+		// 9. u8utf8
 		U8Utf8 u8utf8 = new U8Utf8();
 		MetaDefinition u8asciiDef = 
 			new MetaEncoding(
@@ -226,7 +228,7 @@ implements TypeLibraryLoader
 			);
 		library.register(new DictionaryDefinition(library, metaVersionId,MetaVersion.TYPENAME, "1.3"), versionDef, new TypeBeanMarshaller(),new TypeBeanMarshaller(), MetaVersion.class );
 
-
+	
 		// 13. meta.expression
 		MetaDefinition exprDef = new MetaAbstract(
 				new MetaAbstractMap[] {
@@ -235,9 +237,10 @@ implements TypeLibraryLoader
 						new MetaAbstractMap( metaSequenceId ),
 						new MetaAbstractMap( metaArrayId ), 
 						new MetaAbstractMap( metaEnvelopId ),
-						new MetaAbstractMap( metaEncodingId )
+						new MetaAbstractMap( metaEncodingId ),
+						new MetaAbstractMap( metaIdentifiedId )
 				});		
-		int exprDefId = library.register(new DictionaryDefinition( library, metaExpressionId,MetaExpression.TYPENAME, "1.3"), exprDef, new MetaMarshaller(),new MetaMarshaller(), null );
+		int exprId = library.register(new DictionaryDefinition( library, metaExpressionId,MetaExpression.TYPENAME, "1.3"), exprDef, new MetaMarshaller(),new MetaMarshaller(), null );
 		
 		// 12. meta.definition
 		MetaDefinition defDef = new MetaAbstract(
@@ -246,11 +249,10 @@ implements TypeLibraryLoader
 						new MetaAbstractMap( metaFixedWidthId ),
 						new MetaAbstractMap( abstractId ),
 						new MetaAbstractMap( abstractMapId ),
-						new MetaAbstractMap( exprDefId )
-				/*		new MetaAbstractMap( metaIdentityId ) */
+						new MetaAbstractMap( exprId )   // TODO: Note: Uses concrete identifier, not abstract. Need to investigate.
 				});		
 		library.register(new DictionaryDefinition( library, metaDefinitionId,MetaDefinition.TYPENAME, "1.3"), defDef, new MetaMarshaller(),new MetaMarshaller(), null );
-		
+
 				
 		// 14. meta.reference
 		MetaDefinition refDef = new MetaSequence( 
@@ -267,7 +269,9 @@ implements TypeLibraryLoader
 		
 		// 16. meta.sequence
 		// TODO Remove MetaSequence.  Requires better Marshaller classes.
-		MetaDefinition seqDef = new MetaSequence( new MetaExpression[] { new MetaArray(
+		MetaDefinition seqDef = new MetaSequence( 
+			new MetaExpression[] { 
+				new MetaArray(
 					new MetaReference( uint8Id),
 					new MetaReference( metaExpressionId))});
 		library.register( new DictionaryDefinition( library, metaSequenceId,MetaSequence.TYPENAME, "1.3"), seqDef, new MetaSequence.MetaSequenceTypeReader(), new MetaSequence.MetaSequenceTypeWriter(), MetaSequence.class );
@@ -299,7 +303,14 @@ implements TypeLibraryLoader
 		);
 		library.register( new DictionaryDefinition( library,metaEncodingId, MetaEncoding.TYPENAME, "1.3"), encodingDef, new MetaEncoding.MetaEncodingTypeReader(), new MetaEncoding.MetaEncodingTypeWriter(), MetaEncoding.class );
 
-	    // 20. meta.atom
+		// 20. meta.identified
+		MetaDefinition identifiedDef = new MetaSequence(
+			new MetaExpression[] {
+				new MetaTag( "description", new MetaReference( u8utf8Id ))
+			});
+		library.register( new DictionaryDefinition( library,metaIdentifiedId, MetaIdentified.TYPENAME, "1.3"), identifiedDef, new TypeReaderAuto(MetaIdentified.class), new MetaIdentified.MetaIdentifiedTypeWriter(), MetaIdentified.class );
+
+	    // 21. meta.atom
 		MetaDefinition basicDef = new MetaSequence(
 			new MetaExpression[] {
 				new MetaTag( "min_bit_length", new MetaReference( uvint28Id )),
@@ -314,37 +325,48 @@ implements TypeLibraryLoader
 		);	
 		library.register( new DictionaryDefinition( library,metaFixedWidthId, MetaAtom.TYPENAME, "1.3"), basicDef, new TypeReaderAuto(MetaAtom.class), new MetaAtom.MetaBasicTypeWriter(), MetaAtom.class );
 
-	    // 21. meta.atom_attribute 
+	    // 22. meta.atom_attribute 
 	    MetaDefinition fwAttribute = new MetaAbstract(
 	    		new MetaAbstractMap[] {
 	    				new MetaAbstractMap( metaFixedWidthAttributeSizeId ),
 	    				new MetaAbstractMap( metaFixedWidthAttributeIntegerId ),
 	    				new MetaAbstractMap( metaFixedWidthAttributeUnsignedId ),
-	    				new MetaAbstractMap( metaFixedWidthAttributeBigEndianId )
+	    				new MetaAbstractMap( metaFixedWidthAttributeBigEndianId ),
+	    				new MetaAbstractMap( metaFixedWidthAttributeSignedId ),
+	    				new MetaAbstractMap( metaFixedWidthAttributeIeee756Id )
 	    		});
 	    library.register( new DictionaryDefinition( library,metaFixedWidthAttributeId,MetaAtomAttribute.TYPENAME, "1.3"), fwAttribute, new MetaMarshaller(),new MetaMarshaller(), null );
 		
-	    // 23. meta.attribute.size
+	    // 24. meta.attribute.size
 	    MetaDefinition fwaSize = new MetaSequence( new MetaExpression[] { new MetaTag( "size", new MetaReference( uvint28Id )) });
 	    library.register( new DictionaryDefinition( library,metaFixedWidthAttributeSizeId,MetaAtomAttributeSize.TYPENAME, "1.3"), fwaSize, new TypeReaderAuto(MetaAtomAttributeSize.class), new TypeBeanMarshaller(), MetaAtomAttributeSize.class );	    
 
-	    // 24. meta.attribute.integer
+	    // 25. meta.attribute.integer
 	    MetaDefinition fwaInteger = new MetaSequence( new MetaExpression[] {} );
 	    library.register(new DictionaryDefinition(library,metaFixedWidthAttributeIntegerId,MetaAtomAttributeInteger.TYPENAME, "1.3"),  fwaInteger, new TypeReaderAuto(MetaAtomAttributeInteger.class), new TypeBeanMarshaller(), MetaAtomAttributeInteger.class );	    
 	    
-	    // 25. meta.attribute.unsigned
+	    // 26. meta.attribute.unsigned
 	    MetaDefinition fwaUnsigned = new MetaSequence( new MetaExpression[] {} );
 	    library.register( new DictionaryDefinition(library,metaFixedWidthAttributeUnsignedId, MetaAtomAttributeUnsigned.TYPENAME, "1.3"), fwaUnsigned, new TypeReaderAuto(MetaAtomAttributeUnsigned.class), new TypeBeanMarshaller(), MetaAtomAttributeUnsigned.class );	    
 
-	    // 26. meta.attribute.bigendian
+	    // 27. meta.attribute.bigendian
 	    MetaDefinition fwaBigEndian = new MetaSequence( new MetaExpression[] {} );
 	    library.register( new DictionaryDefinition(library,metaFixedWidthAttributeBigEndianId, MetaAtomAttributeBigEndian.TYPENAME, "1.3"), fwaBigEndian, new TypeReaderAuto(MetaAtomAttributeBigEndian.class), new TypeBeanMarshaller(), MetaAtomAttributeBigEndian.class );	    
 
-	    // 28. dictionary.base
+	    // 28. meta.attribute.signed
+	    MetaDefinition fwaSigned = new MetaSequence( new MetaExpression[] {} );
+	    library.register( new DictionaryDefinition(library,metaFixedWidthAttributeSignedId, MetaAtomAttributeSigned.TYPENAME, "1.3"), fwaSigned, new TypeReaderAuto(MetaAtomAttributeSigned.class), new TypeBeanMarshaller(), MetaAtomAttributeSigned.class );	    
+	    
+	    // 29. meta.attribute.ieee756
+	    MetaDefinition fwaIeee756 = new MetaSequence( new MetaExpression[] {} );
+	    library.register( new DictionaryDefinition(library,metaFixedWidthAttributeIeee756Id, MetaAtomAttributeIEEE756.TYPENAME, "1.3"), fwaIeee756, new TypeReaderAuto(MetaAtomAttributeIEEE756.class), new TypeBeanMarshaller(), MetaAtomAttributeIEEE756.class );	    
+
+	    
+	    // 31. dictionary.base
 	    MetaDefinition dictBaseDef = new MetaSequence( new MetaExpression[] {} );
 	    library.register( new DictionaryDefinition(library,dictionaryBaseId,DictionaryBase.TYPENAME,VERSION), dictBaseDef, new TypeBeanMarshaller(), new TypeBeanMarshaller(), DictionaryBase.class );
 	    
-	    // 29. dictionary.name
+	    // 32. dictionary.name
 	    MetaDefinition dictNameDef = new MetaSequence(
 	    			new MetaExpression[] {
 	    					new MetaTag( "name", new MetaReference( metaNameId ))
@@ -352,7 +374,7 @@ implements TypeLibraryLoader
 	    		);
 	    library.register( new DictionaryDefinition(library,dictionaryNameId,DictionaryName.TYPENAME, "1.3"), dictNameDef, new TypeReaderAuto(DictionaryName.class), new TypeBeanMarshaller(), DictionaryName.class );
 
-	    // 30. dictionary.definition
+	    // 33. dictionary.definition
 	    MetaDefinition dictDefDef = new MetaSequence(
 	    			new MetaExpression[] {
 	    					new MetaTag( "name", new MetaReference( metaNameId )),
@@ -360,7 +382,7 @@ implements TypeLibraryLoader
 	    			});
 	    library.register( new DictionaryDefinition(library,dictionaryDefinitionId,DictionaryDefinition.TYPENAME, "1.3"), dictDefDef, new TypeBeanMarshaller(), new DictionaryDefinition.DictionaryDefinitionTypeWriter(), DictionaryDefinition.class );
 
-	    // 31. dictionary.relation
+	    // 34. dictionary.relation
 	    MetaDefinition dictRelationDef = new MetaSequence(
 	    			new MetaExpression[] {
 	    					new MetaTag( "id", new MetaReference( metaId )),
@@ -368,7 +390,7 @@ implements TypeLibraryLoader
 	    			});
 	    library.register( new DictionaryDefinition(library,dictionaryRelationId,DictionaryRelation.TYPENAME, "1.3"), dictRelationDef, new TypeBeanMarshaller(), new DictionaryRelation.DicitonaryRelationTypeWriter(), DictionaryRelation.class );
 
-	    // 32. dictionary.location
+	    // 35. dictionary.location
 	    MetaDefinition dictLocationDef = new MetaAbstract(
 	    		new MetaAbstractMap[] {
 	    				new MetaAbstractMap( dictionaryBaseId ),
@@ -378,14 +400,14 @@ implements TypeLibraryLoader
 	    		});
 	    library.register( new DictionaryDefinition(library,dictionaryLocationId,DictionaryLocation.TYPENAME, "1.3"), dictLocationDef, new MetaMarshaller(),new MetaMarshaller(), DictionaryLocation.class );
 
-		// 33. dictionary.definition_envelop
+		// 36. dictionary.definition_envelop
 		MetaDefinition dDef = new MetaEnvelope(
 				new MetaReference( uvint28Id ),
 				new MetaReference( metaDefinitionId )
 		);			  
 		library.register( new DictionaryDefinition(library,metaDefinitionEnvelopId,MetaDefinition.META_DEFINITION_ENVELOPE, "1.3"), dDef, new MetaMarshaller(), new MetaMarshaller(), null );
 		
-		// 34. dictionary.entry
+		// 37. dictionary.entry
 		MetaDefinition entryDef =new MetaSequence(
 			new MetaExpression[] {
 				new MetaTag( "id", new MetaReference( uvint28Id )),
@@ -395,16 +417,31 @@ implements TypeLibraryLoader
 	    );
 		library.register( new DictionaryDefinition(library,dictionaryEntryId,Dictionary.DICTIONARY_ENTRY, Dictionary.DICTIONARY_ENTRY_VERSION), entryDef, new MetaMarshaller(), new MetaMarshaller(), null );
 		
-		// 35. dictionary.entry.list
+		// 38. dictionary.entry_list
 		// TODO Remove surrounding sequence.  Requires better marshaller.
-		MetaDefinition dmDef = new MetaSequence( new MetaExpression[] {
+		MetaDefinition dmDef = new MetaSequence( 
+			new MetaExpression[] {
 				new MetaArray(
 					new MetaReference(uvint28Id ),
 					new MetaReference(dictionaryEntryId)
-				)});
+			)});
 		library.register( new DictionaryDefinition(library,dictionaryEntryListId,Dictionary.DICTIONARY_ENTRY_LIST, Dictionary.DICTIONARY_ENTRY_LIST_VERSION), dmDef, new TypeReaderAuto(TypeMap.class), new TypeMapMarshaller(), null );
 		
+		// 39. dictionary.file
+		MetaDefinition dFileDef = new MetaSequence(
+			new MetaExpression[] {
+					new MetaTag( "core", new MetaArray(
+							new MetaReference(uint8Id),
+							new MetaReference(dictionaryEntryListId))),
+					new MetaTag( "meta", new MetaArray(
+							new MetaReference(uint8Id),
+							new MetaReference(dictionaryEntryListId))),
+					new MetaTag("message",
+							new MetaIdentified("message"))		
+			});
+		library.register( new DictionaryDefinition(library,dictionaryFileId,Dictionary.DICTIONARY_FILE, Dictionary.DICTIONARY_FILE_VERSION), dFileDef, new TypeSimpleReader( new Dictionary.DictionaryReader()), new TypeSimpleWriter(new Dictionary.DictionaryWriter()), Dictionary.class );
 		
+
 		library.setPrimed();
 	}
 

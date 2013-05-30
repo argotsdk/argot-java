@@ -11,13 +11,11 @@ import com.argot.TypeLibraryLoader;
 import com.argot.common.CommonLoader;
 import com.argot.data.MixedData;
 import com.argot.data.MixedDataAnnotated;
-import com.argot.dictionary.DictionaryLoader;
 import com.argot.message.MessageReader;
 import com.argot.message.MessageWriter;
 import com.argot.meta.DictionaryDefinition;
 import com.argot.meta.DictionaryName;
 import com.argot.meta.MetaExpression;
-import com.argot.meta.MetaExtensionLoader;
 import com.argot.meta.MetaIdentity;
 import com.argot.meta.MetaLoader;
 import com.argot.meta.MetaName;
@@ -34,8 +32,6 @@ extends TestCase
 	
 	TypeLibraryLoader libraryLoaders[] = {
 		new MetaLoader(),
-		new DictionaryLoader(),
-		new MetaExtensionLoader(),
 		new CommonLoader()
 	};
 	

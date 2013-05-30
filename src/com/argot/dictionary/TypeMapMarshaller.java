@@ -55,9 +55,15 @@ implements TypeLibraryWriter, TypeWriter
 			int streamId = ((Integer) i.next()).intValue();
 			int definitionId = map.getDefinitionId(streamId);
 
-			out.writeObject( UVInt28.TYPENAME, new Integer(streamId));
-			out.writeObject( DictionaryLocation.TYPENAME, library.getLocation(definitionId));
-			out.writeObject( MetaDefinition.META_DEFINITION_ENVELOPE, library.getStructure( definitionId ) );			
+			try {
+				out.writeObject( UVInt28.TYPENAME, new Integer(streamId));
+				out.writeObject( DictionaryLocation.TYPENAME, library.getLocation(definitionId));
+				out.writeObject( MetaDefinition.META_DEFINITION_ENVELOPE, library.getStructure( definitionId ) );
+			} 
+			catch (TypeException e) 
+			{
+				throw new TypeException("Failed to write:" + streamId + " " + library.getName(definitionId).getFullName(), e );
+			}			
 		}
 
     }

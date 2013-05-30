@@ -74,6 +74,8 @@ Version History
 - Removed meta_extension and dictionary dictionaries.  Now part of meta dictionary.
 - Changed bool to boolean.
 - Added additional information to TypeMapMarshaller exceptions.
+- Removed Message, model, network and remote packages.  They will move to Argot extensions.
+- Removed bookstore example.  Not relevant to Internet of Things.  Better examples coming.
 
 TODO
 

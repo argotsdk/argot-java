@@ -29,12 +29,16 @@ package com.argot.auto;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
+import com.argot.TypeInputStream;
 import com.argot.TypeLibrary;
 import com.argot.TypeLibraryLoader;
+import com.argot.TypeMap;
+import com.argot.TypeMapperCore;
+import com.argot.TypeMapperDynamic;
+import com.argot.TypeMapperError;
+import com.argot.TypeOutputStream;
 import com.argot.common.CommonLoader;
 import com.argot.data.MixedDataAnnotated;
-import com.argot.message.MessageReader;
-import com.argot.message.MessageWriter;
 import com.argot.meta.MetaLoader;
 
 import junit.framework.TestCase;
@@ -43,7 +47,6 @@ public class TypeAnnotationMarshallerTest
 extends TestCase
 {
 	private TypeLibrary _library;
-	private int _mixedDataTypeId;
 	
 	TypeLibraryLoader libraryLoaders[] = {
 		new MetaLoader(),
@@ -54,7 +57,7 @@ extends TestCase
     {
         super.setUp();
         _library = new TypeLibrary( libraryLoaders );
-        _mixedDataTypeId = MixedDataAnnotated.register( _library );
+        MixedDataAnnotated.register( _library );
     }
     
     public void testTypeMapCore() throws Exception
@@ -62,12 +65,14 @@ extends TestCase
         MixedDataAnnotated data = new MixedDataAnnotated( 2345, (short)234, "Testing");
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        MessageWriter writer = new MessageWriter( _library );
-        writer.writeMessage( baos, _mixedDataTypeId, data );
+        TypeMap map = new TypeMap( _library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperError())));
+        TypeOutputStream out = new TypeOutputStream( baos, map );
+        out.writeObject( MixedDataAnnotated.TYPENAME, data );
         baos.close();
         
         ByteArrayInputStream bais = new ByteArrayInputStream( baos.toByteArray() );
-        Object o = MessageReader.readMessage( _library, bais );
+        TypeInputStream in = new TypeInputStream( bais, map );
+        Object o = in.readObject( MixedDataAnnotated.TYPENAME );
         assertEquals( o.getClass(), data.getClass() );
         MixedDataAnnotated readData = (MixedDataAnnotated) data;
         assertEquals( readData.getInt(), data.getInt() );

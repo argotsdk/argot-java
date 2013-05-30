@@ -483,7 +483,6 @@ public class TypeMap
 		public TypeWriter builtWriter;
 		public TypeLibraryWriter writer;		
 		public boolean writerBound;
-		public int version;
 	}
 
 	public static final String REFERENCE_MAP = "reference_map";

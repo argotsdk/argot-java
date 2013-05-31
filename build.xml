@@ -182,12 +182,8 @@
 		be built by Argot.
 	-->
 	<target name="argot-compile" depends="compile,argot-copy,argot-compiler-config" description="compiles dictionary files from argot">
-		<argotc input="argot/meta_extensions.argot" output="${build.bin}/meta_extensions.dictionary" loadExtensions="false"/>
 		<argotc input="argot/meta.argot" output="${build.bin}/meta.dictionary" loadCommon="false"/>
 		<argotc input="argot/common.argot" output="${build.bin}/common.dictionary" loadCommon="false"/>
-		<argotc input="argot/remote.argot" output="${build.bin}/remote.dictionary" loadRemote="false"/>
-		<argotc input="argot/dictionary.argot" output="${build.bin}/dictionary.dictionary" loadRemote="false"/>		
-		<argotc input="argot/netargot.argot" output="${build.bin}/netargot.dictionary" loadRemote="false"/>
 	</target>
 
 	<target name="buildjar" depends="compile,argot-copy">
@@ -250,14 +246,6 @@
 			<fileset dir="argot" />
 		</copy>
 
-		<mkdir dir="${release}/doc" />
-		<copy file="doc/ArgotProgrammersGuide.pdf" tofile="${release}/doc/ArgotProgrammersGuide.pdf" />
-
-		<mkdir dir="${release}/examples" />
-		<copy todir="${release}/examples">
-			<fileset dir="examples" />
-		</copy>
-
 		<mkdir dir="${release}/src" />
 		<copy todir="${release}/src">
 			<fileset dir="src" />
@@ -279,7 +267,7 @@
 		</copy>
 		
 		<!-- zip up the release -->
-		<zip basedir="${release}" destfile="${build}/ArgotJava-${version}.zip" />
+		<zip basedir="${release}" destfile="${build}/argot-java-${version}.zip" />
 	</target>
 
 	<target name="clean" description="clean up">

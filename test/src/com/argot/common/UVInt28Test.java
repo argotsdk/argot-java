@@ -38,7 +38,6 @@ import com.argot.TypeMapperDynamic;
 import com.argot.TypeMapperError;
 import com.argot.TypeOutputStream;
 import com.argot.TypeLibrary;
-import com.argot.dictionary.DictionaryLoader;
 import com.argot.meta.MetaLoader;
 
 public class UVInt28Test
@@ -50,8 +49,7 @@ extends TestCase
     private ByteArrayOutputStream baos;
 
 	TypeLibraryLoader libraryLoaders[] = {
-		new MetaLoader(),
-		new DictionaryLoader()
+		new MetaLoader()
 	};
 
     protected void setUp() throws Exception

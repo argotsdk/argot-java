@@ -74,6 +74,11 @@ public class Dictionary
 	public static final String DICTIONARY_ENTRY_LIST = "dictionary.entry_list";
 	public static final String DICTIONARY_ENTRY_LIST_VERSION = "1.3";
 	
+	public static final String DICTIONARY = "dictionary.dictionary";
+	
+	public static final String DICTIONARY_LIST = "dictionary.list";
+	public static final String DICTIONARY_LIST_VERSION = "1.3";
+	
 	public static class DictionaryWriter
 	implements TypeWriter
 	{

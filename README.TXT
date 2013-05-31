@@ -60,7 +60,7 @@ Please view the example .argot files to see how argot is specified.
 
 Version History
 ---------------
-1.3.0 Unreleased
+1.3.b3 - 1 June 2013
 
 - Removed the ReferenceTypeMap and added functionality to TypeMap to hold additional
   reference information.

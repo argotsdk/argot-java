@@ -25,12 +25,9 @@
  */
 package com.argot;
 
-import java.util.Iterator;
-
 import com.argot.meta.MetaCluster;
 import com.argot.meta.MetaIdentity;
 import com.argot.meta.MetaName;
-import com.argot.meta.MetaVersion;
 
 public class TypeMapperDynamic 
 implements TypeMapper 
@@ -120,15 +117,14 @@ implements TypeMapper
 		_map.getStreamId(name.getGroup());
 		
 		MetaIdentity metaName = (MetaIdentity) elemStructure;
-		Iterator<MetaVersion> iter = metaName.getVersions().iterator();
-		if (!iter.hasNext())
+		Integer[] versions = metaName.getVersionIdentifiers();
+		if (versions.length == 0)
+		{
 			throw new TypeException("Type has no versions " + name  );
-		
-		MetaVersion version = (MetaVersion) iter.next();
-		int verId = _library.getDefinitionId(name, version);
+		}
 		
 		int mapId = getNextId();
-		_map.map(mapId, verId);
+		_map.map(mapId, versions[0]);
 		return mapId;
 	}
 

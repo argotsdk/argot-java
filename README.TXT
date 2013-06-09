@@ -60,6 +60,18 @@ Please view the example .argot files to see how argot is specified.
 
 Version History
 ---------------
+
+1.3.b4 - Unreleased
+
+- Changed the Marshaller annoation to take a class instead of an enumerated list.
+  Allows others to write new marshallers and use them in the future.
+- Added new TypeLibraryReaderWriter interface for Marshaller annotation.
+- Updated the MetaExpressionLibraryResolver to not require the full meta dictionary
+  to be mapped into a user defined type map.
+- Updated MetaAbstract to force UVInt28 to be mapped into user map if abstract type used.
+- MetaIdentity changed to return list of definitions as array.  Used by updated
+  MetaExpressionLibraryResolver.
+
 1.3.b3 - 1 June 2013
 
 - Removed the ReferenceTypeMap and added functionality to TypeMap to hold additional

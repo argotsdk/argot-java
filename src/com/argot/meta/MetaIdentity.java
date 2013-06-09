@@ -28,7 +28,6 @@ package com.argot.meta;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import com.argot.TypeElement;
 import com.argot.TypeException;
@@ -77,9 +76,9 @@ implements MetaDefinition
 		return value.intValue();
 	}
 	
-	public Set<MetaVersion> getVersions()
+	public Integer[] getVersionIdentifiers()
 	{
-		return _versions.keySet();
+		return (Integer[]) _versions.values().toArray(new Integer[_versions.size()]);
 	}
 	
 	// NOTE may not be needed.

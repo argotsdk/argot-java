@@ -25,6 +25,7 @@
  */
 package com.argot.meta;
 
+import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeLibraryReader;
 import com.argot.TypeLibraryWriter;
@@ -35,18 +36,15 @@ import com.argot.TypeWriter;
 public class MetaExpressionLibraryResolver 
 implements MetaExpressionResolver
 {
+
 	public TypeReader getExpressionReader( TypeMap map, MetaExpression expression ) 
 	throws TypeException
 	{
-		// The expression.getTypeId() returns meta identity(un-versioned identifier) of
-		// the expression type. Using the map to return the stream identifier will get
-		// the mapped specific version of the identifier.
-		
-		// TODO Needs to be fixed.  This should get the expressionReader from somewhere
-		// else.  Going via the map requires all meta types to be mapped which is not ideal.
-		int id = map.getStreamId(expression.getTypeId());
+		// Force the streamId to be mapped using a getStreamId.
+		map.getStreamId(expression.getMemberTypeId());
 
-    	TypeLibraryReader reader = map.getLibrary().getReader(map.getDefinitionId(id));
+		// Get the typeId of the expression and use it to get the reader.
+    	TypeLibraryReader reader = map.getLibrary().getReader(getMetaDefinitionId(map,expression.getTypeId()));
 		if(!(reader instanceof MetaExpressionReader))
 		{
 			throw new TypeException("MetaExpressionReader expected. Found: " + reader.getClass().getName() );
@@ -58,14 +56,42 @@ implements MetaExpressionResolver
 	public TypeWriter getExpressionWriter(TypeMap map, MetaExpression expression)
 	throws TypeException
 	{
-		int id = map.getStreamId(expression.getTypeId());
-		TypeLibraryWriter writer = map.getLibrary().getWriter(map.getDefinitionId(id));
-		//TypeLibraryWriter writer = map.getLibrary().getWriter(expression.getTypeId());
+		// Force the streamId to be mapped using the following.
+		map.getStreamId(expression.getMemberTypeId());
+		
+		TypeLibraryWriter writer = map.getLibrary().getWriter(getMetaDefinitionId(map,expression.getTypeId()));
 		if(!(writer instanceof MetaExpressionWriter))
 		{
-			throw new TypeException("MetaExpressionWriter expected. Found: " + writer.getClass().getName() );
+			throw new TypeException("MetaExpressionLibraryResolver: MetaExpressionWriter expected. Found: " + writer.getClass().getName() );
 		}
 		MetaExpressionWriter expressionWriter = (MetaExpressionWriter) writer;
 		return expressionWriter.getExpressionWriter(map,this, expression);    	
+	}
+	
+	/*
+	 * This finds the metaIdentity of the type that was used to define the type.
+	 * It then gets the definition of the type and returns the typeId.
+	 * Required because it shouldn't map the definition id.
+	 */
+	private int getMetaDefinitionId(TypeMap map, int metaTypeId) 
+	throws TypeException
+	{
+		TypeElement typeStructure = map.getLibrary().getStructure(metaTypeId);
+		if (!(typeStructure instanceof MetaIdentity))
+		{
+			// This shouldn't be possible.
+			throw new TypeException("MetaExpressionLibraryResolver: Failed to find MetaIdentity for type");
+		}
+		
+		// There must only be one version of a Meta type.  Get it.
+		MetaIdentity identity = (MetaIdentity) typeStructure;
+		Integer[] versions = identity.getVersionIdentifiers();
+		if (versions.length != 1)
+		{
+			throw new TypeException("MetaExpressionLibraryResolver: More than one version defined for MetaExpression type");
+		}
+		
+		return versions[0];
+
 	}
 }

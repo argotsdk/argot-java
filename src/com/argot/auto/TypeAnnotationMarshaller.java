@@ -34,8 +34,7 @@ import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
 import com.argot.TypeLibrary;
-import com.argot.TypeLibraryReader;
-import com.argot.TypeLibraryWriter;
+import com.argot.TypeLibraryReaderWriter;
 import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
@@ -51,7 +50,7 @@ import com.argot.meta.MetaTag;
  * a sequence.
  */
 public class TypeAnnotationMarshaller
-implements TypeLibraryReader, TypeLibraryWriter, TypeBound
+implements TypeLibraryReaderWriter, TypeBound
 {
 	MetaExpressionResolver _expressionResolver;	
 	MetaSequence _sequence;

@@ -91,6 +91,11 @@ public class TypeMap
 		return list;
 	}
 	
+	public int getNextId()
+	{
+		return _map.size();
+	}
+	
 	private class IntegerComparator
 	implements Comparator<Integer>
 	{
@@ -123,7 +128,7 @@ public class TypeMap
 	public TypeLibrary getLibrary()
 	{
 		return _library;
-	}	
+	}
 	
 	public void map( int streamId, int definitionId )
 	throws TypeException

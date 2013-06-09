@@ -58,8 +58,8 @@ implements MetaDefinition, TypeRelation
     public static final String TYPENAME = "meta.abstract";
 	public static final String VERSION = "1.3";
 
-	private Map<Integer,MetaMap> _concreteToMap;
-	//private Map _mapToConcrete;
+	protected Map<Integer,MetaMap> _concreteToMap;
+
 	private Map<String,Integer> _relationMap;
 	
 	private MetaAbstractMap _defaultMappings[];
@@ -67,10 +67,10 @@ implements MetaDefinition, TypeRelation
 	// This keeps a list of any abstract types we've mapped.
 	private List<MetaAbstract> _abstractParentMap;
 	
-	private class MetaMap
+	protected class MetaMap
 	{
-		boolean isHidden;
-		int mapTypeId;
+		public boolean isHidden;
+		public int mapTypeId;
 	}
 	
 	public MetaAbstract()
@@ -136,10 +136,6 @@ implements MetaDefinition, TypeRelation
 		if (m == null ) return -1;
 		return m.mapTypeId;
 	}
- //   public Map<Integer,MetaMap> getConcreteToMap()
- //   {
- //   	return _concreteToMap;
- //   }
 
     public void addAbstractMap( MetaAbstract parent )
     {
@@ -244,6 +240,10 @@ implements MetaDefinition, TypeRelation
 	    {
 	    	MetaAbstract ma = (MetaAbstract) o;
 	    	
+	    	// MetaAbstract uses UVInt28 as part of reading a data type.  This will ensure the type is mapped.
+	    	TypeMap refMap = (TypeMap) out.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
+	    	refMap.getStreamId(UVInt28.TYPENAME);
+	    	
 	    	out.writeObject(UInt8.TYPENAME, new Integer(ma._defaultMappings.length));
 	    	
 	    	MetaAbstractMap[] defaultMappings = ma._defaultMappings;
@@ -267,7 +267,7 @@ implements MetaDefinition, TypeRelation
 		}
 	}
 
-	private static class MetaAbstractReader
+	public static class MetaAbstractReader
 	implements TypeReader
 	{
 		private MetaAbstract _metaAbstract;
@@ -335,7 +335,7 @@ implements MetaDefinition, TypeRelation
 		TypeWriter idWriter;
 	}
 	
-    private static class MetaAbstractWriter
+    public static class MetaAbstractWriter
     implements TypeWriter
     {
     	private MetaAbstract _metaAbstract;

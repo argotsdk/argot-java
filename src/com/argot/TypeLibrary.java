@@ -32,9 +32,6 @@ import java.util.List;
 import java.util.Set;
 
 import com.argot.auto.ArgotMarshaller;
-import com.argot.auto.ArgotMarshaller.Marshaller;
-import com.argot.auto.TypeAnnotationMarshaller;
-import com.argot.auto.TypeBeanMarshaller;
 import com.argot.common.CommonLoader;
 import com.argot.meta.MetaCluster;
 import com.argot.meta.MetaIdentity;
@@ -706,15 +703,16 @@ public class TypeLibrary
 		{
 			throw new TypeException("Error: ArgotMarshaller annotation not set for " + clss.getName());
 		}
-		if (marshallerType.value() == Marshaller.ANNOTATION )
+		try
 		{
-			return bind( typeId, new TypeAnnotationMarshaller(), new TypeAnnotationMarshaller(), clss );
+			TypeLibraryReaderWriter marshaller = marshallerType.value().newInstance();
+			return bind( typeId, marshaller, marshaller, clss );
 		}
-		else if (marshallerType.value() == Marshaller.BEAN )
+		catch(Exception ex)
 		{
-			return bind( typeId, new TypeBeanMarshaller(), new TypeBeanMarshaller(), clss );
+			throw new TypeException("Error: Failed to create instance of marshaller: " + marshallerType.value().getName(), ex );
 		}
-		throw new TypeException("Error: Unknown marshaller set for ArgotMarshaller annotation");
+		
 	}
 	
 	/*

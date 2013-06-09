@@ -33,8 +33,7 @@ import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
 import com.argot.TypeLibrary;
-import com.argot.TypeLibraryReader;
-import com.argot.TypeLibraryWriter;
+import com.argot.TypeLibraryReaderWriter;
 import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
@@ -46,7 +45,7 @@ import com.argot.meta.MetaExpressionResolver;
 import com.argot.meta.MetaSequence;
 
 public class TypeArrayMarshaller
-implements TypeLibraryWriter, TypeLibraryReader, TypeBound
+implements TypeLibraryReaderWriter, TypeBound
 {	
 	private MetaExpressionResolver _resolver;
 	private Class<?> _typeClass;

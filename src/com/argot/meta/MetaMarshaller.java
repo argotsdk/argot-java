@@ -29,15 +29,14 @@ import com.argot.TypeBound;
 import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeLibrary;
-import com.argot.TypeLibraryReader;
-import com.argot.TypeLibraryWriter;
+import com.argot.TypeLibraryReaderWriter;
 import com.argot.TypeMap;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
 
 
 public class MetaMarshaller
-implements TypeBound,TypeLibraryReader, TypeLibraryWriter
+implements TypeBound,TypeLibraryReaderWriter
 {
 	private MetaExpression _expression;
 	private MetaExpressionResolver _resolver;

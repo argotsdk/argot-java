@@ -61,7 +61,7 @@ Please view the example .argot files to see how argot is specified.
 Version History
 ---------------
 
-1.3.b4 - Unreleased
+1.3.b4 - 9 June 2013
 
 - Changed the Marshaller annoation to take a class instead of an enumerated list.
   Allows others to write new marshallers and use them in the future.

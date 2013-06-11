@@ -27,7 +27,7 @@
 <project name="argot" default="package" basedir=".">
 
 	<description>Argot build</description>
-    <property name="version" value="1.3.b3"/>
+    <property name="version" value="1.3.b4"/>
 	
 	<!-- set global properties for this build -->
 	<property name="src" location="src" />
@@ -46,7 +46,7 @@
 	<property name="argot-compiler" location="${base}\tools\argot_compiler" />
 
 	<!--property name="emma.dir" value="C:\java\emma-2.0.5312" /-->
-	<property name="emma.dir" value="/Users/davidryan/Documents/java/emma-2.0.5312" />
+	<property name="emma.dir" value="/Users/davidryan/Documents/Java/emma-2.0.5312" />
 	<path id="emma.lib">
 		<pathelement location="${emma.dir}/lib/emma.jar" />
 		<pathelement location="${emma.dir}/lib/emma_ant.jar" />

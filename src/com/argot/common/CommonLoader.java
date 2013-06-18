@@ -71,7 +71,7 @@ extends ResourceDictionaryLoader
 		if ( library.getTypeState( typeId ) == TypeLibrary.TYPE_REGISTERED )
 		{
 			UInt8 bbe = new UInt8();
-			id = library.bind( typeId, new TypeSimpleReader(bbe),new TypeSimpleWriter(bbe),null );			
+			id = library.bind( typeId, new TypeSimpleReader(bbe),new TypeSimpleWriter(bbe),Short.class );			
 			library.setSimpleType(id,true);
 		}
 		
@@ -79,7 +79,7 @@ extends ResourceDictionaryLoader
 		if ( library.getTypeState( typeId ) == TypeLibrary.TYPE_REGISTERED )
 		{
 			UInt16 bbs = new UInt16();
-			id = library.bind( typeId, new TypeSimpleReader(bbs), new TypeSimpleWriter(bbs), null );
+			id = library.bind( typeId, new TypeSimpleReader(bbs), new TypeSimpleWriter(bbs), Integer.class );
 			library.setSimpleType(id,true);			
 		}
 		
@@ -87,7 +87,7 @@ extends ResourceDictionaryLoader
 		if ( library.getTypeState( typeId ) == TypeLibrary.TYPE_REGISTERED )
 		{
 			UInt32 bei = new UInt32();
-			id = library.bind( typeId, new TypeSimpleReader(bei), new TypeSimpleWriter(bei), null );
+			id = library.bind( typeId, new TypeSimpleReader(bei), new TypeSimpleWriter(bei), Long.class );
 			library.setSimpleType(id,true);
 		}
 

@@ -136,6 +136,11 @@ implements MetaDefinition, TypeRelation
 		if (m == null ) return -1;
 		return m.mapTypeId;
 	}
+	
+	public Integer[] getConcreteIds()
+	{
+		return _concreteToMap.keySet().toArray(new Integer[_concreteToMap.keySet().size()]);
+	}
 
     public void addAbstractMap( MetaAbstract parent )
     {

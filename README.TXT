@@ -61,6 +61,14 @@ Please view the example .argot files to see how argot is specified.
 Version History
 ---------------
 
+1.3.b5 - Unreleased
+
+- Added CountOutputStream to count bytes when writing envelopes, etc.
+- Modified TypeConstructorAuto to cast arrays to the correct type.
+- Bound Java integer types to unsigned types in Argot.  Uint8 to Short, etc.  
+  Uint32 not bound to anything yet. Should probably be BigInteger.
+- Added getConcreteIds to MetaAbstract.  Required for Argot remote.
+
 1.3.b4 - 9 June 2013
 
 - Changed the Marshaller annoation to take a class instead of an enumerated list.

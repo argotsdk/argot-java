@@ -27,6 +27,7 @@ package com.argot.auto;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 
 import com.argot.TypeConstructor;
 import com.argot.TypeElement;
@@ -45,7 +46,8 @@ implements TypeConstructor
 		_constructor = null;
 	}
 
-    public Object construct(TypeElement sequence, Object[] objects)
+    @SuppressWarnings("unchecked")
+	public Object construct(TypeElement sequence, Object[] objects)
     throws TypeException
     {
     	if (_constructor == null)
@@ -55,7 +57,24 @@ implements TypeConstructor
     	
 		try
 		{
-			return _constructor.newInstance( objects );
+			Object[] arguments = new Object[objects.length];
+			
+			// Convert object[] to their parameter[] arguments.
+			@SuppressWarnings("rawtypes")
+			Class[] paramTypes = _constructor.getParameterTypes();
+			for (int x=0;x<objects.length;x++)
+			{
+				if (paramTypes[x].isArray() && objects[x].getClass().isArray())
+				{
+					Object[] data = (Object[]) objects[x];
+					arguments[x] = Arrays.copyOf(data,data.length,paramTypes[x] );
+				}
+				else
+				{
+					arguments[x] = objects[x];
+				}
+			}
+			return _constructor.newInstance( arguments );
 		}
 		catch (IllegalArgumentException e)
 		{
@@ -86,7 +105,7 @@ implements TypeConstructor
     throws TypeException
     {    
 		Constructor<?> constructors[] = _clss.getConstructors();
-
+		
 		// Loop through all the constructors on the class.
 		for ( int x=0; x < constructors.length; x++ )
 		{
@@ -131,6 +150,26 @@ implements TypeConstructor
 
 				if ( paramTypes[y].getName().equals( "double" ) && objects[y].getClass().getName().equals( "java.lang.Double" ))
 					continue;
+				
+				// If the parameter is an array see if all the objects in the array conform.
+				if (paramTypes[y].isArray() && objects[y].getClass().isArray())
+				{
+					@SuppressWarnings("rawtypes")
+					Class arrayType = objects[y].getClass().getComponentType();
+					Object[] data = (Object[]) objects[y];
+					boolean ok = true;
+					for (int z=0;z<data.length;z++)
+					{
+						if (data[z] != null && !arrayType.isInstance(data[z]))
+						{
+							ok = false;
+						}
+					}
+					if (ok)
+					{
+						continue;
+					}
+				}
 				
 				// We couldn't find a match between this parameter and object value.
 				// This constructor isn't a match.

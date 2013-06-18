@@ -151,7 +151,7 @@ implements TypeLibraryLoader
 				new MetaAtomAttributeBigEndian()
 		});
 
-		id = library.register( new DictionaryDefinition(library, uint8Id,UInt8.TYPENAME, "1.3"), u8def, new TypeSimpleReader(bbe), new TypeSimpleWriter(bbe), null );
+		id = library.register( new DictionaryDefinition(library, uint8Id,UInt8.TYPENAME, "1.3"), u8def, new TypeSimpleReader(bbe), new TypeSimpleWriter(bbe), Short.class );
 		library.setSimpleType(id,true);
 
 		// 3. uvint28
@@ -165,7 +165,7 @@ implements TypeLibraryLoader
 				new MetaAtomAttributeBigEndian()
 		});
 
-		id = library.register( new DictionaryDefinition(library, uvint28Id,UVInt28.TYPENAME, "1.3"), uvi28def, new TypeSimpleReader(uvi28), new TypeSimpleWriter(uvi28), null );
+		id = library.register( new DictionaryDefinition(library, uvint28Id,UVInt28.TYPENAME, "1.3"), uvi28def, new TypeSimpleReader(uvi28), new TypeSimpleWriter(uvi28), Integer.class );
 		library.setSimpleType(id,true);
 		
 	    // 5. meta.id

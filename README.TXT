@@ -68,6 +68,9 @@ Version History
 - Bound Java integer types to unsigned types in Argot.  Uint8 to Short, etc.  
   Uint32 not bound to anything yet. Should probably be BigInteger.
 - Added getConcreteIds to MetaAbstract.  Required for Argot remote.
+- DynamicMapper performs mapping if only a single version exists.
+- Better error reporting in MetaAbstract
+- Implement getVersion correctly in TypeLibrary and TypeMap
 
 1.3.b4 - 9 June 2013
 

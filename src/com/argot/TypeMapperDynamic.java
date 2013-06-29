@@ -118,9 +118,9 @@ implements TypeMapper
 		
 		MetaIdentity metaName = (MetaIdentity) elemStructure;
 		Integer[] versions = metaName.getVersionIdentifiers();
-		if (versions.length == 0)
+		if (versions.length != 1)
 		{
-			throw new TypeException("Type has no versions " + name  );
+			throw new TypeException("Type has multiple versions " + name.getFullName()  );
 		}
 		
 		int mapId = getNextId();

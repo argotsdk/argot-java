@@ -108,7 +108,10 @@ implements MetaDefinition, TypeRelation
 			for (int x=0; x<_defaultMappings.length;x++)
 			{
 				MetaAbstractMap mapping = _defaultMappings[x];
-				
+				if (mapping == null)
+				{
+					throw new TypeException("MetaAbstract: Default mapping " + x + " invalid");
+				}
 				
 		        TypeElement concreteElement = library.getStructure( mapping.getConcreteType() ); 
 		        if (concreteElement instanceof MetaAbstract)
@@ -391,7 +394,7 @@ implements MetaDefinition, TypeRelation
 			MetaMap metaMap = (MetaMap) _metaAbstract._concreteToMap.get( new Integer( id ));
 	        if ( metaMap == null )
 	        {
-				throw new TypeException( "can't write abstract type directly.:" + clss.getName() );
+				throw new TypeException( "MetaAbstract - Definition '" + name.getFullName() + "' not mapped to abstract type '"  + map.getLibrary().getName(_metaAbstract.getMemberTypeId()).getFullName() + "'" );
 			}
 	        
 	        CacheEntry entry = new CacheEntry();
@@ -402,8 +405,15 @@ implements MetaDefinition, TypeRelation
 		        // that the server also has the mapping from concrete to map value.  By 
 		        // getting the System Id of the MapId it will automatically resolve if the
 		        // server has the correct value.
-		        map.getStreamId(metaMap.mapTypeId);
-		        map.getStreamId(id);
+	        	try
+	        	{
+	        		map.getStreamId(metaMap.mapTypeId);
+	        		map.getStreamId(id);
+	        	}
+	        	catch (TypeException ex)
+	        	{
+	        		throw new TypeException( "MetaAbstract - Definition '" + name.getFullName() + "' not mapped to abstract type '"  + map.getLibrary().getName(_metaAbstract.getMemberTypeId()).getFullName() + "'" );
+	        	}
 	        }
 
 	        // The Id written to file is the mapped concrete id.

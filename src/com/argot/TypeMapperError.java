@@ -49,6 +49,7 @@ implements TypeMapper
 		try
 		{
 			name = _library.getName(definitionId).getFullName();
+			name += "/" + _library.getVersion(definitionId);
 		}
 		catch ( TypeException ex )
 		{

@@ -74,7 +74,6 @@ public class TypeLibrary
 	{
 	    public int state;
 	    public int id;
-		public String version;
 		public TypeLibraryReader reader;
 		public TypeLibraryWriter writer;
 		public Class<?> clss;
@@ -799,7 +798,7 @@ public class TypeLibrary
 	}
 	
 	
-	public String getVersion(int definitionId) 
+	public MetaVersion getVersion(int definitionId) 
 	throws TypeException
 	{
 		if ( !isTypeIdInRange(definitionId) )
@@ -809,7 +808,12 @@ public class TypeLibrary
 		if ( def == null )
 			throw new TypeNotDefinedException( "type not found" );
 		
-		return def.version;
+		if (!(def.location instanceof TypeLocationDefinition))
+		{
+			throw new TypeException("Not a definition type");
+		}
+		
+		return ((TypeLocationDefinition) def.location).getVersion();
 	}
 	
 	/**

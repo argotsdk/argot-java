@@ -35,6 +35,7 @@ import java.util.Map;
 
 import com.argot.meta.MetaCluster;
 import com.argot.meta.MetaName;
+import com.argot.meta.MetaVersion;
 import com.argot.util.TwoWayHashMap;
 
 /**
@@ -424,7 +425,7 @@ public class TypeMap
 		return _library.getName( getDefinitionId( streamId ) );
 	}
 	
-	public String getVersion(int streamId)
+	public MetaVersion getVersion(int streamId)
 	throws TypeException
 	{
 		return _library.getVersion( getDefinitionId( streamId ));

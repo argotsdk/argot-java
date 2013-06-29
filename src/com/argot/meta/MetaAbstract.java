@@ -417,8 +417,15 @@ implements MetaDefinition, TypeRelation
 	        }
 
 	        // The Id written to file is the mapped concrete id.
-	        entry.mapId = new Integer(map.getStreamId(defId));
-	        
+	        try
+	        {
+	        	entry.mapId = new Integer(map.getStreamId(defId));
+	        }
+	        catch( TypeException ex)
+	        {
+	        	MetaVersion version = map.getLibrary().getVersion(defId);
+        		throw new TypeException( "MetaAbstract - Definition '" + name.getFullName() + "/"+ version.toString() + "' not mapped to abstract type '"  + map.getLibrary().getName(_metaAbstract.getMemberTypeId()).getFullName() + "'" );	        	
+	        }
 	        // Cache the writer function.
 	        entry.idWriter = map.getWriter(map.getStreamId( defId ));
 			return entry;

@@ -33,8 +33,6 @@ import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
 
-/**
- */
 public class Int64
 implements TypeReader, TypeWriter
 {
@@ -45,53 +43,39 @@ implements TypeReader, TypeWriter
 	throws TypeException, IOException
 	{
 		byte bytes[] = new byte[8];
-		in.read(bytes,0,8);
+		in.getStream().read(bytes,0,8);
 
-		long value = (((bytes[0] & 0xffL) << 56) | ((bytes[1] & 0xffL) << 48) | ((bytes[2] & 0xffL) << 40) | ((bytes[3] & 0xffL) << 32) | ((bytes[4] & 0xffL) << 24) | ((bytes[5] & 0xffL) << 16) | ((bytes[6] & 0xffL) << 8) | (bytes[7] & 0xffL ));		
+		long value = (((bytes[0] & 0xff) << 56) 
+				    | ((bytes[1] & 0xff) << 48) 
+				    | ((bytes[2] & 0xff) << 40) 
+				    | ((bytes[3] & 0xff) << 32) 
+				    | ((bytes[4] & 0xff) << 24) 
+				    | ((bytes[5] & 0xff) << 16) 
+				    | ((bytes[6] & 0xff) << 8) 
+				    | (bytes[7] & 0xff ));		
 
-		// need to return a long value here because an unsigned
-		// integer can be bigger than the java int.
 		return new Long( value );
 	}
 
 	public void write(TypeOutputStream out, Object o ) 
 	throws TypeException, IOException
 	{
-		int a,b,c,d,e,f,g,h;
-		
 		if ( !(o instanceof Long) )
-			throw new TypeException( "U32B: requires Long" );
+			throw new TypeException( "Int64: requires Long" );
 		
 		long s = ((Long) o).longValue();
-
-		if ( s < MIN || s > MAX )
-			throw new TypeException( "U16B: value out of range");
+		byte[] bytes = new byte[8];
 		
-		a = (int)((s >> 56) & 0xff);
-		b = (int)((s >> 48) & 0xff);
-		c = (int)((s >> 40) & 0xff);
-		d = (int)((s >> 32) & 0xff);
-		e = (int)((s >> 24) & 0xff);
-		f = (int)((s >> 16) & 0xff);
-		g = (int)((s >> 8) & 0xff);
-		h = (int)(s & 0xff);
+		bytes[0] = (byte)((s >> 56) & 0xff );
+		bytes[1] = (byte)((s >> 48) & 0xff );
+		bytes[2] = (byte)((s >> 40) & 0xff );
+		bytes[3] = (byte)((s >> 32) & 0xff );
+		bytes[4] = (byte)((s >> 24) & 0xff );
+		bytes[5] = (byte)((s >> 16) & 0xff );
+		bytes[6] = (byte)((s >> 8) & 0xff );
+		bytes[7] = (byte)(s & 0xff );
 		
-		out.getStream().write( a );
-		out.getStream().write( b );
-		out.getStream().write( c );
-		out.getStream().write( d );
-		out.getStream().write( e );
-		out.getStream().write( f );
-		out.getStream().write( g );
-		out.getStream().write( h );
-
+		out.getStream().write(bytes,0,8);
 	}
-	
-	// NOTE: As java can not store anything bigger than
-	//       a long.  It means that the max value is one
-	//       bit short of the max of 2^64-1.
-	public final long MIN = -9223372036854775808l; //-2^63;
-	public final long MAX =  9223372036854775807l; //2^63-1;
-	
 
 }

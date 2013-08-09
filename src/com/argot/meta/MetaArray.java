@@ -122,8 +122,40 @@ implements MetaDefinition
 		public TypeWriter getExpressionWriter(TypeMap map, MetaExpressionResolver resolver, TypeElement element)
 		throws TypeException 
 		{
-			throw new TypeException("not implemented");
+			MetaArray metaArray = (MetaArray) element;
+			return new MetaArrayWriter( resolver.getExpressionWriter(map, metaArray._size), resolver.getExpressionWriter(map, metaArray._type));
 		}		
+	}
+	
+	private static class MetaArrayWriter
+	implements TypeWriter
+	{
+		TypeWriter _size;
+		TypeWriter _data;
+		
+		private MetaArrayWriter(TypeWriter size, TypeWriter data )
+		{
+			_size = size;
+			_data = data;
+		}
+		
+		@Override
+		public void write(TypeOutputStream out, Object o) 
+		throws TypeException, IOException 
+		{
+			if (!o.getClass().isArray())
+				throw new TypeException("Attempting to write non-array type");
+			
+			Long[] array = (Long[])o;
+			
+			_size.write(out, array.length );
+			
+			for ( int x = 0 ; x < array.length; x ++ )
+			{
+				_data.write( out, array[x] );
+			}
+		}
+		
 	}
 	
 	private static class MetaArrayReader

@@ -79,23 +79,27 @@ implements TypeConstructor
 		catch (IllegalArgumentException e)
 		{
 			//e.printStackTrace();
-			throw new TypeException( "TypeReaderAuto:" + e.toString() + ":" + createError(objects), e );						
+			throw new TypeException( "TypeReaderAuto:" + _clss.getName() + ":" + e.toString() + ":" + createError(objects), e );						
 		}
 		catch (InstantiationException e)
 		{
 			//e.printStackTrace();
-			throw new TypeException( "TypeReaderAuto:" + e.toString(), e );
+			throw new TypeException( "TypeReaderAuto:" + _clss.getName() + ":" + e.toString(), e );
 		}
 		catch (IllegalAccessException e)
 		{
 			//e.printStackTrace();
-			throw new TypeException( "TypeReaderAuto:" + e.toString(), e );
+			throw new TypeException( "TypeReaderAuto:" + _clss.getName() + ":" + e.toString(), e );
 		}
 		catch (InvocationTargetException e)
 		{
 			//e.printStackTrace();
 				
-			throw new TypeException( "TypeReaderAuto:" + e.toString() + ":" + e.getCause().getMessage(),e );
+			throw new TypeException( "TypeReaderAuto:" + _clss.getName() + ":" + e.toString() + ":" + e.getCause().getMessage(),e );
+		}
+		catch (ClassCastException e)
+		{
+			throw new TypeException( "TypeReaderAuto:" + _clss.getName() + ":" + e.toString(),e );
 		}
 		
 		

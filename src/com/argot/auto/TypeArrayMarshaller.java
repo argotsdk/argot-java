@@ -121,7 +121,15 @@ implements TypeLibraryReaderWriter, TypeBound
 	    	Object array = Array.newInstance(_typeClass, s);
 	    	for(int x=0; x<s; x++)
 	    	{
-	    		Array.set(array, x, _data.read(in));
+	    		Object v = _data.read(in);
+	    		try
+	    		{
+	    			Array.set(array, x, v);
+	    		} 
+	    		catch( IllegalArgumentException ex ) 
+	    		{
+	    			throw new TypeException("Failed to set array with Object:" + (v==null?"null":v.getClass().getName()) + " to " + _typeClass.getName() ,ex);
+	    		}
 	    	}
 	    	return array;
 	    }
@@ -154,7 +162,7 @@ implements TypeLibraryReaderWriter, TypeBound
 			
 	 		if ( !o.getClass().isArray() )
 	 		{
-	 			throw new TypeException("TypeArrayMarshaller: Object value is not an array type");	
+	 			throw new TypeException("TypeArrayMarshaller: Object value is not an array type. " + o.getClass().getName());	
 	 		}
 	 		
 	 		int length = Array.getLength(o);

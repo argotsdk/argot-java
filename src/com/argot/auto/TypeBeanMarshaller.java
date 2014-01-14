@@ -49,6 +49,7 @@ public class TypeBeanMarshaller
 implements TypeLibraryReaderWriter, TypeBound
 {
 	MetaExpressionResolver _expressionResolver;
+	TypeInstantiator _instantiator;
 	Class<?> _typeClass;
 	Method[] _getMethods;
 	Method[] _setMethods;	
@@ -56,12 +57,23 @@ implements TypeLibraryReaderWriter, TypeBound
 
 	public TypeBeanMarshaller()
 	{
-		this(new MetaExpressionLibraryResolver());
+		this(new MetaExpressionLibraryResolver(),new ClassInstantiator());
+	}
+	
+	public TypeBeanMarshaller(TypeInstantiator instantiator)
+	{
+		this(new MetaExpressionLibraryResolver(), instantiator);
 	}
 	
 	public TypeBeanMarshaller(MetaExpressionResolver resolver )
 	{
+		this(resolver,new ClassInstantiator());
+	}
+	
+	public TypeBeanMarshaller(MetaExpressionResolver resolver, TypeInstantiator instantiator )
+	{
 		_expressionResolver = resolver;
+		_instantiator = instantiator;
 	}
 	
 	public void bind(TypeLibrary library, int definitionId, TypeElement definition) 
@@ -148,21 +160,8 @@ implements TypeLibraryReaderWriter, TypeBound
 		public Object read(TypeInputStream in)
 		throws TypeException, IOException 
 		{
-				Object o;
-				try 
-				{
-					o = _typeClass.newInstance();
-				} 
-				catch (InstantiationException e) 
-				{
-					throw new TypeException(e.getMessage(),e);
-				} 
-				catch (IllegalAccessException e) 
-				{
-					throw new TypeException(e.getMessage(),e);
-				}
-				
-				
+				Object o = _instantiator.instantiate(_typeClass);
+								
 				Object[] args = new Object[1];
 				for (int x=0;x<_sequenceReaders.length;x++)
 				{
@@ -255,6 +254,27 @@ implements TypeLibraryReaderWriter, TypeBound
 		return new TypeBeanMarshallerWriter(writers);
 	}
 
+	private static class ClassInstantiator
+	implements TypeInstantiator {
 
+		@Override
+		public Object instantiate(Class<?> clss) 
+		throws TypeException 
+		{
+			try 
+			{
+				return clss.newInstance();
+			} 
+			catch (InstantiationException e) 
+			{
+				throw new TypeException(e.getMessage(),e);
+			}
+			catch (IllegalAccessException e)
+			{
+				throw new TypeException(e.getMessage(),e);
+			}
+		}
+		
+	}
 
 }

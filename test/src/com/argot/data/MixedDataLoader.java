@@ -19,30 +19,32 @@ public class MixedDataLoader
 implements TypeLibraryLoader
 {
 
-	public String getName()
+	@Override
+    public String getName()
 	{
 		return "mixed_data";
 	}
 
-	public void load(TypeLibrary library) 
+	@Override
+    public void load(final TypeLibrary library)
 	throws TypeException
 	{
-		
-		int id = library.register( new DictionaryName(MetaName.parseName(library,MixedData.TYPENAME)), new MetaIdentity() );
-		
-		library.register( 
+
+		final int id = library.register( new DictionaryName(MetaName.parseName(library,MixedData.TYPENAME)), new MetaIdentity() );
+
+		library.register(
 				new DictionaryDefinition(id, MetaName.parseName(library,MixedData.TYPENAME), MetaVersion.parseVersion("1.0")),
 				new MetaSequence(
 					new MetaExpression[]{
-					    new MetaTag( "uint16", new MetaReference( library.getTypeId("uint16"))),
-					    new MetaTag( "uint8", new MetaReference( library.getTypeId("uint8"))),
-					    new MetaTag( "u8ascii", new MetaReference( library.getTypeId("u8ascii")))
+					    new MetaTag( "short", new MetaReference( library.getTypeId("uint16"))),
+					    new MetaTag( "byte", new MetaReference( library.getTypeId("uint8"))),
+					    new MetaTag( "text", new MetaReference( library.getTypeId("u8utf8")))
 					}
 				),
 			new TypeReaderAuto( MixedData.class ),
 			new MixedDataWriter(),
 			MixedData.class
-		);		
+		);
 	}
 
 }

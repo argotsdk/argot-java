@@ -45,65 +45,65 @@ import com.argot.meta.MetaVersion;
  * A simple mixed data used for testing purposes.
  */
 
-public class MixedDataAnnotated 
+public class MixedDataAnnotated
 {
 	public static final String TYPENAME = "mixeddata";
 	public static final String VERSION = "1.0";
-	
+
 	@ArgotTag("uint16")
 	public int _anInt;
-	
+
 	@ArgotTag("uint8")
 	public short _aShort;
-	
-	@ArgotTag("u8ascii")
-	public String _anAscii;
-	
+
+	@ArgotTag("u8utf8")
+	public String _anUtf8;
+
 	public MixedDataAnnotated()
 	{
 		this(0,(short)0,"");
 	}
-	
-	public MixedDataAnnotated(int i, short s, String string)
+
+	public MixedDataAnnotated(final int i, final short s, final String string)
 	{
 		_anInt = i;
 		_aShort = s;
-		_anAscii = string;
+		_anUtf8 = string;
 	}
 
 	public int getInt()
 	{
 		return _anInt;
 	}
-	
+
 	public short getShort()
 	{
 		return _aShort;
 	}
-	
+
 	public String getString()
 	{
-		return _anAscii;
+		return _anUtf8;
 	}
-	
+
 
 
 	/*
 	 * This should be contained in a dictionary file instead
 	 * of being created in code.  Useful here for testing.
 	 */
-	public static int register( TypeLibrary library )
+	public static int register( final TypeLibrary library )
 	throws TypeException
 	{
-		int id = library.register( new DictionaryName(MetaName.parseName(library,TYPENAME)), new MetaIdentity() );
-		
-		return library.register( 
+		final int id = library.register( new DictionaryName(MetaName.parseName(library,TYPENAME)), new MetaIdentity() );
+
+		return library.register(
 				new DictionaryDefinition(id, MetaName.parseName(library,TYPENAME), MetaVersion.parseVersion(VERSION)),
 				new MetaSequence(
 					new MetaExpression[]{
 					    new MetaTag( "uint16", new MetaReference( library.getTypeId("uint16"))),
 					    new MetaTag( "uint8", new MetaReference( library.getTypeId("uint8"))),
-					    new MetaTag( "u8ascii", new MetaReference( library.getTypeId("u8ascii")))
+					    new MetaTag( "u8utf8", new MetaReference( library.getTypeId("u8utf8")))
 					}
 				),
 			new TypeAnnotationMarshaller(),

@@ -185,7 +185,7 @@ public class ArgotMessage
 	       // final int libraryId = _typeLibrary.getTypeId(dictionaryTypes[x].location);
 	        final int libraryId = getDictionaryLocation(dictionaryTypes[x].location, messageTypeMap);
 	        if (libraryId == -1) {
-
+	            throw new TypeException("Failed to find type");
 	        }
 	        messageTypeMap.map(dictionaryTypes[x].id, libraryId);
 	    }
@@ -213,7 +213,10 @@ public class ArgotMessage
 	        return _typeLibrary.getTypeId(definition);
 	    }
 	    else if (location instanceof DictionaryRelation) {
-
+	        final DictionaryRelation relation = (DictionaryRelation) location;
+	     // map target definition to internal library identifier.
+            relation.setId(map.getDefinitionId(relation.getId()));
+            return _typeLibrary.getTypeId(relation);
 	    }
 	    return -1;
 	}

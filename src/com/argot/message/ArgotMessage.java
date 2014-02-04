@@ -122,7 +122,6 @@ public class ArgotMessage
 	    final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 	    final TypeOutputStream messageDictionary = new TypeOutputStream(baos, messageTypeMap );
 
-	    System.out.println("writing ext count " + extensionCount );
         messageDictionary.writeObject(UVInt28.TYPENAME, new Integer( extensionCount ));
 
 	    messageIdIterator = streamIdList.iterator();
@@ -138,7 +137,6 @@ public class ArgotMessage
             final TypeLocation location = messageTypeMap.getLocation(id.intValue());
             final MetaDefinition definition = (MetaDefinition) messageTypeMap.getStructure(id.intValue());
 
-            System.out.println( "writing " + id.intValue() + " " + location.toString());
             messageDictionary.writeObject( UVInt28.TYPENAME, new Integer(id.intValue()));
             messageDictionary.writeObject( DictionaryLocation.TYPENAME, location);
             messageDictionary.writeObject( MetaDefinition.META_DEFINITION_ENVELOPE, definition );
@@ -159,19 +157,16 @@ public class ArgotMessage
 	    final TypeInputStream msgStream = new TypeInputStream( in, messageTypeMap );
 
 	    final Short magic = (Short) msgStream.readObject( UInt8.TYPENAME );
-	    System.out.println("magic = " + magic );
 	    if (magic.intValue() != 65) {
 	        throw new TypeException("Message stream not an Argot message");
 	    }
 
 	    final Short version = (Short) msgStream.readObject(UInt8.TYPENAME);
-	    System.out.println("version = " + version );
 	    if (version.intValue() != 19) {
 	        throw new TypeException("Invalid version for Argot message");
 	    }
 
 	    final Integer dictionaryCount = (Integer) msgStream.readObject(UVInt28.TYPENAME);
-	    System.out.println("dictionaryCount = " + dictionaryCount);
 	    // Read in all the types and check if the library has a type at the same location.
 	    final Triple[] dictionaryTypes = new Triple[dictionaryCount];
 	    for (int x = 0 ; x < dictionaryCount; x++ ) {
@@ -181,8 +176,6 @@ public class ArgotMessage
 	        dictionaryTypes[x].location = (TypeLocation) msgStream.readObject(DictionaryLocation.TYPENAME);
 	        dictionaryTypes[x].structure = (byte[]) msgStream.readObject( MetaDefinition.META_DEFINITION_ENVELOPE );
 
-	        System.out.println("reading id " + dictionaryTypes[x].id + " " + dictionaryTypes[x].location.getClass().getName());
-	       // final int libraryId = _typeLibrary.getTypeId(dictionaryTypes[x].location);
 	        final int libraryId = getDictionaryLocation(dictionaryTypes[x].location, messageTypeMap);
 	        if (libraryId == -1) {
 	            throw new TypeException("Failed to find type");

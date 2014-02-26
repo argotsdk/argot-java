@@ -61,6 +61,12 @@ Please view the example .argot files to see how argot is specified.
 Version History
 ---------------
 
+1.3.b6 - 
+
+- Added Argot Message Format.
+- Various changes to improve error reporting.
+- Added sources jar to build
+
 1.3.b5 - 4 July 2013
 
 - Added CountOutputStream to count bytes when writing envelopes, etc.

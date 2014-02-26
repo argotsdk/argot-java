@@ -209,7 +209,8 @@
 		</copy>
 
 		<mkdir dir="${release}/lib" />
-		<jar jarfile="${release}/lib/argot-${version}.jar" basedir="${build.bin}" />			
+		<jar jarfile="${release}/lib/argot-${version}.jar" basedir="${build.bin}" />
+		<jar jarfile="${release}/lib/argot-${version}-sources.jar" basedir="${src}" />
 	</target>
 	
 	<available file="../../tools/argot_compiler" type="dir" property="argot.compiler.present"/>	

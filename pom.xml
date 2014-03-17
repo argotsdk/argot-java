@@ -16,7 +16,7 @@
     </properties>
 
     <scm>
-        <url>https://github.com/argotsdk/argot-java2</url>
+        <url>git@github.com:argotsdk/argot-java2</url>
         <connection>scm:git:git://github.com/argotsdk/argot-java2</connection>
         <developerConnection>scm:git:git://github.com/argotsdk/argot-java2</developerConnection>
     </scm>

@@ -1,0 +1,234 @@
+/*
+ * Copyright (c) 2003-2013, Live Media Pty. Ltd.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification, are permitted
+ * provided that the following conditions are met:
+ *
+ *  1. Redistributions of source code must retain the above copyright notice, this list of
+ *     conditions and the following disclaimer.
+ *  2. Redistributions in binary form must reproduce the above copyright notice, this list of
+ *     conditions and the following disclaimer in the documentation and/or other materials
+ *     provided with the distribution.
+ *  3. Neither the name of Live Media nor the names of its contributors may be used to endorse
+ *     or promote products derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+ * AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+ 
+!import meta.atom;
+!import meta.atom_attribute;
+!import meta.expression;
+!import meta.sequence;
+!import meta.reference;
+!import meta.name;
+
+
+(library.list [
+
+
+/*
+ *  The empty data type does not read any data. Like a NOP for Argot.
+ */
+ 
+/*
+ * The empty type is used for tagging information.  It is a 
+ * basic type that is empty.
+ * EMPTY_ID 1
+ */
+
+(library.entry 
+	(library.definition meta.name:"empty" meta.version:"1.3")	
+	(meta.atom uvint28:0 uvint28:0
+		[ (meta.attribute.size uvint28:0) ]))
+		
+/*
+ *  Unsigned data types (big endian network order).
+ */
+
+(library.entry
+	(library.definition meta.name:"uint8" meta.version:"1.3")
+	(meta.atom uvint28:8 uvint28:8
+		[ (meta.attribute.size uvint28:8)
+	  	  (meta.attribute.integer)
+	  	  (meta.attribute.unsigned)
+	  	  (meta.attribute.bigendian) ] ))
+
+
+(library.entry
+	(library.definition meta.name:"uint16" meta.version:"1.3")
+	(meta.atom uvint28:16 uvint28:16
+	[ (meta.attribute.size uvint28:16)
+	  (meta.attribute.integer)
+	  (meta.attribute.unsigned)
+	  (meta.attribute.bigendian) ] ))
+
+
+
+(library.entry
+	(library.definition meta.name:"uint32" meta.version:"1.3")
+	(meta.atom uvint28:32 uvint28:32
+	[ (meta.attribute.size uvint28:32)
+	  (meta.attribute.integer)
+	  (meta.attribute.unsigned)
+	  (meta.attribute.bigendian) ] ))
+
+(library.entry
+	(library.definition meta.name:"uint64" meta.version:"1.3")
+	(meta.atom uvint28:64 uvint28:64
+	[ (meta.attribute.size uvint28:64)
+	  (meta.attribute.integer)
+	  (meta.attribute.unsigned)
+	  (meta.attribute.bigendian) ] ))
+
+/*
+ *  Signed data types (big endian network order).
+ */
+
+(library.entry
+	(library.definition meta.name:"int8" meta.version:"1.3")
+	(meta.atom uvint28:8 uvint28:8
+	[ (meta.attribute.size uvint28:8)
+	  (meta.attribute.integer)
+	  (meta.attribute.signed) 
+	  (meta.attribute.bigendian) ] ))
+
+(library.entry
+	(library.definition meta.name:"int16" meta.version:"1.3")
+	(meta.atom uvint28:16 uvint28:16
+	[ (meta.attribute.size uvint28:16)
+	  (meta.attribute.integer)
+	  (meta.attribute.signed) 
+	  (meta.attribute.bigendian) ] ))
+
+(library.entry
+	(library.definition meta.name:"int32" meta.version:"1.3")
+	(meta.atom uvint28:32 uvint28:32
+	[ (meta.attribute.size uvint28:32)
+	  (meta.attribute.integer)
+	  (meta.attribute.signed) 
+	  (meta.attribute.bigendian) ] ))
+
+(library.entry
+	(library.definition meta.name:"int64" meta.version:"1.3")
+	(meta.atom uvint28:64 uvint28:64
+	[ (meta.attribute.size uvint28:64)
+	  (meta.attribute.integer)
+	  (meta.attribute.signed)
+	  (meta.attribute.bigendian) ] ))
+
+
+/*
+ *  Floats and Double.
+ */
+
+(library.entry
+	(library.definition meta.name:"float" meta.version:"1.3") 
+	(meta.atom uvint28:32 uvint28:32
+		[ (meta.attribute.size uvint28:32)
+		  (meta.attribute.IEEE756) 
+		  (meta.attribute.signed)  ]))
+
+
+(library.entry 
+	(library.definition meta.name:"double" meta.version:"1.3") 
+	(meta.atom uvint28:64 uvint28:64
+		[ (meta.attribute.size uvint28:64)
+		  (meta.attribute.IEEE756) 
+		  (meta.attribute.signed)  ]))
+
+
+/*
+ *  Boolean value is a byte that can be 0 false..  !0 true.
+ */
+
+
+(library.entry
+	(library.definition meta.name:"boolean" meta.version:"1.3")
+	(meta.reference #uint8))
+
+
+/*
+ *  An ascii encoded string.  Maximum size 255 bytes.
+ */
+
+(library.entry
+	(library.definition meta.name:"u8ascii" meta.version:"1.3")
+	(meta.encoding
+		(meta.array
+			(meta.reference #uint8)
+			(meta.reference #uint8))
+		u8ascii:"ISO646-US"))
+
+(library.entry
+	(library.definition meta.name:"u8utf8" meta.version:"1.3")
+	(meta.encoding
+		(meta.array
+			(meta.reference #uint8)
+			(meta.reference #uint8))
+		u8ascii:"UTF-8"))
+	
+/*
+ *  A UTF8 encoded string.  Maximum size u32.max bytes.
+ */		
+
+(library.entry
+	(library.definition meta.name:"u32utf8" meta.version:"1.3")
+	(meta.encoding
+		(meta.array
+			(meta.reference #uint32)
+			(meta.reference #uint8))
+		u8ascii:"UTF-8"))
+
+/*
+ *  A binary data block.  Maximum size u32.max.
+ */
+
+
+(library.entry
+	(library.definition meta.name:"u32binary" meta.version:"1.3")
+	(meta.array
+		(meta.reference #uint32)
+		(meta.reference #uint8)))
+
+/*
+ * A binary data block.  Maximum size u16.max
+ */ 
+
+(library.entry
+	(library.definition meta.name:"u16binary" meta.version:"1.3")
+	(meta.array
+		(meta.reference #uint16)
+		(meta.reference #uint8)))		
+
+/*
+ * Date is an abstract type that can be defined using various methods.
+ */
+
+
+(library.entry
+	(library.definition meta.name:"date" meta.version:"1.3")
+	(meta.abstract []))
+
+/*
+ *  A Java data is the number of milliseconds (or is it seconds) from 1st of Janurary 1970.
+ */
+
+
+(library.entry
+	(library.definition meta.name:"date_java" meta.version:"1.3")
+	(meta.sequence [ (meta.reference #int64) ]))
+
+(library.entry
+	(library.relation #date u8ascii:"1.3" u8ascii:"java")
+	(meta.abstract_map #date_java))
+
+])

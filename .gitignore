@@ -51,3 +51,7 @@ out/
 auto-save-list
 tramp
 .\#*
+
+### Gradle ###
+.gradle
+build/

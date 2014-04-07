@@ -44,42 +44,48 @@ implements MetaDefinition
 {
 	public static final String TYPENAME = "meta.array";
 	public static final String VERSION = "1.3";
-	
-	private MetaExpression _size;
-	private MetaExpression _type;
-	
-	public MetaArray( MetaExpression size, MetaExpression type )
+
+	private final MetaExpression _size;
+	private final MetaExpression _type;
+
+	public MetaArray( final MetaExpression size, final MetaExpression type )
 	{
-		if ( size == null ) throw new IllegalArgumentException("MetaArray: size is null");
-		if ( type == null ) throw new IllegalArgumentException("MetaArray: type is null");
+		if ( size == null ) {
+            throw new IllegalArgumentException("MetaArray: size is null");
+        }
+		if ( type == null ) {
+            throw new IllegalArgumentException("MetaArray: type is null");
+        }
 
 		_size = size;
 		_type = type;
 	}
 
+    @Override
     public String getTypeName()
     {
         return TYPENAME;
     }
-    
-    public void bind(TypeLibrary library, int definitionId, TypeLocation location, TypeElement definition) throws TypeException
+
+    @Override
+    public void bind(final TypeLibrary library, final int definitionId, final TypeLocation location, final TypeElement definition) throws TypeException
     {
         super.bind(library, definitionId, location, definition);
         _size.bind( library, definitionId, null, definition );
         _type.bind( library, definitionId, null, definition );
-    }	
-	
+    }
+
 	public MetaExpression getSizeExpression()
 	{
 	    return _size;
 	}
-	
+
 	public MetaExpression getTypeExpression()
 	{
 	    return _type;
 	}
-	
-	public int getExpressionType( TypeLibrary library ) throws TypeException
+
+	public int getExpressionType( final TypeLibrary library ) throws TypeException
 	{
 	    return library.getDefinitionId( TYPENAME, VERSION );
 	}
@@ -88,95 +94,95 @@ implements MetaDefinition
 	extends MetaExpressionReaderAuto
 	implements MetaExpressionReader
 	{
-		public MetaArrayTypeReader() 
+		public MetaArrayTypeReader()
 		{
 			super(MetaArray.class);
 		}
 
-		public TypeReader getExpressionReader(TypeMap map, MetaExpressionResolver resolver, TypeElement element)
-		throws TypeException 
+		public TypeReader getExpressionReader(final TypeMap map, final MetaExpressionResolver resolver, final TypeElement element)
+		throws TypeException
 		{
-			MetaArray metaArray = (MetaArray) element;
+			final MetaArray metaArray = (MetaArray) element;
 			return new MetaArrayReader( resolver.getExpressionReader(map, metaArray._size), resolver.getExpressionReader(map, metaArray._type));
-		}	
-	}    
-	
+		}
+	}
+
 	public static class MetaArrayTypeWriter
 	implements TypeLibraryWriter,TypeWriter,MetaExpressionWriter
 	{
-		public void write(TypeOutputStream out, Object o )
+		public void write(final TypeOutputStream out, final Object o )
 		throws TypeException, IOException
 		{
-			MetaArray ma = (MetaArray) o;
+			final MetaArray ma = (MetaArray) o;
 			out.writeObject( MetaExpression.TYPENAME, ma._size );
 			out.writeObject( MetaExpression.TYPENAME, ma._type );
-					
+
 		}
-		
-		public TypeWriter getWriter(TypeMap map) 
-		throws TypeException 
+
+		public TypeWriter getWriter(final TypeMap map)
+		throws TypeException
 		{
 			return this;
 		}
 
-		public TypeWriter getExpressionWriter(TypeMap map, MetaExpressionResolver resolver, TypeElement element)
-		throws TypeException 
+		public TypeWriter getExpressionWriter(final TypeMap map, final MetaExpressionResolver resolver, final TypeElement element)
+		throws TypeException
 		{
-			MetaArray metaArray = (MetaArray) element;
+			final MetaArray metaArray = (MetaArray) element;
 			return new MetaArrayWriter( resolver.getExpressionWriter(map, metaArray._size), resolver.getExpressionWriter(map, metaArray._type));
-		}		
+		}
 	}
-	
+
 	private static class MetaArrayWriter
 	implements TypeWriter
 	{
 		TypeWriter _size;
 		TypeWriter _data;
-		
-		private MetaArrayWriter(TypeWriter size, TypeWriter data )
+
+		private MetaArrayWriter(final TypeWriter size, final TypeWriter data )
 		{
 			_size = size;
 			_data = data;
 		}
-		
-		@Override
-		public void write(TypeOutputStream out, Object o) 
-		throws TypeException, IOException 
+
+		public void write(final TypeOutputStream out, final Object o)
+		throws TypeException, IOException
 		{
-			if (!o.getClass().isArray())
-				throw new TypeException("Attempting to write non-array type");
-			
-			Long[] array = (Long[])o;
-			
+			if (!o.getClass().isArray()) {
+                throw new TypeException("Attempting to write non-array type");
+            }
+
+			final Long[] array = (Long[])o;
+
 			_size.write(out, array.length );
-			
+
 			for ( int x = 0 ; x < array.length; x ++ )
 			{
 				_data.write( out, array[x] );
 			}
 		}
-		
+
 	}
-	
+
 	private static class MetaArrayReader
 	implements TypeReader
 	{
 		TypeReader _size;
 		TypeReader _data;
-		
-		private MetaArrayReader(TypeReader size, TypeReader data)
+
+		private MetaArrayReader(final TypeReader size, final TypeReader data)
 		{
 			_size = size;
 			_data = data;
 		}
-		
-		public Object read(TypeInputStream in)
-		throws TypeException, IOException 
+
+		public Object read(final TypeInputStream in)
+		throws TypeException, IOException
 		{
-		    Object sizeObject =  _size.read(in);
-		    
+		    final Object sizeObject =  _size.read(in);
+
 			int size = 0;
-			
+
 			if ( sizeObject instanceof Byte )
 			{
 				size = ((Byte)sizeObject).intValue();
@@ -197,15 +203,15 @@ implements MetaDefinition
 			{
 				throw new TypeException("MetaArray not able to use size object");
 			}
-					
-			Object[] objects = new Object[ size ];
+
+			final Object[] objects = new Object[ size ];
 			for ( int x = 0 ; x < size; x ++ )
 			{
 				objects[x] = _data.read( in );
 			}
-			
+
 			return objects;
 		}
-		
+
 	}
 }

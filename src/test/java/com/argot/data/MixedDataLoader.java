@@ -19,13 +19,11 @@ public class MixedDataLoader
 implements TypeLibraryLoader
 {
 
-	@Override
     public String getName()
 	{
 		return "mixed_data";
 	}
 
-	@Override
     public void load(final TypeLibrary library)
 	throws TypeException
 	{

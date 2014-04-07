@@ -181,7 +181,6 @@ implements MetaDefinition, TypeRelation
     	}
 	}
 
-	@Override
     public int getRelation(final String tag)
 	{
 		final Integer i = _relationMap.get(tag);
@@ -192,7 +191,6 @@ implements MetaDefinition, TypeRelation
 		return i.intValue();
 	}
 
-	@Override
     public void setRelation(final String tag, final int id)
 	{
 		_relationMap.put(tag, new Integer(id));
@@ -209,14 +207,12 @@ implements MetaDefinition, TypeRelation
 			_reader = new MetaMarshaller();
 		}
 
-		@Override
         public void bind(final TypeLibrary library, final int definitionId, final TypeElement definition)
 		throws TypeException
 		{
 			_reader.bind(library, definitionId, definition);
 		}
 
-	    @Override
         public Object read(final TypeInputStream in)
 	    throws TypeException, IOException
 	    {
@@ -235,14 +231,12 @@ implements MetaDefinition, TypeRelation
 			return new MetaAbstract(defaultMaps);
 	    }
 
-		@Override
         public TypeReader getReader(final TypeMap map)
 		throws TypeException
 		{
 			return this;
 		}
 
-		@Override
         public TypeReader getExpressionReader(final TypeMap map, final MetaExpressionResolver resolver, final TypeElement element)
 		throws TypeException
 		{
@@ -255,7 +249,6 @@ implements MetaDefinition, TypeRelation
 	implements TypeWriter, TypeLibraryWriter, MetaExpressionWriter
 	{
 
-	    @Override
         public void write(final TypeOutputStream out, final Object o)
 	    throws TypeException, IOException
 	    {
@@ -274,14 +267,12 @@ implements MetaDefinition, TypeRelation
 	    	}
 	    }
 
-		@Override
         public TypeWriter getWriter(final TypeMap map)
 		throws TypeException
 		{
 			return this;
 		}
 
-		@Override
         public TypeWriter getExpressionWriter(final TypeMap map, final MetaExpressionResolver resolver, final TypeElement element)
 		throws TypeException
 		{
@@ -304,7 +295,6 @@ implements MetaDefinition, TypeRelation
 			_mapCache = new HashMap<Integer,TypeReader>();
 		}
 
-		@Override
         public Object read(final TypeInputStream in)
 		throws TypeException, IOException
 		{
@@ -373,7 +363,6 @@ implements MetaDefinition, TypeRelation
     		_mapCache = new HashMap<Class<?>,CacheEntry>();
     	}
 
-		@Override
         public void write(final TypeOutputStream out, final Object o)
 		throws TypeException, IOException
 		{

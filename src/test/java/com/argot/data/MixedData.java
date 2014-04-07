@@ -83,7 +83,6 @@ public class MixedData
 	public static class MixedDataWriter
 	implements TypeLibraryWriter,TypeWriter
 	{
-		@Override
         public void write(final TypeOutputStream out, final Object o)
 		throws TypeException, IOException
 		{
@@ -93,7 +92,6 @@ public class MixedData
 			out.writeObject("u8utf8", data._anUtf8 );
 		}
 
-		@Override
         public TypeWriter getWriter(final TypeMap map)
 		throws TypeException
 		{

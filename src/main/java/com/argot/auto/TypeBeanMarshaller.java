@@ -33,6 +33,7 @@ import com.argot.TypeBound;
 import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
+import com.argot.TypeInstantiator;
 import com.argot.TypeLibrary;
 import com.argot.TypeLibraryReaderWriter;
 import com.argot.TypeMap;
@@ -57,7 +58,7 @@ implements TypeLibraryReaderWriter, TypeBound
 
 	public TypeBeanMarshaller()
 	{
-		this(new MetaExpressionLibraryResolver(),new ClassInstantiator());
+		this(new MetaExpressionLibraryResolver(),null);
 	}
 
 	public TypeBeanMarshaller(final TypeInstantiator instantiator)
@@ -67,7 +68,7 @@ implements TypeLibraryReaderWriter, TypeBound
 
 	public TypeBeanMarshaller(final MetaExpressionResolver resolver )
 	{
-		this(resolver,new ClassInstantiator());
+		this(resolver,null);
 	}
 
 	public TypeBeanMarshaller(final MetaExpressionResolver resolver, final TypeInstantiator instantiator )
@@ -82,6 +83,10 @@ implements TypeLibraryReaderWriter, TypeBound
 		if ( !(definition instanceof MetaSequence) )
 		{
 			throw new TypeException("TypeBeanMarshaller: Not an array instance");
+		}
+
+		if (_instantiator == null ) {
+		    _instantiator = library.getInstantiator(definitionId);
 		}
 
 		_sequence = (MetaSequence) definition;
@@ -105,7 +110,7 @@ implements TypeLibraryReaderWriter, TypeBound
 			try
 			{
 				final Class<?>[] empty = new Class[0];
-				_getMethods[x] = _typeClass.getDeclaredMethod(method, empty);
+				_getMethods[x] = _typeClass.getMethod(method, empty);
 			}
 			catch (final SecurityException e)
 			{
@@ -160,7 +165,7 @@ implements TypeLibraryReaderWriter, TypeBound
 		public Object read(final TypeInputStream in)
 		throws TypeException, IOException
 		{
-				final Object o = _instantiator.instantiate(_typeClass);
+				final Object o = _instantiator.newInstance();
 
 				final Object[] args = new Object[1];
 				for (int x=0;x<_sequenceReaders.length;x++)
@@ -252,28 +257,6 @@ implements TypeLibraryReaderWriter, TypeBound
 		}
 
 		return new TypeBeanMarshallerWriter(writers);
-	}
-
-	private static class ClassInstantiator
-	implements TypeInstantiator {
-
-		public Object instantiate(final Class<?> clss)
-		throws TypeException
-		{
-			try
-			{
-				return clss.newInstance();
-			}
-			catch (final InstantiationException e)
-			{
-				throw new TypeException(e.getMessage(),e);
-			}
-			catch (final IllegalAccessException e)
-			{
-				throw new TypeException(e.getMessage(),e);
-			}
-		}
-
 	}
 
 }

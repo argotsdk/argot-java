@@ -55,3 +55,9 @@ tramp
 ### Gradle ###
 .gradle
 build/
+
+### Eclipse ###
+.project
+.classpath
+.settings/
+

@@ -45,14 +45,14 @@ implements TypeReader, TypeWriter
 		byte bytes[] = new byte[8];
 		in.getStream().read(bytes,0,8);
 
-		long value = (((bytes[0] & 0xff) << 56) 
-				    | ((bytes[1] & 0xff) << 48) 
-				    | ((bytes[2] & 0xff) << 40) 
-				    | ((bytes[3] & 0xff) << 32) 
-				    | ((bytes[4] & 0xff) << 24) 
-				    | ((bytes[5] & 0xff) << 16) 
-				    | ((bytes[6] & 0xff) << 8) 
-				    | (bytes[7] & 0xff ));		
+		long value = ((((long)bytes[0] & 0xff) << 56) 
+				    | (((long)bytes[1] & 0xff) << 48) 
+				    | (((long)bytes[2] & 0xff) << 40) 
+				    | (((long)bytes[3] & 0xff) << 32) 
+				    | (((long)bytes[4] & 0xff) << 24) 
+				    | (((long)bytes[5] & 0xff) << 16) 
+				    | (((long)bytes[6] & 0xff) << 8) 
+				    | ((long)bytes[7] & 0xff ));		
 
 		return new Long( value );
 	}
@@ -66,14 +66,14 @@ implements TypeReader, TypeWriter
 		long s = ((Long) o).longValue();
 		byte[] bytes = new byte[8];
 		
-		bytes[0] = (byte)((s >> 56) & 0xff );
-		bytes[1] = (byte)((s >> 48) & 0xff );
-		bytes[2] = (byte)((s >> 40) & 0xff );
-		bytes[3] = (byte)((s >> 32) & 0xff );
-		bytes[4] = (byte)((s >> 24) & 0xff );
-		bytes[5] = (byte)((s >> 16) & 0xff );
-		bytes[6] = (byte)((s >> 8) & 0xff );
-		bytes[7] = (byte)(s & 0xff );
+		bytes[0] = (byte) ((s >> 56) & 0xff );
+		bytes[1] = (byte) ((s >> 48) & 0xff );
+		bytes[2] = (byte) ((s >> 40) & 0xff );
+		bytes[3] = (byte) ((s >> 32) & 0xff );
+		bytes[4] = (byte) ((s >> 24) & 0xff );
+		bytes[5] = (byte) ((s >> 16) & 0xff );
+		bytes[6] = (byte) ((s >> 8) & 0xff );
+		bytes[7] = (byte) (s & 0xff );
 		
 		out.getStream().write(bytes,0,8);
 	}

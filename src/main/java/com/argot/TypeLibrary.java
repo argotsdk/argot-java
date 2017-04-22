@@ -41,40 +41,44 @@ import com.argot.meta.MetaName;
 import com.argot.meta.MetaVersion;
 
 /**
- * The TypeLibrary is central to Argot.  It provides the collection of definitions in any system.
+ * The TypeLibrary is central to Argot. It provides the collection of
+ * definitions in any system.
  *
- * A TypeLibrary has a collection of names, collection of definitions (many to one name), and
- * associates classes to definitions (one to one).  The interface allows looking up based on
- * names, definition id's or classes.
+ * A TypeLibrary has a collection of names, collection of definitions (many to
+ * one name), and associates classes to definitions (one to one). The interface
+ * allows looking up based on names, definition id's or classes.
  *
  * @author David Ryan
  */
 public class TypeLibrary
 {
-    public static int NOTYPE = -1;
+	public static int NOTYPE = -1;
 
-    public static int TYPE_NOT_DEFINED = 0;
-    public static int TYPE_RESERVED = 1;
-    public static int TYPE_REGISTERED = 2;
-    public static int TYPE_COMPLETE = 3;
+	public static int TYPE_NOT_DEFINED = 0;
+	public static int TYPE_RESERVED = 1;
+	public static int TYPE_REGISTERED = 2;
+	public static int TYPE_COMPLETE = 3;
 
-    public static final String[] typeStates = {"Type not defined","type reserved","type registered","type complete"};
+	public static final String[] typeStates = {"Type not defined", "type reserved", "type registered", "type complete"};
 
-	private ArrayList<TypeDefinitionEntry> _types;    // index(nameId) to TypeNameEntry
+	private ArrayList<TypeDefinitionEntry> _types; // index(nameId) to
+													// TypeNameEntry
 
-	private HashMap<String,TypeDefinitionEntry> _names;  // name to TypeNameEntry
+	private HashMap<String, TypeDefinitionEntry> _names; // name to
+															// TypeNameEntry
 
-	private HashMap<Class<?>,List<TypeDefinitionEntry>> _classes;  // class to TypeDefinitionEntry
+	private HashMap<Class<?>, List<TypeDefinitionEntry>> _classes; // class to
+																	// TypeDefinitionEntry
 
-	//private TreeItem _tree;
+	// private TreeItem _tree;
 	private MetaCluster _tree;
 
 	private boolean _primed;
 
 	private class TypeDefinitionEntry
 	{
-	    public int state;
-	    public int id;
+		public int state;
+		public int id;
 		public TypeLibraryReader reader;
 		public TypeLibraryWriter writer;
 		public Class<?> clss;
@@ -84,17 +88,13 @@ public class TypeLibrary
 		public boolean isSimple;
 	}
 
-	public TypeLibrary()
-	throws TypeException
+	public TypeLibrary() throws TypeException
 	{
 		init();
 		loadBaseTypes();
 	}
 
-
-
-	public TypeLibrary( final boolean loadBaseTypes )
-	throws TypeException
+	public TypeLibrary(final boolean loadBaseTypes) throws TypeException
 	{
 		init();
 
@@ -104,8 +104,7 @@ public class TypeLibrary
 		}
 	}
 
-	public TypeLibrary( final TypeLibraryLoader[] loaders )
-	throws TypeException
+	public TypeLibrary(final TypeLibraryLoader[] loaders) throws TypeException
 	{
 		init();
 
@@ -114,40 +113,33 @@ public class TypeLibrary
 
 	private void init()
 	{
-		System.out.println("\nArgot Version 1.3.b4");
-		System.out.println("Copyright 2003-2013 (C) Live Media Pty Ltd.");
-		System.out.println("www.argot-sdk.org\n");
+		// System.out.println("\nArgot Version 1.3.b4");
+		// System.out.println("Copyright 2003-2013 (C) Live Media Pty Ltd.");
+		// System.out.println("www.argot-sdk.org\n");
 
 		_types = new ArrayList<TypeDefinitionEntry>();
-		_names = new HashMap<String,TypeDefinitionEntry>();
-		_classes = new HashMap<Class<?>,List<TypeDefinitionEntry>>();
+		_names = new HashMap<String, TypeDefinitionEntry>();
+		_classes = new HashMap<Class<?>, List<TypeDefinitionEntry>>();
 		_tree = null;
 		_primed = false;
 	}
 
-	private void loadBaseTypes()
-	throws TypeException
+	private void loadBaseTypes() throws TypeException
 	{
-		final TypeLibraryLoader libraryLoaders[] =
-		{
-				new MetaLoader(),
-				new CommonLoader()
-		};
+		final TypeLibraryLoader libraryLoaders[] = {new MetaLoader(), new CommonLoader()};
 
-		loadLibraries( libraryLoaders );
+		loadLibraries(libraryLoaders);
 	}
 
-	public void loadLibraries( final TypeLibraryLoader[] loaders )
-	throws TypeException
+	public void loadLibraries(final TypeLibraryLoader[] loaders) throws TypeException
 	{
-		for(int x=0;x<loaders.length;x++)
+		for (int x = 0; x < loaders.length; x++)
 		{
 			loadLibrary(loaders[x]);
 		}
 	}
 
-	public void loadLibrary( final TypeLibraryLoader loader )
-	throws TypeException
+	public void loadLibrary(final TypeLibraryLoader loader) throws TypeException
 	{
 		loader.load(this);
 	}
@@ -157,36 +149,35 @@ public class TypeLibrary
 		_primed = true;
 	}
 
-	private void addClass( final TypeDefinitionEntry definition, final Class<?> clss)
-	throws TypeException
+	private void addClass(final TypeDefinitionEntry definition, final Class<?> clss) throws TypeException
 	{
-        List<TypeDefinitionEntry> list =  _classes.get( clss);
-        if ( list == null )
-        {
-        	list = new ArrayList<TypeDefinitionEntry>();
-        	_classes.put(clss, list);
-        } else {
-        	final Iterator<TypeDefinitionEntry> iter = list.iterator();
-        	while (iter.hasNext())
-        	{
-        		final TypeDefinitionEntry entry = iter.next();
+		List<TypeDefinitionEntry> list = _classes.get(clss);
+		if (list == null)
+		{
+			list = new ArrayList<TypeDefinitionEntry>();
+			_classes.put(clss, list);
+		}
+		else
+		{
+			final Iterator<TypeDefinitionEntry> iter = list.iterator();
+			while (iter.hasNext())
+			{
+				final TypeDefinitionEntry entry = iter.next();
 
-        		if (entry == definition)
-        		{
-        			throw new TypeException("Class already bound to type");
-        		}
-        	}
-        }
-        list.add( definition );
+				if (entry == definition)
+				{
+					throw new TypeException("Class already bound to type");
+				}
+			}
+		}
+		list.add(definition);
 
 	}
-
 
 	/*
 	 * Used to add any new names to the tree structure.
 	 */
-	private void addLocationToTree(final MetaName location, final TypeDefinitionEntry entry)
-	throws TypeException
+	private void addLocationToTree(final MetaName location, final TypeDefinitionEntry entry) throws TypeException
 	{
 		final TypeElement data = getStructure(location.getGroup());
 		if (data == null)
@@ -205,159 +196,159 @@ public class TypeLibrary
 	}
 
 	/**
-	 * Add a new definition to the library. This must be a fresh entry.
-	 * Either a reserved or register call.
+	 * Add a new definition to the library. This must be a fresh entry. Either a
+	 * reserved or register call.
+	 * 
 	 * @param definition
 	 * @return
 	 */
-	private int add( final TypeDefinitionEntry definition )
-	throws TypeException
+	private int add(final TypeDefinitionEntry definition) throws TypeException
 	{
 		MetaIdentity identity = null;
 		MetaVersion identityVersion = null;
 		TypeRelation relation = null;
 		String relationTag = null;
 
-	    // Add to list of names if it isn't already there.
-	    if (definition.location instanceof TypeLocationName)
-	    {
-	    	final MetaName metaName = ((TypeLocationName)definition.location).getName();
+		// Add to list of names if it isn't already there.
+		if (definition.location instanceof TypeLocationName)
+		{
+			final MetaName metaName = ((TypeLocationName) definition.location).getName();
 
-	    	final String name = checkName( metaName.getFullName() );
+			final String name = checkName(metaName.getFullName());
 
-
-		    final TypeDefinitionEntry nameEntry = _names.get(name);
-		    if ( nameEntry != null )
-		    {
-		    	throw new TypeDefinedException("Type name already exists");
-		    }
+			final TypeDefinitionEntry nameEntry = _names.get(name);
+			if (nameEntry != null)
+			{
+				throw new TypeDefinedException("Type name already exists");
+			}
 
 			addLocationToTree(metaName, definition);
 
-		    // Add name lookup in names map.
-		    _names.put(name, definition);
+			// Add name lookup in names map.
+			_names.put(name, definition);
 		}
-	    else if (definition.location instanceof TypeLocationDefinition)
-	    {
-	    	final TypeLocationDefinition typeDef = (TypeLocationDefinition) definition.location;
+		else if (definition.location instanceof TypeLocationDefinition)
+		{
+			final TypeLocationDefinition typeDef = (TypeLocationDefinition) definition.location;
 
-	    	//String typeName = this.getName(tv.getTypeId()) + "#" + checkVersion( tv.getVersion() );
-	    	if ( !isTypeIdInRange( typeDef.getId() ) )
-	    	{
-	    		throw new TypeException("Type not in range");
-	    	}
+			// String typeName = this.getName(tv.getTypeId()) + "#" +
+			// checkVersion( tv.getVersion() );
+			if (!isTypeIdInRange(typeDef.getId()))
+			{
+				throw new TypeException("Type not in range");
+			}
 
-	    	final TypeDefinitionEntry nameEntry = _types.get(typeDef.getId());
-	    	if ( nameEntry == null )
-	    	{
-	    		throw new TypeNotDefinedException("Type name not defined");
-	    	}
+			final TypeDefinitionEntry nameEntry = _types.get(typeDef.getId());
+			if (nameEntry == null)
+			{
+				throw new TypeNotDefinedException("Type name not defined");
+			}
 
-		    if ( !( nameEntry.structure instanceof MetaIdentity ) )
-		    {
-		    	throw new TypeException("Location not a name type");
-		    }
+			if (!(nameEntry.structure instanceof MetaIdentity))
+			{
+				throw new TypeException("Location not a name type");
+			}
 
-		    identity = (MetaIdentity) nameEntry.structure;
-		    identityVersion = typeDef.getVersion();
-	    }
-	    else if (definition.location instanceof TypeLocationRelation)
-	    {
-	    	final TypeLocationRelation typeRel = (TypeLocationRelation) definition.location;
+			identity = (MetaIdentity) nameEntry.structure;
+			identityVersion = typeDef.getVersion();
+		}
+		else if (definition.location instanceof TypeLocationRelation)
+		{
+			final TypeLocationRelation typeRel = (TypeLocationRelation) definition.location;
 
-	    	if ( !isTypeIdInRange( typeRel.getId() ) )
-	    	{
-	    		throw new TypeException("Type not in range");
-	    	}
+			if (!isTypeIdInRange(typeRel.getId()))
+			{
+				throw new TypeException("Type not in range");
+			}
 
-	    	final TypeDefinitionEntry targetEntry = _types.get(typeRel.getId());
-	    	if ( targetEntry == null )
-	    	{
-	    		throw new TypeNotDefinedException("Relation target name not defined");
-	    	}
+			final TypeDefinitionEntry targetEntry = _types.get(typeRel.getId());
+			if (targetEntry == null)
+			{
+				throw new TypeNotDefinedException("Relation target name not defined");
+			}
 
-	    	if (!(targetEntry.structure instanceof TypeRelation))
-	    	{
-	    		throw new TypeException("TypeLocationRelation target not a TypeRelation");
-	    	}
+			if (!(targetEntry.structure instanceof TypeRelation))
+			{
+				throw new TypeException("TypeLocationRelation target not a TypeRelation");
+			}
 
-	    	relation = (TypeRelation) targetEntry.structure;
-	    	relationTag = typeRel.getTag();
-	    }
-	    else if (definition.location instanceof TypeLocationBase)
-	    {
-	    	if (_tree != null) {
-                throw new TypeException("Base cluster already defined");
-            }
+			relation = (TypeRelation) targetEntry.structure;
+			relationTag = typeRel.getTag();
+		}
+		else if (definition.location instanceof TypeLocationBase)
+		{
+			if (_tree != null)
+			{
+				throw new TypeException("Base cluster already defined");
+			}
 
-	    	_tree = (MetaCluster) definition.structure;
-	    }
+			_tree = (MetaCluster) definition.structure;
+		}
 
-	    // Add to list of definitions.
-	    _types.add( definition );
-	    final int id = _types.indexOf( definition );
-	    definition.id = id;
+		// Add to list of definitions.
+		_types.add(definition);
+		final int id = _types.indexOf(definition);
+		definition.id = id;
 
-	    if (identity != null)
-	    {
-	    	identity.addVersion(identityVersion, definition.id);
-	    }
+		if (identity != null)
+		{
+			identity.addVersion(identityVersion, definition.id);
+		}
 
-	    if (relation != null)
-	    {
-	    	relation.setRelation(relationTag, definition.id);
-	    }
-	    // Add class lookup if defined.
-	    if ( definition.clss != null )
-	    {
-	    	addClass( definition, definition.clss );
-	    }
-	    return id;
+		if (relation != null)
+		{
+			relation.setRelation(relationTag, definition.id);
+		}
+		// Add class lookup if defined.
+		if (definition.clss != null)
+		{
+			addClass(definition, definition.clss);
+		}
+		return id;
 	}
 
-	private String checkName( final String name )
-	throws TypeException
+	private String checkName(final String name) throws TypeException
 	{
-	    if ( name == null || name.length() == 0 ) {
-            throw new TypeException("invalid parameter");
-        }
+		if (name == null || name.length() == 0)
+		{
+			throw new TypeException("invalid parameter");
+		}
 
-	    return name.toLowerCase();
+		return name.toLowerCase();
 	}
 
-	private String checkVersion(final String version )
-	throws TypeException
+	private String checkVersion(final String version) throws TypeException
 	{
 		return checkName(version);
 	}
 
-	private boolean isTypeIdInRange( final int id )
+	private boolean isTypeIdInRange(final int id)
 	{
-		if ( _types.size() == 0 ) {
-            return false;
-        }
+		if (_types.size() == 0)
+		{
+			return false;
+		}
 
-		if ( id < 0 || id >= _types.size() ) {
-            return false;
-        }
+		if (id < 0 || id >= _types.size())
+		{
+			return false;
+		}
 
 		return true;
 	}
 
-	public int getTypeId(final String name )
-	throws TypeException
+	public int getTypeId(final String name) throws TypeException
 	{
 		final String checkedName = checkName(name);
 		final TypeDefinitionEntry entry = _names.get(checkedName);
 		if (entry == null)
 		{
-			throw new TypeNotDefinedException("Not Defined:" + name );
+			throw new TypeNotDefinedException("Not Defined:" + name);
 		}
 		return entry.id;
 	}
 
-	public int getTypeId(final String name, final String version)
-	throws TypeException
+	public int getTypeId(final String name, final String version) throws TypeException
 	{
 		final String checkedName = checkName(name);
 		final MetaVersion checkedVersion = MetaVersion.parseVersion(checkVersion(version));
@@ -365,10 +356,10 @@ public class TypeLibrary
 		final TypeDefinitionEntry entry = _names.get(checkedName);
 		if (entry == null)
 		{
-			throw new TypeNotDefinedException("Not Defined:" + name );
+			throw new TypeNotDefinedException("Not Defined:" + name);
 		}
 
-		if ( !(entry.structure instanceof MetaIdentity))
+		if (!(entry.structure instanceof MetaIdentity))
 		{
 			throw new TypeException("Structure not an identity");
 		}
@@ -376,7 +367,7 @@ public class TypeLibrary
 		final MetaIdentity identity = (MetaIdentity) entry.structure;
 
 		final int id = identity.getVersion(checkedVersion);
-		if ( id == TypeLibrary.NOTYPE )
+		if (id == TypeLibrary.NOTYPE)
 		{
 			throw new TypeNotDefinedException("Not Defined:" + name + "#" + version);
 		}
@@ -384,14 +375,13 @@ public class TypeLibrary
 		return id;
 	}
 
-	public int getTypeId( final TypeLocation location )
-	throws TypeException
+	public int getTypeId(final TypeLocation location) throws TypeException
 	{
-		if (location == null )
+		if (location == null)
 		{
 			throw new TypeException("location is null");
 		}
-		if ( location instanceof TypeLocationName )
+		if (location instanceof TypeLocationName)
 		{
 			final TypeLocationName locationName = (TypeLocationName) location;
 
@@ -402,17 +392,19 @@ public class TypeLibrary
 			}
 			return entry.id;
 		}
-		else if ( location instanceof TypeLocationDefinition )
+		else if (location instanceof TypeLocationDefinition)
 		{
 			final TypeLocationDefinition locationDef = (TypeLocationDefinition) location;
-	    	if ( !isTypeIdInRange(locationDef.getId()) ) {
-                return NOTYPE;
-            }
+			if (!isTypeIdInRange(locationDef.getId()))
+			{
+				return NOTYPE;
+			}
 
-	        final TypeDefinitionEntry definition = _types.get( locationDef.getId() );
-			if (definition == null) {
-                return NOTYPE;
-            }
+			final TypeDefinitionEntry definition = _types.get(locationDef.getId());
+			if (definition == null)
+			{
+				return NOTYPE;
+			}
 
 			if (!(definition.structure instanceof MetaIdentity))
 			{
@@ -423,17 +415,19 @@ public class TypeLibrary
 
 			return identity.getVersion(locationDef.getVersion());
 		}
-		else if (location instanceof TypeLocationRelation )
+		else if (location instanceof TypeLocationRelation)
 		{
 			final TypeLocationRelation locationRelation = (TypeLocationRelation) location;
-	    	if ( !isTypeIdInRange(locationRelation.getId()) ) {
-                return NOTYPE;
-            }
+			if (!isTypeIdInRange(locationRelation.getId()))
+			{
+				return NOTYPE;
+			}
 
-	        final TypeDefinitionEntry definition = _types.get( locationRelation.getId() );
-			if (definition == null) {
-                return NOTYPE;
-            }
+			final TypeDefinitionEntry definition = _types.get(locationRelation.getId());
+			if (definition == null)
+			{
+				return NOTYPE;
+			}
 
 			if (!(definition.structure instanceof TypeRelation))
 			{
@@ -444,11 +438,12 @@ public class TypeLibrary
 
 			return relation.getRelation(locationRelation.getTag());
 		}
-		else if (location instanceof TypeLocationBase )
+		else if (location instanceof TypeLocationBase)
 		{
-			if (_primed) {
-                return 0;  // Type 0 must be the base group.
-            }
+			if (_primed)
+			{
+				return 0; // Type 0 must be the base group.
+			}
 			return -1;
 		}
 		else
@@ -457,286 +452,291 @@ public class TypeLibrary
 		}
 	}
 
-    /**
-     * Uses a definition identifier
-     */
-    public int getTypeState(final int typeId)
-    {
-    	if ( !isTypeIdInRange(typeId) ) {
-            return TYPE_NOT_DEFINED;
-        }
-
-        final TypeDefinitionEntry definition = _types.get( typeId );
-        if ( definition == null ) {
-            return TYPE_NOT_DEFINED;
-        }
-        return definition.state;
-    }
-
-    public int getTypeState( final TypeLocation location )
-    {
-    	int id = NOTYPE;
-    	try
-    	{
-    		id = getTypeId(location);
-    	}
-    	catch( final TypeException ex)
-    	{
-    		return TYPE_NOT_DEFINED;
-    	}
-
-    	return getTypeState(id);
-    }
-
-    /**
-     * Register a type. Type must not be defined in the system or reserved.
-     *
-     * requires version.
-     *
-     * @param name
-     * @param reader
-     * @param writer
-     * @param clss
-     * @param structure
-     * @return
-     * @throws TypeException
-     */
-	public int register( final TypeLocation location, final TypeElement structure, final TypeLibraryReader reader, final TypeLibraryWriter writer, final Class<?> clss )
-	throws TypeException
+	/**
+	 * Uses a definition identifier
+	 */
+	public int getTypeState(final int typeId)
 	{
-		// check for valid parameters
-	    if ( structure == null ) {
-            throw new TypeException("invalid parameter: structure is null");
-        }
-	    if ( reader == null ) {
-            throw new TypeException("invalid parameter: reader is null");
-        }
-	    if ( writer == null ) {
-            throw new TypeException("invalid parameter: writer is null");
-        }
+		if (!isTypeIdInRange(typeId))
+		{
+			return TYPE_NOT_DEFINED;
+		}
 
-	    // Check if this has been defined already.
-	    final int typeId = getTypeId( location );
-	    final int state = getTypeState( typeId);
-	    if ( state != TYPE_NOT_DEFINED && state != TYPE_RESERVED )
-	    {
-	        throw new TypeDefinedException( typeStates[state] );
-	    }
-
-	    TypeDefinitionEntry definition = null;
-
-	    if ( state == TYPE_NOT_DEFINED )
-	    {
-		    definition = new TypeDefinitionEntry();
-		    definition.structure = structure;
-		    definition.location = location;
-		    definition.reader = reader;
-		    definition.writer = writer;
-		    definition.clss = clss;  // Can be null.
-		    definition.instantiator = new TypeClassInstantiator(clss);
-		    definition.state = TYPE_COMPLETE;
-
-		    add( definition );
-	    }
-	    else if ( state == TYPE_RESERVED )
-	    {
-		    definition = _types.get( typeId );
-		    definition.location = location;
-		    definition.structure = structure;
-		    definition.reader = reader;
-		    definition.writer = writer;
-		    definition.clss = clss;
-	        definition.instantiator = new TypeClassInstantiator(clss);
-		    definition.state = TYPE_COMPLETE;
-
-		    // copied from add.  Need to add class.
-		    if ( definition.clss != null )
-		    {
-		    	addClass( definition, definition.clss );
-		    }
-	    }
-	    else
-	    {
-	        throw new TypeException("invalid state");
-	    }
-
-	    // Bind the definitions to the library.
-    	structure.bind( this, definition.id, location, structure );
-	    if ( reader instanceof TypeBound )
-	    {
-	    	((TypeBound)reader).bind(this, definition.id, structure);
-	    }
-
-	    if ( writer instanceof TypeBound )
-	    {
-	    	((TypeBound)writer).bind(this, definition.id, structure );
-	    }
-
-	    return definition.id;
+		final TypeDefinitionEntry definition = _types.get(typeId);
+		if (definition == null)
+		{
+			return TYPE_NOT_DEFINED;
+		}
+		return definition.state;
 	}
 
+	public int getTypeState(final TypeLocation location)
+	{
+		int id = NOTYPE;
+		try
+		{
+			id = getTypeId(location);
+		}
+		catch (final TypeException ex)
+		{
+			return TYPE_NOT_DEFINED;
+		}
 
+		return getTypeState(id);
+	}
+
+	/**
+	 * Register a type. Type must not be defined in the system or reserved.
+	 *
+	 * requires version.
+	 *
+	 * @param name
+	 * @param reader
+	 * @param writer
+	 * @param clss
+	 * @param structure
+	 * @return
+	 * @throws TypeException
+	 */
+	public int register(final TypeLocation location, final TypeElement structure, final TypeLibraryReader reader, final TypeLibraryWriter writer, final Class<?> clss)
+			throws TypeException
+	{
+		// check for valid parameters
+		if (structure == null)
+		{
+			throw new TypeException("invalid parameter: structure is null");
+		}
+		if (reader == null)
+		{
+			throw new TypeException("invalid parameter: reader is null");
+		}
+		if (writer == null)
+		{
+			throw new TypeException("invalid parameter: writer is null");
+		}
+
+		// Check if this has been defined already.
+		final int typeId = getTypeId(location);
+		final int state = getTypeState(typeId);
+		if (state != TYPE_NOT_DEFINED && state != TYPE_RESERVED)
+		{
+			throw new TypeDefinedException(typeStates[state]);
+		}
+
+		TypeDefinitionEntry definition = null;
+
+		if (state == TYPE_NOT_DEFINED)
+		{
+			definition = new TypeDefinitionEntry();
+			definition.structure = structure;
+			definition.location = location;
+			definition.reader = reader;
+			definition.writer = writer;
+			definition.clss = clss; // Can be null.
+			definition.instantiator = new TypeClassInstantiator(clss);
+			definition.state = TYPE_COMPLETE;
+
+			add(definition);
+		}
+		else if (state == TYPE_RESERVED)
+		{
+			definition = _types.get(typeId);
+			definition.location = location;
+			definition.structure = structure;
+			definition.reader = reader;
+			definition.writer = writer;
+			definition.clss = clss;
+			definition.instantiator = new TypeClassInstantiator(clss);
+			definition.state = TYPE_COMPLETE;
+
+			// copied from add. Need to add class.
+			if (definition.clss != null)
+			{
+				addClass(definition, definition.clss);
+			}
+		}
+		else
+		{
+			throw new TypeException("invalid state");
+		}
+
+		// Bind the definitions to the library.
+		structure.bind(this, definition.id, location, structure);
+		if (reader instanceof TypeBound)
+		{
+			((TypeBound) reader).bind(this, definition.id, structure);
+		}
+
+		if (writer instanceof TypeBound)
+		{
+			((TypeBound) writer).bind(this, definition.id, structure);
+		}
+
+		return definition.id;
+	}
 
 	/**
 	 *
 	 * requires version.
 	 *
-	 * Register a name with its structure.  Used when reading from
-	 * a dictionary file.
+	 * Register a name with its structure. Used when reading from a dictionary
+	 * file.
 	 */
-	public int register( final TypeLocation location, final TypeElement structure )
-	throws TypeException
+	public int register(final TypeLocation location, final TypeElement structure) throws TypeException
 	{
-	    if ( location == null ) {
-            throw new TypeException("invalid parameter");
-        }
-	    if ( structure == null ) {
-            throw new TypeException("invalid parameter");
-        }
+		if (location == null)
+		{
+			throw new TypeException("invalid parameter");
+		}
+		if (structure == null)
+		{
+			throw new TypeException("invalid parameter");
+		}
 
-	    final int typeId = getTypeId( location );
-	    if ( typeId != NOTYPE  )
-	    {
-	        throw new TypeDefinedException( "type registered at location" );
-	    }
+		final int typeId = getTypeId(location);
+		if (typeId != NOTYPE)
+		{
+			throw new TypeDefinedException("type registered at location");
+		}
 
-	    TypeDefinitionEntry definition = null;
+		TypeDefinitionEntry definition = null;
 
-	    definition = new TypeDefinitionEntry();
-	    definition.location = location;
-	    definition.structure = structure;
-	    definition.reader = null;
-	    definition.writer = null;
-	    definition.clss = null;  // Can be null.
-	    definition.state = TYPE_REGISTERED;
+		definition = new TypeDefinitionEntry();
+		definition.location = location;
+		definition.structure = structure;
+		definition.reader = null;
+		definition.writer = null;
+		definition.clss = null; // Can be null.
+		definition.state = TYPE_REGISTERED;
 
-	    add( definition );
+		add(definition);
 
-	    try
-	    {
-	    	structure.bind( this, definition.id, location, structure );
-	    }
-	    catch (final TypeException e)
-	    {
-	    	throw new TypeException("Failed to bind", e);
-	    }
-	    return definition.id;
+		try
+		{
+			structure.bind(this, definition.id, location, structure);
+		}
+		catch (final TypeException e)
+		{
+			throw new TypeException("Failed to bind", e);
+		}
+		return definition.id;
 	}
 
-	public int reserve( final TypeLocation location )
-	throws TypeException
+	public int reserve(final TypeLocation location) throws TypeException
 	{
-	    if ( location == null ) {
-            throw new TypeException("invalid parameter");
-        }
+		if (location == null)
+		{
+			throw new TypeException("invalid parameter");
+		}
 
-	    final int typeId = getTypeId( location );
-	    if ( typeId != NOTYPE  )
-	    {
-	        throw new TypeDefinedException( "type registered at location" );
-	    }
+		final int typeId = getTypeId(location);
+		if (typeId != NOTYPE)
+		{
+			throw new TypeDefinedException("type registered at location");
+		}
 
-	    TypeDefinitionEntry definition = null;
+		TypeDefinitionEntry definition = null;
 
-	    definition = new TypeDefinitionEntry();
-	    definition.location = location;
-	    definition.structure = null;
-	    definition.reader = null;
-	    definition.writer = null;
-	    definition.clss = null;  // Can be null.
-	    definition.state = TYPE_RESERVED;
+		definition = new TypeDefinitionEntry();
+		definition.location = location;
+		definition.structure = null;
+		definition.reader = null;
+		definition.writer = null;
+		definition.clss = null; // Can be null.
+		definition.state = TYPE_RESERVED;
 
-	    add( definition );
+		add(definition);
 
-	    return definition.id;
+		return definition.id;
 	}
 
-	public int bind( final int typeId, final TypeElement structure )
-	throws TypeException
+	public int bind(final int typeId, final TypeElement structure) throws TypeException
 	{
-	    if ( structure == null ) {
-            throw new TypeException("invalid parameter");
-        }
+		if (structure == null)
+		{
+			throw new TypeException("invalid parameter");
+		}
 
-	    final int state = getTypeState( typeId );
-	    if ( state != TYPE_RESERVED ) {
-            throw new TypeException("type in wrong state:" + typeStates[state]);
-        }
+		final int state = getTypeState(typeId);
+		if (state != TYPE_RESERVED)
+		{
+			throw new TypeException("type in wrong state:" + typeStates[state]);
+		}
 
-	    final TypeDefinitionEntry definition = _types.get( typeId );
-	    definition.structure = structure;
-	    definition.state = TYPE_REGISTERED;
+		final TypeDefinitionEntry definition = _types.get(typeId);
+		definition.structure = structure;
+		definition.state = TYPE_REGISTERED;
 
-	    try
-	    {
-	    	structure.bind( this, definition.id, definition.location, structure );
-	    }
-	    catch (final TypeException e)
-	    {
-	    	throw new TypeException("Failed to bind", e);
-	    }
-	    return definition.id;
+		try
+		{
+			structure.bind(this, definition.id, definition.location, structure);
+		}
+		catch (final TypeException e)
+		{
+			throw new TypeException("Failed to bind", e);
+		}
+		return definition.id;
 
 	}
 
 	/*
 	 * requires version
 	 */
-	public int bind( final int typeId, final TypeLibraryReader reader, final TypeLibraryWriter writer, final Class<?> clss )
-	throws TypeException
+	public int bind(final int typeId, final TypeLibraryReader reader, final TypeLibraryWriter writer, final Class<?> clss) throws TypeException
 	{
-	    final int state = getTypeState( typeId );
-	    if ( state != TYPE_REGISTERED ) {
-            throw new TypeException("type in wrong state:" + typeStates[state]);
-        }
+		final int state = getTypeState(typeId);
+		if (state != TYPE_REGISTERED)
+		{
+			throw new TypeException("type in wrong state:" + typeStates[state]);
+		}
 
-	    final TypeDefinitionEntry def = _types.get( typeId );
-	    def.reader = reader;
-	    def.writer = writer;
-	    def.clss = clss;
-	    if (def.instantiator == null) {
-	        def.instantiator = new TypeClassInstantiator(clss);
-	    }
-	    def.state = TYPE_COMPLETE;
+		final TypeDefinitionEntry def = _types.get(typeId);
+		def.reader = reader;
+		def.writer = writer;
+		def.clss = clss;
+		if (def.instantiator == null)
+		{
+			def.instantiator = new TypeClassInstantiator(clss);
+		}
+		def.state = TYPE_COMPLETE;
 
-	    // Need to add class.
-	    if ( def.clss != null )
-	    {
-	    	addClass( def, def.clss);
-	    }
-	    final TypeElement structure = def.structure;
+		// Need to add class.
+		if (def.clss != null)
+		{
+			addClass(def, def.clss);
+		}
+		final TypeElement structure = def.structure;
 
-	    structure.bind( this, def.id, def.location, structure );
+		structure.bind(this, def.id, def.location, structure);
 
-	    if ( reader instanceof TypeBound )
-	    {
-	    	((TypeBound)reader).bind(this, def.id, structure );
-	    }
+		if (reader instanceof TypeBound)
+		{
+			((TypeBound) reader).bind(this, def.id, structure);
+		}
 
-	    if ( writer instanceof TypeBound )
-	    {
-	    	((TypeBound)writer).bind(this, def.id, structure );
-	    }
+		if (writer instanceof TypeBound)
+		{
+			((TypeBound) writer).bind(this, def.id, structure);
+		}
 
-	    return def.id;
+		return def.id;
 	}
 
-	public int bind( final int typeId, final Class<?> clss )
-	throws TypeException
+	public int bind(final int typeId, final Class<?> clss) throws TypeException
 	{
 		final ArgotMarshaller marshallerType = clss.getAnnotation(ArgotMarshaller.class);
-		if (marshallerType == null )
+		if (marshallerType == null)
 		{
 			throw new TypeException("Error: ArgotMarshaller annotation not set for " + clss.getName());
 		}
 		try
 		{
 			final TypeLibraryReaderWriter marshaller = marshallerType.value().newInstance();
-			return bind( typeId, marshaller, marshaller, clss );
+			return bind(typeId, marshaller, marshaller, clss);
 		}
-		catch(final Exception ex)
+		catch (final Exception ex)
 		{
-			throw new TypeException("Error: Failed to create instance of marshaller: " + marshallerType.value().getName(), ex );
+			throw new TypeException("Error: Failed to create instance of marshaller: " + marshallerType.value().getName(), ex);
 		}
 
 	}
@@ -745,22 +745,20 @@ public class TypeLibrary
 	 * returns the structure identifier
 	 */
 
-	public int getDefinitionId(final MetaName name, final MetaVersion version)
-	throws TypeException
+	public int getDefinitionId(final MetaName name, final MetaVersion version) throws TypeException
 	{
 		return getDefinitionId(name.getFullName(), version.toString());
 	}
 
-	public int getDefinitionId( final String name, final String version )
-	throws TypeException
+	public int getDefinitionId(final String name, final String version) throws TypeException
 	{
-	    final String checkedName = checkName( name );
-	    final MetaVersion checkedVersion = MetaVersion.parseVersion(checkVersion( version ));
+		final String checkedName = checkName(name);
+		final MetaVersion checkedVersion = MetaVersion.parseVersion(checkVersion(version));
 
 		final TypeDefinitionEntry entry = _names.get(checkedName);
 		if (entry == null)
 		{
-			throw new TypeNotDefinedException("Not Defined:" + name );
+			throw new TypeNotDefinedException("Not Defined:" + name);
 		}
 
 		if (!(entry.structure instanceof MetaIdentity))
@@ -770,13 +768,13 @@ public class TypeLibrary
 
 		final MetaIdentity identity = (MetaIdentity) entry.structure;
 		final int id = identity.getVersion(checkedVersion);
-	    if ( id == -1 ) {
-            throw new TypeException("version not found");
-        }
+		if (id == -1)
+		{
+			throw new TypeException("version not found");
+		}
 
-	    return id;
+		return id;
 	}
-
 
 	/**
 	 * Using a definition Id, find the associated name.
@@ -785,60 +783,60 @@ public class TypeLibrary
 	 * @return
 	 * @throws TypeNotDefinedException
 	 */
-	public MetaName getName(final int typeId)
-	throws TypeException
+	public MetaName getName(final int typeId) throws TypeException
 	{
-		if ( !isTypeIdInRange(typeId) ) {
-            throw new TypeNotDefinedException( "type id not in range");
-        }
+		if (!isTypeIdInRange(typeId))
+		{
+			throw new TypeNotDefinedException("type id not in range");
+		}
 
-		final TypeDefinitionEntry def = _types.get( typeId );
-		if ( def == null ) {
-            throw new TypeNotDefinedException( "type not found" );
-        }
+		final TypeDefinitionEntry def = _types.get(typeId);
+		if (def == null)
+		{
+			throw new TypeNotDefinedException("type not found");
+		}
 
 		if (def.location instanceof TypeLocationName)
 		{
-			return ((TypeLocationName)def.location).getName();
+			return ((TypeLocationName) def.location).getName();
 		}
 		else if (def.location instanceof TypeLocationDefinition)
 		{
-			return getName(((TypeLocationDefinition)def.location).getId());
+			return getName(((TypeLocationDefinition) def.location).getId());
 		}
 		else if (def.location instanceof TypeLocationRelation)
 		{
-			return getName(((TypeLocationRelation)def.location).getId());
-			//String tag = ((TypeLocationRelation)def.location).getTag();
-			//return MetaName.parseName( name.toString() + "." + tag );
+			return getName(((TypeLocationRelation) def.location).getId());
+			// String tag = ((TypeLocationRelation)def.location).getTag();
+			// return MetaName.parseName( name.toString() + "." + tag );
 		}
 		else if (def.location instanceof TypeLocationBase)
 		{
 			// This is a bit ugly.
-			return new MetaName(0,"...","...");
-			//throw new TypeException("Library base not named");
+			return new MetaName(0, "...", "...");
+			// throw new TypeException("Library base not named");
 		}
 
 		throw new TypeException("Type not named");
 	}
 
-	public int getTypeId(final MetaName name)
-	throws TypeException
+	public int getTypeId(final MetaName name) throws TypeException
 	{
 		return getTypeId(name.getFullName());
 	}
 
-
-	public MetaVersion getVersion(final int definitionId)
-	throws TypeException
+	public MetaVersion getVersion(final int definitionId) throws TypeException
 	{
-		if ( !isTypeIdInRange(definitionId) ) {
-            throw new TypeNotDefinedException( "type id not in range");
-        }
+		if (!isTypeIdInRange(definitionId))
+		{
+			throw new TypeNotDefinedException("type id not in range");
+		}
 
-		final TypeDefinitionEntry def = _types.get( definitionId );
-		if ( def == null ) {
-            throw new TypeNotDefinedException( "type not found" );
-        }
+		final TypeDefinitionEntry def = _types.get(definitionId);
+		if (def == null)
+		{
+			throw new TypeNotDefinedException("type not found");
+		}
 
 		if (!(def.location instanceof TypeLocationDefinition))
 		{
@@ -850,185 +848,205 @@ public class TypeLibrary
 
 	/**
 	 *
-	 * @param name id
+	 * @param name
+	 *            id
 	 * @return
 	 * @throws TypeException
 	 */
-	public boolean isSimpleType( final int typeId )
-	throws TypeException
+	public boolean isSimpleType(final int typeId) throws TypeException
 	{
-		if ( !isTypeIdInRange(typeId) ) {
-            throw new TypeNotDefinedException( "type id not in range");
-        }
+		if (!isTypeIdInRange(typeId))
+		{
+			throw new TypeNotDefinedException("type id not in range");
+		}
 
-		final TypeDefinitionEntry nameEntry = _types.get( typeId );
-		if ( nameEntry == null ) {
-            throw new TypeNotDefinedException( "type not found" );
-        }
+		final TypeDefinitionEntry nameEntry = _types.get(typeId);
+		if (nameEntry == null)
+		{
+			throw new TypeNotDefinedException("type not found");
+		}
 
 		return nameEntry.isSimple;
 	}
 
 	/**
 	 *
-	 * @param name id
+	 * @param name
+	 *            id
 	 * @param isSimple
 	 * @throws TypeException
 	 */
-	public void setSimpleType( final int typeId, final boolean isSimple )
-	throws TypeException
+	public void setSimpleType(final int typeId, final boolean isSimple) throws TypeException
 	{
-		if ( !isTypeIdInRange(typeId) ) {
-            throw new TypeNotDefinedException( "type id not in range");
-        }
+		if (!isTypeIdInRange(typeId))
+		{
+			throw new TypeNotDefinedException("type id not in range");
+		}
 
-		final TypeDefinitionEntry nameEntry = _types.get( typeId );
-		if ( nameEntry == null ) {
-            throw new TypeNotDefinedException( "type not found" );
-        }
+		final TypeDefinitionEntry nameEntry = _types.get(typeId);
+		if (nameEntry == null)
+		{
+			throw new TypeNotDefinedException("type not found");
+		}
 
 		nameEntry.isSimple = isSimple;
 	}
 
-	public TypeLocation getLocation( final int typeId )
-	throws TypeException
+	public TypeLocation getLocation(final int typeId) throws TypeException
 	{
-		if ( !isTypeIdInRange(typeId) ) {
-            throw new TypeNotDefinedException( "type id not in range");
-        }
+		if (!isTypeIdInRange(typeId))
+		{
+			throw new TypeNotDefinedException("type id not in range");
+		}
 
-		final TypeDefinitionEntry def = _types.get( typeId );
-		if ( def == null ) {
-            throw new TypeNotDefinedException( "type id" );
-        }
+		final TypeDefinitionEntry def = _types.get(typeId);
+		if (def == null)
+		{
+			throw new TypeNotDefinedException("type id");
+		}
 
 		return def.location;
 	}
 
 	/**
 	 *
-	 * @param structure id
+	 * @param structure
+	 *            id
 	 * @return
 	 * @throws TypeException
 	 */
-	public TypeElement getStructure( final int typeId )
-	throws TypeException
+	public TypeElement getStructure(final int typeId) throws TypeException
 	{
-		if ( !isTypeIdInRange(typeId) ) {
-            throw new TypeNotDefinedException( "type id not in range");
-        }
+		if (!isTypeIdInRange(typeId))
+		{
+			throw new TypeNotDefinedException("type id not in range");
+		}
 
-		final TypeDefinitionEntry def = _types.get( typeId );
-		if ( def == null ) {
-            throw new TypeNotDefinedException( "type id" );
-        }
+		final TypeDefinitionEntry def = _types.get(typeId);
+		if (def == null)
+		{
+			throw new TypeNotDefinedException("type id");
+		}
 
-		if ( def.state != TYPE_COMPLETE && def.state != TYPE_REGISTERED ) {
-            throw new TypeException( "type not complete: " + this.getName(typeId).getFullName());
-        }
+		if (def.state != TYPE_COMPLETE && def.state != TYPE_REGISTERED)
+		{
+			throw new TypeException("type not complete: " + this.getName(typeId).getFullName());
+		}
 
 		return def.structure;
 	}
 
-    /**
-     *
-     * @param structure id
-     * @return
-     * @throws TypeException
-     */
-	public TypeLibraryReader getReader( final int typeId )
-	throws TypeException
+	/**
+	 *
+	 * @param structure
+	 *            id
+	 * @return
+	 * @throws TypeException
+	 */
+	public TypeLibraryReader getReader(final int typeId) throws TypeException
 	{
-		if ( !isTypeIdInRange(typeId) ) {
-            throw new TypeNotDefinedException( "type id not in range");
-        }
+		if (!isTypeIdInRange(typeId))
+		{
+			throw new TypeNotDefinedException("type id not in range");
+		}
 
-		final TypeDefinitionEntry def =  _types.get( typeId );
-		if ( def == null ) {
-            throw new TypeNotDefinedException( "type id" );
-        }
+		final TypeDefinitionEntry def = _types.get(typeId);
+		if (def == null)
+		{
+			throw new TypeNotDefinedException("type id");
+		}
 
-		if ( def.state != TYPE_COMPLETE ) {
-            throw new TypeException( "type not complete: " + this.getName(typeId).getFullName());
-        }
+		if (def.state != TYPE_COMPLETE)
+		{
+			throw new TypeException("type not complete: " + this.getName(typeId).getFullName());
+		}
 
 		return def.reader;
 	}
 
 	/**
 	 *
-	 * @param structure id
+	 * @param structure
+	 *            id
 	 * @return
 	 * @throws TypeException
 	 */
-	public TypeLibraryWriter getWriter( final int typeId )
-	throws TypeException
+	public TypeLibraryWriter getWriter(final int typeId) throws TypeException
 	{
-		if ( !isTypeIdInRange(typeId) ) {
-            throw new TypeNotDefinedException( "type id not in range");
-        }
+		if (!isTypeIdInRange(typeId))
+		{
+			throw new TypeNotDefinedException("type id not in range");
+		}
 
-		final TypeDefinitionEntry def = _types.get( typeId );
-		if ( def == null ) {
-            throw new TypeException( "type not found" );
-        }
+		final TypeDefinitionEntry def = _types.get(typeId);
+		if (def == null)
+		{
+			throw new TypeException("type not found");
+		}
 
-		if ( def.state != TYPE_COMPLETE ) {
-            throw new TypeException( "type not complete: " + typeId + " - " + this.getName(typeId).getFullName());
-        }
+		if (def.state != TYPE_COMPLETE)
+		{
+			throw new TypeException("type not complete: " + typeId + " - " + this.getName(typeId).getFullName());
+		}
 
 		return def.writer;
 	}
 
 	/**
 	 *
-	 * @param structure id
+	 * @param structure
+	 *            id
 	 * @return
 	 * @throws TypeException
 	 */
-	public Class<?> getClass( final int typeId )
-	throws TypeException
+	public Class<?> getClass(final int typeId) throws TypeException
 	{
-		if ( !isTypeIdInRange(typeId) ) {
-            throw new TypeNotDefinedException( "type id not in range");
-        }
+		if (!isTypeIdInRange(typeId))
+		{
+			throw new TypeNotDefinedException("type id not in range");
+		}
 
-		final TypeDefinitionEntry def = _types.get( typeId );
-		if ( def == null ) {
-            throw new TypeException( "type not found" );
-        }
+		final TypeDefinitionEntry def = _types.get(typeId);
+		if (def == null)
+		{
+			throw new TypeException("type not found");
+		}
 
-		if ( def.clss == null ) {
-            throw new TypeException( "no class bound for type." );
-        }
+		if (def.clss == null)
+		{
+			throw new TypeException("no class bound for type.");
+		}
 
 		return def.clss;
 	}
 
-	   /**
-    *
-    * @param structure id
-    * @return
-    * @throws TypeException
-    */
-   public TypeInstantiator getInstantiator( final int typeId )
-   throws TypeException
-   {
-       if ( !isTypeIdInRange(typeId) ) {
-           throw new TypeNotDefinedException( "type id not in range");
-       }
+	/**
+	 *
+	 * @param structure
+	 *            id
+	 * @return
+	 * @throws TypeException
+	 */
+	public TypeInstantiator getInstantiator(final int typeId) throws TypeException
+	{
+		if (!isTypeIdInRange(typeId))
+		{
+			throw new TypeNotDefinedException("type id not in range");
+		}
 
-       final TypeDefinitionEntry def = _types.get( typeId );
-       if ( def == null ) {
-           throw new TypeException( "type not found" );
-       }
+		final TypeDefinitionEntry def = _types.get(typeId);
+		if (def == null)
+		{
+			throw new TypeException("type not found");
+		}
 
-       if ( def.instantiator == null ) {
-           throw new TypeException( "no class bound for type." );
-       }
+		if (def.instantiator == null)
+		{
+			throw new TypeException("no class bound for type.");
+		}
 
-       return  def.instantiator;
-   }
+		return def.instantiator;
+	}
 
 	/**
 	 *
@@ -1037,44 +1055,49 @@ public class TypeLibrary
 	 * @throws TypeException
 	 */
 
-	public int[] getId( final Class<?> clss )
-	throws TypeException
+	public int[] getId(final Class<?> clss) throws TypeException
 	{
 		Class<?> searchClass = clss;
 
-		if ( clss.getName().equals( "long") ) {
-            searchClass = Long.class;
-        }
-		if ( clss.getName().equals( "short" ) ) {
-            searchClass = Short.class;
-        }
-		if ( clss.getName().equals( "byte" ) ) {
-            searchClass = Byte.class;
-        }
-		if ( clss.getName().equals( "boolean" ) ) {
-            searchClass = Boolean.class;
-        }
-		if ( clss.getName().equals( "int" )) {
-            searchClass = Integer.class;
-        }
-		if ( clss.getName().equals( "double" )) {
-            searchClass = Double.class;
-        }
-		if ( clss.getName().equals( "float" )) {
-            searchClass = Float.class;
-        }
+		if (clss.getName().equals("long"))
+		{
+			searchClass = Long.class;
+		}
+		if (clss.getName().equals("short"))
+		{
+			searchClass = Short.class;
+		}
+		if (clss.getName().equals("byte"))
+		{
+			searchClass = Byte.class;
+		}
+		if (clss.getName().equals("boolean"))
+		{
+			searchClass = Boolean.class;
+		}
+		if (clss.getName().equals("int"))
+		{
+			searchClass = Integer.class;
+		}
+		if (clss.getName().equals("double"))
+		{
+			searchClass = Double.class;
+		}
+		if (clss.getName().equals("float"))
+		{
+			searchClass = Float.class;
+		}
 
-
-		final List<TypeDefinitionEntry> list = _classes.get( searchClass );
-		if ( list == null ) {
-            throw new TypeException( "no id for class: " + searchClass.getName() );
-        }
-
+		final List<TypeDefinitionEntry> list = _classes.get(searchClass);
+		if (list == null)
+		{
+			throw new TypeException("no id for class: " + searchClass.getName());
+		}
 
 		final int[] values = new int[list.size()];
 		final Iterator<TypeDefinitionEntry> iter = list.iterator();
-		int x=0;
-		while(iter.hasNext())
+		int x = 0;
+		while (iter.hasNext())
 		{
 			values[x] = iter.next().id;
 			x++;
@@ -1084,41 +1107,45 @@ public class TypeLibrary
 
 	/**
 	 *
-	 * @param structure id
+	 * @param structure
+	 *            id
 	 * @param clss
 	 * @throws TypeException
 	 */
-	public void addClassAlias( final int typeId, final Class<?> clss ) throws TypeException
+	public void addClassAlias(final int typeId, final Class<?> clss) throws TypeException
 	{
-		if ( !isTypeIdInRange(typeId) ) {
-            throw new TypeNotDefinedException( "type id not in range");
-        }
+		if (!isTypeIdInRange(typeId))
+		{
+			throw new TypeNotDefinedException("type id not in range");
+		}
 
-		final TypeDefinitionEntry def =  _types.get( typeId );
-		if ( def == null ) {
-            throw new TypeException( "type not found" );
-        }
+		final TypeDefinitionEntry def = _types.get(typeId);
+		if (def == null)
+		{
+			throw new TypeException("type not found");
+		}
 
-		addClass( def, clss );
+		addClass(def, clss);
 	}
 
-	public void setTypeInstantiator(final int typeId, final TypeInstantiator instantiator ) throws TypeException
+	public void setTypeInstantiator(final int typeId, final TypeInstantiator instantiator) throws TypeException
 	{
-        if ( !isTypeIdInRange(typeId) ) {
-            throw new TypeNotDefinedException( "type id not in range");
-        }
+		if (!isTypeIdInRange(typeId))
+		{
+			throw new TypeNotDefinedException("type id not in range");
+		}
 
-        final TypeDefinitionEntry def =  _types.get( typeId );
-        if ( def == null ) {
-            throw new TypeException( "type not found" );
-        }
+		final TypeDefinitionEntry def = _types.get(typeId);
+		if (def == null)
+		{
+			throw new TypeException("type not found");
+		}
 
-        def.instantiator = instantiator;
+		def.instantiator = instantiator;
 	}
 
-
-    public Set<String> getNames()
-    {
-    	return _names.keySet();
-    }
+	public Set<String> getNames()
+	{
+		return _names.keySet();
+	}
 }

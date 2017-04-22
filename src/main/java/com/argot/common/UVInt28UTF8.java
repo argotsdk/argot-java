@@ -26,7 +26,6 @@
 package com.argot.common;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
@@ -34,55 +33,51 @@ import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
 
-public class Int64 implements TypeReader, TypeWriter
+/**
+ * This is a short string encoded in UTF8 format. It uses a single unsigned byte to specify the length. So the data length can be between 0-254 characters. 0 is an empty string. 255 is a null string.
+ */
+public class UVInt28UTF8 implements TypeReader, TypeWriter
 {
-	public static final String TYPENAME = "int64";
+	public static final String TYPENAME = "u32utf8";
 	public static final String VERSION = "1.3";
 
 	public Object read(final TypeInputStream in) throws TypeException, IOException
 	{
-		final byte bytes[] = new byte[8];
-		in.getStream().read(bytes, 0, 8);
+		final Integer id = (Integer) in.readObject(UVInt28.TYPENAME);
 
-		final long value = ((((long) bytes[0] & 0xff) << 56) | (((long) bytes[1] & 0xff) << 48) | (((long) bytes[2] & 0xff) << 40) | (((long) bytes[3] & 0xff) << 32)
-				| (((long) bytes[4] & 0xff) << 24) | (((long) bytes[5] & 0xff) << 16) | (((long) bytes[6] & 0xff) << 8) | ((long) bytes[7] & 0xff));
+		String v = null;
 
-		return new Long(value);
+		if (id.intValue() > 0)
+		{
+			final byte[] bytes = new byte[id.intValue()];
+			final int read = in.read(bytes, 0, bytes.length);
+			v = new String(bytes, 0, read, "UTF-8");
+		}
+		else
+		{
+			v = new String("");
+		}
+
+		return v;
 	}
 
 	public void write(final TypeOutputStream out, final Object o) throws TypeException, IOException
 	{
-		if (!(o instanceof Long))
+		if (!(o instanceof String))
 		{
-			throw new TypeException("Int64: requires Long");
+			if (o == null)
+			{
+				out.writeObject(UVInt28.TYPENAME, new Integer(0));
+				return;
+			}
+			throw new TypeException("StringType: can only write objects of type String");
 		}
 
-		final long s = ((Long) o).longValue();
-		// final byte[] bytes = new byte[8];
-		//
-		// bytes[0] = (byte) ((s >> 56) & 0xff);
-		// bytes[1] = (byte) ((s >> 48) & 0xff);
-		// bytes[2] = (byte) ((s >> 40) & 0xff);
-		// bytes[3] = (byte) ((s >> 32) & 0xff);
-		// bytes[4] = (byte) ((s >> 24) & 0xff);
-		// bytes[5] = (byte) ((s >> 16) & 0xff);
-		// bytes[6] = (byte) ((s >> 8) & 0xff);
-		// bytes[7] = (byte) (s & 0xff);
-		//
-		// out.getStream().write(bytes, 0, 8);
+		final String s = (String) o;
+		final byte[] bytes = s.getBytes();
+		final int len = bytes.length;
 
-		// This method preferred as there is no object allocations and does not put pressure
-		// on gc. The byte array above does allow use of System.array copy but it's only 8 bytes
-		// so not a huge performance gain. Not enough gain to outweigh memory allocations.
-		final OutputStream os = out.getStream();
-		os.write((byte) ((s >> 56) & 0xff));
-		os.write((byte) ((s >> 48) & 0xff));
-		os.write((byte) ((s >> 40) & 0xff));
-		os.write((byte) ((s >> 32) & 0xff));
-		os.write((byte) ((s >> 24) & 0xff));
-		os.write((byte) ((s >> 16) & 0xff));
-		os.write((byte) ((s >> 8) & 0xff));
-		os.write((byte) (s & 0xff));
+		out.writeObject(UVInt28.TYPENAME, new Integer(len));
+		out.getStream().write(bytes, 0, len);
 	}
-
 }

@@ -34,37 +34,33 @@ import com.argot.TypeReader;
 import com.argot.TypeWriter;
 
 /**
- * This is a byte array.  Basically for any binary data or storing
- * other types of data as part of another mapped set.  It uses a
- * single unsigned 32bit integer to specificy the size of the array.
- * It returns and writes byte[].
+ * This is a byte array. Basically for any binary data or storing other types of data as part of another mapped set. It uses a single unsigned 32bit integer to specificy the size of the array. It returns and writes byte[].
  */
-public class U16ArrayByte
-implements TypeReader, TypeWriter
+public class U16ArrayByte implements TypeReader, TypeWriter
 {
 	public static final String TYPENAME = "u16binary";
 	public static final String VERSION = "1.3";
-	
-	public Object read(TypeInputStream in)
-	throws TypeException, IOException
-	{
-		Integer id = (Integer) in.readObject( UInt16.TYPENAME );
 
-		byte[] bytes = new byte[ id.intValue() ];
-		in.read(bytes,0,bytes.length);
-		
+	public Object read(final TypeInputStream in) throws TypeException, IOException
+	{
+		final Integer id = (Integer) in.readObject(UInt16.TYPENAME);
+
+		final byte[] bytes = new byte[id.intValue()];
+		in.read(bytes, 0, bytes.length);
+
 		return bytes;
 	}
 
-	public void write(TypeOutputStream out, Object o )
-	throws TypeException, IOException
+	public void write(final TypeOutputStream out, final Object o) throws TypeException, IOException
 	{
-		if ( !(o instanceof byte[]) )
-			throw new TypeException( "StringType: can only write objects of type String");
+		if (!(o instanceof byte[]))
+		{
+			throw new TypeException("u16binary: can only write objects of type byte[]");
+		}
 
-		byte[] bytes = (byte[]) o;
+		final byte[] bytes = (byte[]) o;
 
-		out.writeObject( "uint16", new Integer( bytes.length) );
-		out.getStream().write( bytes );
+		out.writeObject("uint16", new Integer(bytes.length));
+		out.getStream().write(bytes);
 	}
 }

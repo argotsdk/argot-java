@@ -12,9 +12,9 @@ eclipse {
 }
 
 group = 'org.argot-sdk'
-version = '1.3.7-SNAPSHOT'
-sourceCompatibility = 1.5
-targetCompatibility = 1.5
+version = '1.3.b11'
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
 
 repositories {
     maven { url "http://repo.maven.apache.org/maven2" }

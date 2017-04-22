@@ -189,6 +189,18 @@
 		u8ascii:"UTF-8"))
 
 /*
+ *  A UTF8 encoded string.  Maximum size u28.max bytes.
+ */		
+
+(library.entry
+	(library.definition meta.name:"uvint28utf8" meta.version:"1.3")
+	(meta.encoding
+		(meta.array
+			(meta.reference #uvint28)
+			(meta.reference #uint8))
+		u8ascii:"UTF-8"))
+		
+/*
  *  A binary data block.  Maximum size u32.max.
  */
 
@@ -208,6 +220,17 @@
 	(meta.array
 		(meta.reference #uint16)
 		(meta.reference #uint8)))		
+
+/*
+ *  A binary data block.  Maximum size u28.max.
+ */
+
+
+(library.entry
+	(library.definition meta.name:"uvint28binary" meta.version:"1.3")
+	(meta.array
+		(meta.reference #uvint28)
+		(meta.reference #uint8)))
 
 /*
  * Date is an abstract type that can be defined using various methods.

@@ -26,6 +26,7 @@
 package com.argot.common;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import com.argot.TypeException;
@@ -41,11 +42,13 @@ public class Int64 implements TypeReader, TypeWriter
 
 	public Object read(final TypeInputStream in) throws TypeException, IOException
 	{
-		final byte bytes[] = new byte[8];
-		in.getStream().read(bytes, 0, 8);
+		// final byte bytes[] = new byte[8];
+		// in.getStream().read(bytes, 0, 8);
 
-		final long value = ((((long) bytes[0] & 0xff) << 56) | (((long) bytes[1] & 0xff) << 48) | (((long) bytes[2] & 0xff) << 40) | (((long) bytes[3] & 0xff) << 32)
-				| (((long) bytes[4] & 0xff) << 24) | (((long) bytes[5] & 0xff) << 16) | (((long) bytes[6] & 0xff) << 8) | ((long) bytes[7] & 0xff));
+		final InputStream is = in.getStream();
+
+		final long value = ((((long) is.read() & 0xff) << 56) | (((long) is.read() & 0xff) << 48) | (((long) is.read() & 0xff) << 40) | (((long) is.read() & 0xff) << 32)
+				| (((long) is.read() & 0xff) << 24) | (((long) is.read() & 0xff) << 16) | (((long) is.read() & 0xff) << 8) | ((long) is.read() & 0xff));
 
 		return new Long(value);
 	}

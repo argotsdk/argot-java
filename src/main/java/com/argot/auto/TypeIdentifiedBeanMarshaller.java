@@ -43,6 +43,7 @@ import com.argot.TypeWriter;
 import com.argot.meta.MetaExpression;
 import com.argot.meta.MetaExpressionLibraryResolver;
 import com.argot.meta.MetaExpressionResolver;
+import com.argot.meta.MetaReference;
 import com.argot.meta.MetaSequence;
 import com.argot.meta.MetaTag;
 
@@ -56,6 +57,8 @@ public class TypeIdentifiedBeanMarshaller implements TypeLibraryReaderWriter, Ty
 	Class<?> _typeClass;
 	Method[] _getMethods;
 	Method[] _setMethods;
+	MethodHandleReader[] _methodHandleReaders;
+	MethodHandleWriter[] _methodHandleWriters;
 	MetaSequence _sequence;
 
 	public TypeIdentifiedBeanMarshaller()
@@ -79,6 +82,7 @@ public class TypeIdentifiedBeanMarshaller implements TypeLibraryReaderWriter, Ty
 		_instantiator = instantiator;
 	}
 
+	@Override
 	public void bind(final TypeLibrary library, final int definitionId, final TypeElement definition) throws TypeException
 	{
 		if (!(definition instanceof MetaSequence))
@@ -96,6 +100,9 @@ public class TypeIdentifiedBeanMarshaller implements TypeLibraryReaderWriter, Ty
 
 		_getMethods = new Method[_sequence.size()];
 		_setMethods = new Method[_sequence.size()];
+		_methodHandleReaders = new MethodHandleReader[_sequence.size()];
+		_methodHandleWriters = new MethodHandleWriter[_sequence.size()];
+
 		for (int x = 0; x < _sequence.size(); x++)
 		{
 			final MetaExpression expression = _sequence.getElement(x);
@@ -106,6 +113,15 @@ public class TypeIdentifiedBeanMarshaller implements TypeLibraryReaderWriter, Ty
 
 			final MetaTag reference = (MetaTag) expression;
 			final String description = reference.getDescription();
+
+			final MetaExpression tagExpression = reference.getExpression();
+			String referenceType = null;
+			if (tagExpression instanceof MetaReference)
+			{
+				final MetaReference tagReference = (MetaReference) reference.getExpression();
+				referenceType = library.getName(tagReference.getType()).getFullName();
+			}
+
 			String firstChar = description.substring(0, 1);
 			firstChar = firstChar.toUpperCase();
 			String method = "get" + firstChar + description.substring(1);
@@ -113,6 +129,7 @@ public class TypeIdentifiedBeanMarshaller implements TypeLibraryReaderWriter, Ty
 			{
 				final Class<?>[] empty = new Class[0];
 				_getMethods[x] = _typeClass.getMethod(method, empty);
+				_methodHandleWriters[x] = MethodHandleWriter.getWriter(_getMethods[x], referenceType, true);
 			}
 			catch (final SecurityException e)
 			{
@@ -122,18 +139,26 @@ public class TypeIdentifiedBeanMarshaller implements TypeLibraryReaderWriter, Ty
 			{
 				throw new TypeException("TypeBeanMarshaller: No getter method found:" + _typeClass.getName() + "." + method, e);
 			}
+			catch (final IllegalAccessException e)
+			{
+				throw new TypeException("TypeBeanMarshaller: No getter method found:" + _typeClass.getName() + "." + method, e);
+			}
 
 			method = "set" + firstChar + description.substring(1);
 			_setMethods[x] = resolveSetMethod(_typeClass, method);
-
+			try
+			{
+				_methodHandleReaders[x] = MethodHandleReader.getReader(_setMethods[x], referenceType);
+			}
+			catch (final IllegalAccessException e)
+			{
+				throw new TypeException("TypeBeanMarshaller: No getter method found:" + _typeClass.getName() + "." + method, e);
+			}
 		}
 	}
 
 	/*
-	 * Bean set methods need to take one argument. The problem we face is that
-	 * if the reference type is abstract it won't have any class. This way we
-	 * take the first method with the correct name and one argument. We assume
-	 * that the argument will match what we read off the wire.
+	 * Bean set methods need to take one argument. The problem we face is that if the reference type is abstract it won't have any class. This way we take the first method with the correct name and one argument. We assume that the argument will match what we read off the wire.
 	 */
 	private Method resolveSetMethod(final Class<?> typeClass, final String method) throws TypeException
 	{
@@ -161,55 +186,58 @@ public class TypeIdentifiedBeanMarshaller implements TypeLibraryReaderWriter, Ty
 			_sequenceReaders = sequenceReaders;
 		}
 
+		@Override
 		public Object read(final TypeInputStream in) throws TypeException, IOException
 		{
 			final Object o = _instantiator.newInstance();
 
-			final Object[] args = new Object[1];
 			for (int x = 0; x < _sequenceReaders.length; x++)
 			{
+				Object arg = null;
+				// TODO this should read an identifier. It could optionally
+				// use it to read the value rather than assume the type.
+				final int id = in.getStream().read();
 
-				try
+				if (id != 0)
 				{
-					// TODO this should read an identifier. It could optionally
-					// use it to read the value rather than assume the type.
-					final int id = in.getStream().read();
-					if (id != 0)
+					if (_methodHandleReaders[x] != null)
 					{
-						args[0] = _sequenceReaders[x].read(in);
-					} else
-					{
-						args[0] = null;
+						try
+						{
+							_methodHandleReaders[x].read(o, in);
+						}
+						catch (final Throwable e)
+						{
+							throw new TypeException("TypeBeanMarshaller: Failed to call set method:" + _typeClass.getName() + "." + _setMethods[x].getName(), e);
+						}
 					}
-				}
-				catch (final TypeException e)
-				{
-					throw new TypeException("TypeBeanMarshaller: Failed to read object reading for method:" + _typeClass.getName() + "." + _setMethods[x].getName(), e);
-				}
+					else
+					{
+						try
+						{
+							arg = _sequenceReaders[x].read(in);
 
-				try
-				{
-					_setMethods[x].invoke(o, args);
-				}
-				catch (final IllegalArgumentException e)
-				{
-					throw new TypeException("TypeBeanMarshaller: Failed to call set method:" + _typeClass.getName() + "." + _setMethods[x].getName() + "("
-							+ (args[0] != null ? args[0].getClass().getName() : "null") + ")", e);
-				}
-				catch (final IllegalAccessException e)
-				{
-					throw new TypeException("TypeBeanMarshaller: Failed to call set method:" + _typeClass.getName() + "." + _setMethods[x].getName() + "("
-							+ (args[0] != null ? args[0].getClass().getName() : "null") + ")", e);
-				}
-				catch (final InvocationTargetException e)
-				{
-					throw new TypeException("TypeBeanMarshaller: Failed to call set method:" + _typeClass.getName() + "." + _setMethods[x].getName() + "("
-							+ (args[0] != null ? args[0].getClass().getName() : "null") + ")", e);
-				}
-				catch (final RuntimeException e)
-				{
-					throw new TypeException("TypeBeanMarshaller: Failed to call set method:" + _typeClass.getName() + "." + _setMethods[x].getName() + "("
-							+ (args[0] != null ? args[0].getClass().getName() : "null") + ")", e);
+						}
+						catch (final TypeException e)
+						{
+							throw new TypeException("TypeBeanMarshaller: Failed to read object reading for method:" + _typeClass.getName() + "." + _setMethods[x].getName(), e);
+						}
+
+						try
+						{
+							_setMethods[x].invoke(o, arg);
+						}
+						catch (final IllegalArgumentException | IllegalAccessException | InvocationTargetException e)
+						{
+							throw new TypeException("TypeBeanMarshaller: Failed to call set method:" + _typeClass.getName() + "." + _setMethods[x].getName() + "("
+									+ (arg != null ? arg.getClass().getName() : "null") + ")", e);
+						}
+						catch (final RuntimeException e)
+						{
+							throw new TypeException("TypeBeanMarshaller: Failed to call set method:" + _typeClass.getName() + "." + _setMethods[x].getName() + "("
+									+ (arg != null ? arg.getClass().getName() : "null") + ")", e);
+						}
+					}
 				}
 
 			}
@@ -219,6 +247,7 @@ public class TypeIdentifiedBeanMarshaller implements TypeLibraryReaderWriter, Ty
 
 	}
 
+	@Override
 	public TypeReader getReader(final TypeMap map) throws TypeException
 	{
 		final TypeReader readers[] = new TypeReader[_sequence.size()];
@@ -241,50 +270,55 @@ public class TypeIdentifiedBeanMarshaller implements TypeLibraryReaderWriter, Ty
 
 		}
 
+		@Override
 		public void write(final TypeOutputStream out, final Object o) throws TypeException, IOException
 		{
 			for (int x = 0; x < _sequenceWriters.length; x++)
 			{
-				try
+				if (_methodHandleWriters[x] != null)
 				{
-					final Object v = _getMethods[x].invoke(o, (Object[]) null);
-					if (v == null)
+					try
 					{
-						out.getStream().write(0);
-					} else
-					{
-						// TODO This should write the id of the object being
-						// written. Each value is then identified by type.
-						out.getStream().write(1);
-						_sequenceWriters[x].write(out, v);
+						_methodHandleWriters[x].write(o, out);
 					}
+					catch (final Throwable e)
+					{
+						throw new TypeException("TypeBeanMarshaller: Failed to get data from object:" + _typeClass.getName() + "." + _getMethods[x].getName() + "()", e);
+					}
+				}
+				else
+				{
+					try
+					{
+						final Object v = _getMethods[x].invoke(o, (Object[]) null);
+						if (v == null)
+						{
+							out.getStream().write(0);
+						}
+						else
+						{
+							// TODO This should write the id of the object being
+							// written. Each value is then identified by type.
+							out.getStream().write(1);
+							_sequenceWriters[x].write(out, v);
+						}
 
-				}
-				catch (final IllegalArgumentException e)
-				{
-					throw new TypeException("TypeBeanMarshaller: Failed to get data from object:" + _typeClass.getName() + "." + _getMethods[x].getName() + "()", e);
-				}
-				catch (final IllegalAccessException e)
-				{
-					throw new TypeException("TypeBeanMarshaller: Failed to get data from object:" + _typeClass.getName() + "." + _getMethods[x].getName() + "()", e);
-				}
-				catch (final InvocationTargetException e)
-				{
-					throw new TypeException("TypeBeanMarshaller: Failed to get data from object:" + _typeClass.getName() + "." + _getMethods[x].getName() + "()", e);
-				}
-				catch (final TypeException e)
-				{
-					throw new TypeException("TypeBeanMarshaller: Failed to write data from object:" + _typeClass.getName() + "." + _getMethods[x].getName() + "()", e);
-				}
-				catch (final RuntimeException e)
-				{
-					throw new TypeException("TypeBeanMarshaller: Failed to write data from object:" + _typeClass.getName() + "." + _getMethods[x].getName() + "()", e);
+					}
+					catch (final IllegalArgumentException | IllegalAccessException | InvocationTargetException | TypeException e)
+					{
+						throw new TypeException("TypeBeanMarshaller: Failed to get data from object:" + _typeClass.getName() + "." + _getMethods[x].getName() + "()", e);
+					}
+					catch (final RuntimeException e)
+					{
+						throw new TypeException("TypeBeanMarshaller: Failed to write data from object:" + _typeClass.getName() + "." + _getMethods[x].getName() + "()", e);
+					}
 				}
 			}
 
 		}
 	}
 
+	@Override
 	public TypeWriter getWriter(final TypeMap map) throws TypeException
 	{
 		final TypeWriter writers[] = new TypeWriter[_sequence.size()];

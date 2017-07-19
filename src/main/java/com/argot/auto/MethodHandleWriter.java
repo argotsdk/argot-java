@@ -62,7 +62,15 @@ public interface MethodHandleWriter
 		{
 			writer = new Int32MethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
 		}
+		else if (returnType == float.class && "float".equals(argotType))
+		{
+			writer = new Int32MethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
+		}
 		else if (returnType == long.class && "int64".equals(argotType))
+		{
+			writer = new Int64MethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
+		}
+		else if (returnType == double.class && "double".equals(argotType))
 		{
 			writer = new Int64MethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
 		}
@@ -174,6 +182,32 @@ public interface MethodHandleWriter
 		}
 	}
 
+	public static final class IEEEFloatMethodHandleWriter extends AbstractWriter
+	{
+		public IEEEFloatMethodHandleWriter(final MethodHandle getHandle, final boolean writeNotNull)
+		{
+			super(getHandle, writeNotNull);
+		}
+
+		@Override
+		public void write(final Object o, final TypeOutputStream out) throws Throwable
+		{
+			final float f = (int) getHandle.invoke(o);
+			final int s = Float.floatToIntBits(f);
+			final OutputStream os = out.getStream();
+
+			if (writeNotNull)
+			{
+				os.write(1);
+			}
+
+			os.write((byte) ((s >> 24) & 0xff));
+			os.write((byte) ((s >> 16) & 0xff));
+			os.write((byte) ((s >> 8) & 0xff));
+			os.write((byte) (s & 0xff));
+		}
+	}
+
 	public static final class Int64MethodHandleWriter extends AbstractWriter
 	{
 		public Int64MethodHandleWriter(final MethodHandle getHandle, final boolean writeNotNull)
@@ -185,6 +219,36 @@ public interface MethodHandleWriter
 		public void write(final Object o, final TypeOutputStream out) throws Throwable
 		{
 			final long s = (long) getHandle.invoke(o);
+			final OutputStream os = out.getStream();
+
+			if (writeNotNull)
+			{
+				os.write(1);
+			}
+
+			os.write((byte) ((s >> 56) & 0xff));
+			os.write((byte) ((s >> 48) & 0xff));
+			os.write((byte) ((s >> 40) & 0xff));
+			os.write((byte) ((s >> 32) & 0xff));
+			os.write((byte) ((s >> 24) & 0xff));
+			os.write((byte) ((s >> 16) & 0xff));
+			os.write((byte) ((s >> 8) & 0xff));
+			os.write((byte) (s & 0xff));
+		}
+	}
+
+	public static final class IEEEDoubleMethodHandleWriter extends AbstractWriter
+	{
+		public IEEEDoubleMethodHandleWriter(final MethodHandle getHandle, final boolean writeNotNull)
+		{
+			super(getHandle, writeNotNull);
+		}
+
+		@Override
+		public void write(final Object o, final TypeOutputStream out) throws Throwable
+		{
+			final double d = (double) getHandle.invoke(o);
+			final long s = Double.doubleToLongBits(d);
 			final OutputStream os = out.getStream();
 
 			if (writeNotNull)

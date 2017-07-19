@@ -61,7 +61,15 @@ public interface MethodHandleReader
 		{
 			reader = new Int32MethodHandleReader(MethodHandles.lookup().unreflect(method));
 		}
+		else if (returnType == float.class && "float".equals(argotType))
+		{
+			reader = new Int32MethodHandleReader(MethodHandles.lookup().unreflect(method));
+		}
 		else if (returnType == long.class && "int64".equals(argotType))
+		{
+			reader = new Int64MethodHandleReader(MethodHandles.lookup().unreflect(method));
+		}
+		else if (returnType == double.class && "double".equals(argotType))
 		{
 			reader = new Int64MethodHandleReader(MethodHandles.lookup().unreflect(method));
 		}
@@ -144,6 +152,21 @@ public interface MethodHandleReader
 		}
 	}
 
+	public static final class IEEEFloatMethodHandleReader extends AbstractReader
+	{
+		public IEEEFloatMethodHandleReader(final MethodHandle setHandle)
+		{
+			super(setHandle);
+		}
+
+		@Override
+		public void read(final Object o, final TypeInputStream in) throws Throwable
+		{
+			final int value = (((in.read() & 0xff) << 24) | ((in.read() & 0xff) << 16) | ((in.read() & 0xff) << 8) | (in.read() & 0xff));
+			setHandle.invoke(o, Float.intBitsToFloat(value));
+		}
+	}
+
 	public static final class Int64MethodHandleReader extends AbstractReader
 	{
 		public Int64MethodHandleReader(final MethodHandle setHandle)
@@ -160,6 +183,25 @@ public interface MethodHandleReader
 					| (((long) is.read() & 0xff) << 24) | (((long) is.read() & 0xff) << 16) | (((long) is.read() & 0xff) << 8) | ((long) is.read() & 0xff));
 
 			setHandle.invoke(o, value);
+		}
+	}
+
+	public static final class IEEEDoubleMethodHandleReader extends AbstractReader
+	{
+		public IEEEDoubleMethodHandleReader(final MethodHandle setHandle)
+		{
+			super(setHandle);
+		}
+
+		@Override
+		public void read(final Object o, final TypeInputStream in) throws Throwable
+		{
+			final InputStream is = in.getStream();
+
+			final long value = ((((long) is.read() & 0xff) << 56) | (((long) is.read() & 0xff) << 48) | (((long) is.read() & 0xff) << 40) | (((long) is.read() & 0xff) << 32)
+					| (((long) is.read() & 0xff) << 24) | (((long) is.read() & 0xff) << 16) | (((long) is.read() & 0xff) << 8) | ((long) is.read() & 0xff));
+
+			setHandle.invoke(o, Double.longBitsToDouble(value));
 		}
 	}
 

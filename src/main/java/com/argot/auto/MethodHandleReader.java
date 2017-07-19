@@ -35,6 +35,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 
 import com.argot.TypeInputStream;
+import com.argot.util.StringStrongInterner;
+import com.argot.util.StringWeakInterner;
 
 public interface MethodHandleReader
 {
@@ -75,7 +77,22 @@ public interface MethodHandleReader
 		}
 		else if (returnType == String.class && "u8utf8".equals(argotType))
 		{
-			reader = new U8Utf8MethodHandleReader(MethodHandles.lookup().unreflect(method));
+			final ArgotIntern intern = method.getAnnotation(ArgotIntern.class);
+			if (intern != null)
+			{
+				if ("weak".equalsIgnoreCase(intern.value()))
+				{
+					reader = new U8Utf8WeakInternMethodHandleReader(MethodHandles.lookup().unreflect(method));
+				}
+				else
+				{
+					reader = new U8Utf8StrongInternMethodHandleReader(MethodHandles.lookup().unreflect(method), intern.value());
+				}
+			}
+			else
+			{
+				reader = new U8Utf8MethodHandleReader(MethodHandles.lookup().unreflect(method));
+			}
 		}
 
 		return reader;
@@ -223,9 +240,13 @@ public interface MethodHandleReader
 			}
 		};
 
+		private final StringWeakInterner interner;
+
 		public U8Utf8MethodHandleReader(final MethodHandle setHandle)
 		{
 			super(setHandle);
+
+			interner = StringWeakInterner.get();
 		}
 
 		@Override
@@ -257,6 +278,115 @@ public interface MethodHandleReader
 
 			// get a copy of
 			final String str = c.toString();
+
+			// finally set the string value.
+			setHandle.invoke(o, str);
+		}
+	}
+
+	public static final class U8Utf8WeakInternMethodHandleReader extends AbstractReader
+	{
+		private final ThreadLocal<StringBuffers> buffers = new ThreadLocal<StringBuffers>()
+		{
+			@Override
+			public StringBuffers initialValue()
+			{
+				return new StringBuffers();
+			}
+		};
+
+		private final StringWeakInterner interner;
+
+		public U8Utf8WeakInternMethodHandleReader(final MethodHandle setHandle)
+		{
+			super(setHandle);
+
+			interner = StringWeakInterner.get();
+		}
+
+		@Override
+		public void read(final Object o, final TypeInputStream in) throws Throwable
+		{
+			final int len = in.read();
+
+			// Grab a thread local set of buffers to use temporarily.
+			final StringBuffers buf = buffers.get();
+
+			// get a reference to the buffers.
+			final ByteBuffer b = buf.buffer;
+			final CharBuffer c = buf.charBuffer;
+
+			b.clear();
+			c.clear();
+
+			// read the stream into the byte buffer.
+			in.getStream().read(b.array(), 0, len);
+			b.limit(len);
+
+			// decode the bytes into the char buffer.
+			final CharsetDecoder decoder = buf.decoder;
+			decoder.reset();
+			decoder.decode(b, c, true);
+
+			// flip the char buffer.
+			c.flip();
+
+			// get a copy of
+			final String str = interner.get(c);
+
+			// finally set the string value.
+			setHandle.invoke(o, str);
+		}
+	}
+
+	public static final class U8Utf8StrongInternMethodHandleReader extends AbstractReader
+	{
+		private final StringStrongInterner interner;
+
+		private final ThreadLocal<StringBuffers> buffers = new ThreadLocal<StringBuffers>()
+		{
+			@Override
+			public StringBuffers initialValue()
+			{
+				return new StringBuffers();
+			}
+		};
+
+		public U8Utf8StrongInternMethodHandleReader(final MethodHandle setHandle, final String name)
+		{
+			super(setHandle);
+			interner = StringStrongInterner.getInterner(name);
+		}
+
+		@Override
+		public void read(final Object o, final TypeInputStream in) throws Throwable
+		{
+			final int len = in.read();
+
+			// Grab a thread local set of buffers to use temporarily.
+			final StringBuffers buf = buffers.get();
+
+			// get a reference to the buffers.
+			final ByteBuffer b = buf.buffer;
+			final CharBuffer c = buf.charBuffer;
+
+			b.clear();
+			c.clear();
+
+			// read the stream into the byte buffer.
+			in.getStream().read(b.array(), 0, len);
+			b.limit(len);
+
+			// decode the bytes into the char buffer.
+			final CharsetDecoder decoder = buf.decoder;
+			decoder.reset();
+			decoder.decode(b, c, true);
+
+			// flip the char buffer.
+			c.flip();
+
+			// get a copy of
+			final String str = interner.get(c);
 
 			// finally set the string value.
 			setHandle.invoke(o, str);

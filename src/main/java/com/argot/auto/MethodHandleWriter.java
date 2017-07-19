@@ -206,6 +206,7 @@ public interface MethodHandleWriter
 	public static final class StringBuffers
 	{
 		ByteBuffer buffer = ByteBuffer.allocate(512);
+		CharBuffer charBuffer = CharBuffer.allocate(300);
 		CharsetEncoder encoder = Charset.forName("UTF8").newEncoder();
 	}
 
@@ -228,7 +229,7 @@ public interface MethodHandleWriter
 		@Override
 		public void write(final Object o, final TypeOutputStream out) throws Throwable
 		{
-			// finally set the string value.
+			// get the string from the getter.
 			final String str = (String) getHandle.invoke(o);
 
 			final OutputStream os = out.getStream();
@@ -246,8 +247,12 @@ public interface MethodHandleWriter
 			// get a reference to the buffers.
 			final ByteBuffer b = buf.buffer;
 
-			// this does allocate an object, but at least it isn't copying the buffer!
-			final CharBuffer c = CharBuffer.wrap(str);
+			// copy the string into the charBuffer. Better than CharBuffer.wrap(str) because it doesn't allocate a buffer.
+			// replace CPU for allocations.
+			final CharBuffer c = buf.charBuffer;
+			c.clear();
+			c.append(str);
+			c.flip();
 
 			// clear the byte buffer.
 			b.clear();
@@ -264,7 +269,7 @@ public interface MethodHandleWriter
 
 			if (size > 255)
 			{
-				throw new TypeException("u8ascii: String length exceeded max length of 255.  len =" + size);
+				throw new TypeException("u8utf8: String length exceeded max length of 255.  len =" + size);
 			}
 
 			if (writeNotNull)

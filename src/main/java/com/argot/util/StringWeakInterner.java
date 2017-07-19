@@ -30,7 +30,6 @@ public class StringWeakInterner implements StringWeakInternerMBean
 	{
 		try
 		{
-			System.err.println("Configuring static interner jmx");
 			final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
 			final ObjectName mbName = new ObjectName("com.argot:type=StringWeakInterner,Name=common");
 			mbs.registerMBean(this, mbName);

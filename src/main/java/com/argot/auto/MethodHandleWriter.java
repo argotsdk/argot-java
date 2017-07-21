@@ -192,7 +192,7 @@ public interface MethodHandleWriter
 		@Override
 		public void write(final Object o, final TypeOutputStream out) throws Throwable
 		{
-			final float f = (int) getHandle.invoke(o);
+			final float f = (float) getHandle.invoke(o);
 			final int s = Float.floatToIntBits(f);
 			final OutputStream os = out.getStream();
 

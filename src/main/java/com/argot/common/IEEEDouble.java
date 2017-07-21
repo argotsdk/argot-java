@@ -27,6 +27,8 @@
 package com.argot.common;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
@@ -34,66 +36,49 @@ import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
 
-public class IEEEDouble 
+public class IEEEDouble
 {
-	public static final String TYPENAME = "double";	
+	public static final String TYPENAME = "double";
 	public static final String VERSION = "1.3";
-	
-	public static class Reader
-	implements TypeReader
-	{
-		public Object read(TypeInputStream in)
-		throws TypeException, IOException 
-		{
-			int a,b,c,d,e,f,g,h;
-			
-			a = in.getStream().read(); //56  
-			b = in.getStream().read(); //48
-			c = in.getStream().read(); //40
-			d = in.getStream().read(); //32
-			e = in.getStream().read(); //24
-			f = in.getStream().read(); //16
-			g = in.getStream().read(); //8
-			h = in.getStream().read(); //0
-				
-			long value = (((long)a << 56) + ((long)b << 48) + ((long)c << 40) + ((long)d << 32) + ((long)e << 24) + ((long)f << 16) + ((long)g<<8) + (long)h);
 
-			return new Double( Double.longBitsToDouble(value));
-		}
-	}
-	
-	public static class Writer
-	implements TypeWriter
+	public static class Reader implements TypeReader
 	{
-		public void write(TypeOutputStream out, Object o)
-		throws TypeException, IOException 
+		@Override
+		public Object read(final TypeInputStream in) throws TypeException, IOException
 		{
-			int a,b,c,d,e,f,g,h;
-			
-			if ( !(o instanceof Double) )
-				throw new TypeException( "ieee.double: requires Double" );
-			
-			Double dble = ((Double) o);
-			long s = Double.doubleToRawLongBits(dble.doubleValue());
-			
-			a = (int)((s >> 56) & 0xff);
-			b = (int)((s >> 48) & 0xff);
-			c = (int)((s >> 40) & 0xff);
-			d = (int)((s >> 32) & 0xff);
-			e = (int)((s >> 24) & 0xff);
-			f = (int)((s >> 16) & 0xff);
-			g = (int)((s >> 8) & 0xff);
-			h = (int)(s & 0xff);
-			
-			out.getStream().write( a );
-			out.getStream().write( b );
-			out.getStream().write( c );
-			out.getStream().write( d );
-			out.getStream().write( e );
-			out.getStream().write( f );
-			out.getStream().write( g );
-			out.getStream().write( h );			
+			final InputStream is = in.getStream();
+
+			final long value = ((((long) is.read() & 0xff) << 56) | (((long) is.read() & 0xff) << 48) | (((long) is.read() & 0xff) << 40) | (((long) is.read() & 0xff) << 32)
+					| (((long) is.read() & 0xff) << 24) | (((long) is.read() & 0xff) << 16) | (((long) is.read() & 0xff) << 8) | ((long) is.read() & 0xff));
+
+			return new Double(Double.longBitsToDouble(value));
 		}
 	}
-		
+
+	public static class Writer implements TypeWriter
+	{
+		@Override
+		public void write(final TypeOutputStream out, final Object o) throws TypeException, IOException
+		{
+			if (!(o instanceof Double))
+			{
+				throw new TypeException("ieee.double: requires Double");
+			}
+
+			final Double dble = ((Double) o);
+			final long s = Double.doubleToRawLongBits(dble.doubleValue());
+
+			final OutputStream os = out.getStream();
+			os.write((byte) ((s >> 56) & 0xff));
+			os.write((byte) ((s >> 48) & 0xff));
+			os.write((byte) ((s >> 40) & 0xff));
+			os.write((byte) ((s >> 32) & 0xff));
+			os.write((byte) ((s >> 24) & 0xff));
+			os.write((byte) ((s >> 16) & 0xff));
+			os.write((byte) ((s >> 8) & 0xff));
+			os.write((byte) (s & 0xff));
+
+		}
+	}
+
 }

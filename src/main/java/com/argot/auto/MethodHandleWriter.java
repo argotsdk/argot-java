@@ -64,7 +64,7 @@ public interface MethodHandleWriter
 		}
 		else if (returnType == float.class && "float".equals(argotType))
 		{
-			writer = new Int32MethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
+			writer = new IEEEFloatMethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
 		}
 		else if (returnType == long.class && "int64".equals(argotType))
 		{
@@ -72,7 +72,7 @@ public interface MethodHandleWriter
 		}
 		else if (returnType == double.class && "double".equals(argotType))
 		{
-			writer = new Int64MethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
+			writer = new IEEEDoubleMethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
 		}
 		else if (returnType == String.class && "u8utf8".equals(argotType))
 		{

@@ -65,7 +65,7 @@ public interface MethodHandleReader
 		}
 		else if (returnType == float.class && "float".equals(argotType))
 		{
-			reader = new Int32MethodHandleReader(MethodHandles.lookup().unreflect(method));
+			reader = new IEEEFloatMethodHandleReader(MethodHandles.lookup().unreflect(method));
 		}
 		else if (returnType == long.class && "int64".equals(argotType))
 		{
@@ -73,7 +73,7 @@ public interface MethodHandleReader
 		}
 		else if (returnType == double.class && "double".equals(argotType))
 		{
-			reader = new Int64MethodHandleReader(MethodHandles.lookup().unreflect(method));
+			reader = new IEEEDoubleMethodHandleReader(MethodHandles.lookup().unreflect(method));
 		}
 		else if (returnType == String.class && "u8utf8".equals(argotType))
 		{

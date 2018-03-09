@@ -41,6 +41,7 @@ import com.argot.TypeLibraryReaderWriter;
 import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
+import com.argot.TypeReaderInstantiator;
 import com.argot.TypeWriter;
 import com.argot.meta.MetaExpression;
 import com.argot.meta.MetaExpressionLibraryResolver;
@@ -182,19 +183,21 @@ public class TypeIdentifiedBeanMarshaller implements TypeLibraryReaderWriter, Ty
 		throw new TypeException("TypeBeanMarshaller: No setter method found:" + _typeClass.getName() + "." + method);
 	}
 
-	private class TypeBeanMarshallerReader implements TypeReader
+	private class TypeBeanMarshallerReader implements TypeReader, TypeReaderInstantiator
 	{
 		private final TypeReader[] _sequenceReaders;
+		private TypeInstantiator _readerInstantiator;
 
-		public TypeBeanMarshallerReader(final TypeReader[] sequenceReaders)
+		public TypeBeanMarshallerReader(final TypeReader[] sequenceReaders, final TypeInstantiator instantiator)
 		{
 			_sequenceReaders = sequenceReaders;
+			_readerInstantiator = instantiator;
 		}
 
 		@Override
 		public Object read(final TypeInputStream in) throws TypeException, IOException
 		{
-			final Object o = _instantiator.newInstance();
+			final Object o = _readerInstantiator.newInstance();
 
 			for (int x = 0; x < _sequenceReaders.length; x++)
 			{
@@ -250,6 +253,19 @@ public class TypeIdentifiedBeanMarshaller implements TypeLibraryReaderWriter, Ty
 
 		}
 
+		@Override
+		public void setInstantiator(final TypeInstantiator instantiator)
+		{
+			_readerInstantiator = instantiator;
+
+		}
+
+		@Override
+		public TypeInstantiator getInstantiator()
+		{
+			return _readerInstantiator;
+		}
+
 	}
 
 	@Override
@@ -262,7 +278,7 @@ public class TypeIdentifiedBeanMarshaller implements TypeLibraryReaderWriter, Ty
 			readers[x] = _expressionResolver.getExpressionReader(map, _sequence.getElement(x));
 		}
 
-		return new TypeBeanMarshallerReader(readers);
+		return new TypeBeanMarshallerReader(readers, _instantiator);
 	}
 
 	private class TypeBeanMarshallerWriter implements TypeWriter

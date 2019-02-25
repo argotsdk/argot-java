@@ -90,7 +90,7 @@ public final class TypeHelper
 	}
 	
 	/**
-	 * This checks if the id, name & structure are the same as used
+	 * This checks if the id, name &amp; structure are the same as used
 	 * in the map.  The byte[] must follow the TypeMapCore type id's.
 	 * Any function or references must be valid in the context of this
 	 * TypeMap.

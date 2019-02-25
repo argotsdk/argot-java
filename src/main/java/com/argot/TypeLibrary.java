@@ -490,11 +490,11 @@ public class TypeLibrary
 	 *
 	 * requires version.
 	 *
-	 * @param name
+	 * @param location
+	 * @param structure
 	 * @param reader
 	 * @param writer
 	 * @param clss
-	 * @param structure
 	 * @return
 	 * @throws TypeException
 	 */
@@ -779,7 +779,7 @@ public class TypeLibrary
 	/**
 	 * Using a definition Id, find the associated name.
 	 *
-	 * @param systemId
+	 * @param typeId
 	 * @return
 	 * @throws TypeNotDefinedException
 	 */
@@ -848,8 +848,7 @@ public class TypeLibrary
 
 	/**
 	 *
-	 * @param name
-	 *            id
+	 * @param typeId
 	 * @return
 	 * @throws TypeException
 	 */
@@ -871,8 +870,7 @@ public class TypeLibrary
 
 	/**
 	 *
-	 * @param name
-	 *            id
+	 * @param typeId
 	 * @param isSimple
 	 * @throws TypeException
 	 */
@@ -910,8 +908,7 @@ public class TypeLibrary
 
 	/**
 	 *
-	 * @param structure
-	 *            id
+	 * @param typeId
 	 * @return
 	 * @throws TypeException
 	 */
@@ -938,8 +935,7 @@ public class TypeLibrary
 
 	/**
 	 *
-	 * @param structure
-	 *            id
+	 * @param typeId
 	 * @return
 	 * @throws TypeException
 	 */
@@ -966,8 +962,7 @@ public class TypeLibrary
 
 	/**
 	 *
-	 * @param structure
-	 *            id
+	 * @param typeId
 	 * @return
 	 * @throws TypeException
 	 */
@@ -994,8 +989,7 @@ public class TypeLibrary
 
 	/**
 	 *
-	 * @param structure
-	 *            id
+	 * @param typeId
 	 * @return
 	 * @throws TypeException
 	 */
@@ -1022,8 +1016,7 @@ public class TypeLibrary
 
 	/**
 	 *
-	 * @param structure
-	 *            id
+	 * @param typeId
 	 * @return
 	 * @throws TypeException
 	 */
@@ -1107,8 +1100,7 @@ public class TypeLibrary
 
 	/**
 	 *
-	 * @param structure
-	 *            id
+	 * @param typeId
 	 * @param clss
 	 * @throws TypeException
 	 */

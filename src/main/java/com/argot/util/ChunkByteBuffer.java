@@ -56,7 +56,6 @@ import com.argot.common.UInt32;
  *  The InputStream can be retrieved multiple times, however only after
  *  the output stream has been closed.
  * 
- *  @Version $Id: MimeByteBuffer.java,v 1.1 2004/11/26 02:58:37 oobles Exp $
  *  @author David Ryan
  */
 

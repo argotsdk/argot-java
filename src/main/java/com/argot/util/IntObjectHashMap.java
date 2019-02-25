@@ -20,11 +20,10 @@ package com.argot.util;
 import java.util.Arrays;
 
 /**
- * A hash map implementation of {@link IntObjectMap} that uses open addressing for keys. To minimize the memory footprint, this class uses open addressing rather than chaining. Collisions are resolved using linear probing. Deletions implement compaction, so cost of remove can
+ * A hash map implementation of that uses open addressing for keys. To minimize the memory footprint, this class uses open addressing rather than chaining. Collisions are resolved using linear probing. Deletions implement compaction, so cost of remove can
  * approach O(N) for full maps, which makes a small loadFactor recommended.
  *
- * @param <V>
- *            The value type stored in the map.
+ * @param <V> The value type stored in the map.
  */
 public class IntObjectHashMap<V>
 {

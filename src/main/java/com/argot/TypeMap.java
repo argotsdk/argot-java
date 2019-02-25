@@ -49,8 +49,8 @@ import com.argot.util.TwoWayHashMap;
  * A type name must have a mapping for its identity and a mapping
  * for a specific definition of the name.  Requires:
  * 
- * name -> stream id (specific definition)
- * name -> identity stream id
+ * name -&gt; stream id (specific definition)
+ * name -&gt; identity stream id
  * 
  */
 public class TypeMap

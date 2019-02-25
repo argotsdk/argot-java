@@ -13,207 +13,175 @@ import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
 
-public class StringWeakInterner implements StringWeakInternerMBean
-{
-	private static StringWeakInterner interner = new StringWeakInterner();
+public class StringWeakInterner implements StringWeakInternerMBean {
+    private static StringWeakInterner interner = new StringWeakInterner();
 
-	public static StringWeakInterner get()
-	{
-		return interner;
-	}
-	private IntObjectHashMap<StringEntry> stringMap = new IntObjectHashMap<StringEntry>();
-	private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
-	private final Lock r = rwl.readLock();
-	private final Lock w = rwl.writeLock();
+    public static StringWeakInterner get() {
+        return interner;
+    }
 
-	private StringWeakInterner()
-	{
-		try
-		{
-			final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-			final ObjectName mbName = new ObjectName("com.argot:type=StringWeakInterner,Name=common");
-			mbs.registerMBean(this, mbName);
-		}
-		catch (final MalformedObjectNameException | InstanceAlreadyExistsException | MBeanRegistrationException | NotCompliantMBeanException e)
-		{
-			System.out.println("Argot failed to register MBean u8utf8");
-			e.printStackTrace();
-		}
-	}
+    private IntObjectHashMap<StringEntry> stringMap = new IntObjectHashMap<StringEntry>();
+    private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
+    private final Lock r = rwl.readLock();
+    private final Lock w = rwl.writeLock();
 
-	private int hash(final CharBuffer cb)
-	{
-		int h = 0;
-		final int i = cb.limit();
-		for (int p = cb.position(); p < i; p++)
-		{
+    private StringWeakInterner() {
+        try {
+            final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+            final ObjectName mbName = new ObjectName("com.argot:type=StringWeakInterner,Name=common");
+            mbs.registerMBean(this, mbName);
+        } catch (final MalformedObjectNameException | InstanceAlreadyExistsException | MBeanRegistrationException | NotCompliantMBeanException e) {
+            System.out.println("Argot failed to register MBean u8utf8");
+            e.printStackTrace();
+        }
+    }
 
-			h = 31 * h + cb.get(p);
-		}
+    private int hash(final CharBuffer cb) {
+        int h = 0;
+        final int i = cb.limit();
+        for (int p = cb.position(); p < i; p++) {
 
-		return h;
-	}
+            h = 31 * h + cb.get(p);
+        }
 
-	private boolean compare(final CharBuffer cb, final String str)
-	{
+        return h;
+    }
 
-		if (str == null)
-		{
-			return false;
-		}
+    private boolean compare(final CharBuffer cb, final String str) {
 
-		final int i = cb.limit();
-		for (int p = cb.position(); p < i; p++)
-		{
-			if (cb.get(p) != str.charAt(p))
-			{
-				return false;
-			}
-		}
-		return true;
+        if (str == null || cb.remaining() != str.length()) {
+            return false;
+        }
 
-	}
+        final int i = cb.limit();
+        for (int p = cb.position(); p < i; p++) {
+            if (cb.get(p) != str.charAt(p)) {
+                return false;
+            }
+        }
+        return true;
 
-	public String get(final CharBuffer buffer)
-	{
-		// get the hash and divide by eight to reduce the hash
-		final int hash = (hash(buffer) >> 3);
+    }
 
-		String string = null;
+    public String get(final CharBuffer buffer) {
+        // get the hash and divide by eight to reduce the hash
+        final int hash = (hash(buffer) >> 3);
 
-		r.lock();
+        String string = null;
 
-		// First find the correct UUIDEntry for this hash.
-		StringEntry stringEntry = stringMap.get(hash);
-		if (stringEntry == null)
-		{
-			string = add(hash, buffer);
-		}
-		else
-		{
-			// Look through the list to find the right one.
-			string = stringEntry.string.get();
+        r.lock();
 
-			while (!compare(buffer, string))
-			{
-				stringEntry = stringEntry.next;
+        // First find the correct UUIDEntry for this hash.
+        StringEntry stringEntry = stringMap.get(hash);
+        if (stringEntry == null) {
+            string = add(hash, buffer);
+        } else {
+            // Look through the list to find the right one.
+            string = stringEntry.string.get();
 
-				// End of the list so not there.
-				if (stringEntry == null)
-				{
-					string = add(hash, buffer);
-					break;
-				}
+            while (!compare(buffer, string)) {
+                stringEntry = stringEntry.next;
 
-				string = stringEntry.string.get();
-			}
+                // End of the list so not there.
+                if (stringEntry == null) {
+                    string = add(hash, buffer);
+                    break;
+                }
 
-		}
-		r.unlock();
-		return string;
-	}
+                string = stringEntry.string.get();
+            }
 
-	/*
-	 * Doesn't return the number of objects, just the number of unique hashes. Indicative of size, but not accurate.
-	 */
-	public int size()
-	{
-		return stringMap.size();
-	}
+        }
+        r.unlock();
+        return string;
+    }
 
-	/**
-	 * Just required for testing purposes.
-	 */
-	public void reset()
-	{
-		stringMap = new IntObjectHashMap<StringEntry>();
-	}
+    /*
+     * Doesn't return the number of objects, just the number of unique hashes. Indicative of size, but not accurate.
+     */
+    public int size() {
+        return stringMap.size();
+    }
 
-	private String add(final int hash, final CharBuffer buffer)
-	{
-		String string = null;
+    /**
+     * Just required for testing purposes.
+     */
+    public void reset() {
+        stringMap = new IntObjectHashMap<StringEntry>();
+    }
 
-		r.unlock();
-		w.lock();
-		// try again just in case we got blocked while another thread created the same item.
-		StringEntry stringEntry = stringMap.get(hash);
+    private String add(final int hash, final CharBuffer buffer) {
+        String string = null;
 
-		// Nothing for this hash yet.
-		if (stringEntry == null)
-		{
+        r.unlock();
+        w.lock();
+        // try again just in case we got blocked while another thread created the same item.
+        StringEntry stringEntry = stringMap.get(hash);
 
-			string = buffer.toString();
-			stringEntry = new StringEntry();
-			stringEntry.string = new WeakReference<String>(string);
-			stringMap.put(hash, stringEntry);
-		}
-		else
-		{
-			string = stringEntry.string.get();
-			StringEntry reuseEntry = null;
-			while (!compare(buffer, string))
-			{
-				final StringEntry lastEntry = stringEntry;
+        // Nothing for this hash yet.
+        if (stringEntry == null) {
 
-				// This entry in the list can be re-used. The weakReference has lost its string.
-				if (string == null)
-				{
-					reuseEntry = stringEntry;
-				}
+            string = buffer.toString();
+            stringEntry = new StringEntry();
+            stringEntry.string = new WeakReference<String>(string);
+            stringMap.put(hash, stringEntry);
+        } else {
+            string = stringEntry.string.get();
+            StringEntry reuseEntry = null;
+            while (!compare(buffer, string)) {
+                final StringEntry lastEntry = stringEntry;
 
-				// go to next one in the list.
-				stringEntry = stringEntry.next;
+                // This entry in the list can be re-used. The weakReference has lost its string.
+                if (string == null) {
+                    reuseEntry = stringEntry;
+                }
 
-				// End of the list so not there.
-				if (stringEntry == null)
-				{
-					string = buffer.toString();
+                // go to next one in the list.
+                stringEntry = stringEntry.next;
 
-					if (reuseEntry != null)
-					{
-						stringEntry = reuseEntry;
-						stringEntry.string = new WeakReference<String>(string);
+                // End of the list so not there.
+                if (stringEntry == null) {
+                    string = buffer.toString();
 
-						// no need to link entry, it is already linked.
-					}
-					else
-					{
-						stringEntry = new StringEntry();
-						stringEntry.string = new WeakReference<String>(string);
+                    if (reuseEntry != null) {
+                        stringEntry = reuseEntry;
+                        stringEntry.string = new WeakReference<String>(string);
 
-						// link the last valid entry to the new entry.
-						lastEntry.next = stringEntry;
-					}
+                        // no need to link entry, it is already linked.
+                    } else {
+                        stringEntry = new StringEntry();
+                        stringEntry.string = new WeakReference<String>(string);
 
-					break;
-				}
+                        // link the last valid entry to the new entry.
+                        lastEntry.next = stringEntry;
+                    }
 
-				string = stringEntry.string.get();
-			}
+                    break;
+                }
 
-		}
+                string = stringEntry.string.get();
+            }
 
-		r.lock();
-		w.unlock();
+        }
 
-		return string;
-	}
+        r.lock();
+        w.unlock();
 
-	private static class StringEntry
-	{
-		StringEntry next;
-		WeakReference<String> string;
-	}
+        return string;
+    }
 
-	@Override
-	public int getSize()
-	{
-		return stringMap.size();
-	}
+    private static class StringEntry {
+        StringEntry next;
+        WeakReference<String> string;
+    }
 
-	@Override
-	public int getLength()
-	{
-		return stringMap.length();
-	}
+    @Override
+    public int getSize() {
+        return stringMap.size();
+    }
+
+    @Override
+    public int getLength() {
+        return stringMap.length();
+    }
 }

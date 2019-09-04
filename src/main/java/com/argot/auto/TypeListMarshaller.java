@@ -45,160 +45,132 @@ import com.argot.meta.MetaExpressionLibraryResolver;
 import com.argot.meta.MetaExpressionResolver;
 import com.argot.meta.MetaSequence;
 
-public class TypeListMarshaller implements TypeLibraryReaderWriter, TypeBound
-{
-	private final MetaExpressionResolver _resolver;
-	private Class<?> _typeClass;
-	private TypeInstantiator _instantiator;
-	private MetaExpression _sizeExpression;
-	private MetaExpression _dataExpression;
+public class TypeListMarshaller implements TypeLibraryReaderWriter, TypeBound {
+    private final MetaExpressionResolver _resolver;
+    private Class<?> _typeClass;
+    private TypeInstantiator _instantiator;
+    private MetaExpression _sizeExpression;
+    private MetaExpression _dataExpression;
 
-	public TypeListMarshaller(final TypeInstantiator instantiator)
-	{
-		_resolver = new MetaExpressionLibraryResolver();
-		_instantiator = instantiator;
-	}
+    public TypeListMarshaller(final TypeInstantiator instantiator) {
+        _resolver = new MetaExpressionLibraryResolver();
+        _instantiator = instantiator;
+    }
 
-	public TypeListMarshaller()
-	{
-		this(null);
-	}
+    public TypeListMarshaller() {
+        this(null);
+    }
 
-	public void bind(final TypeLibrary library, final int definitionId, final TypeElement definition) throws TypeException
-	{
-		if (!(definition instanceof MetaSequence))
-		{
-			throw new TypeException("TypeListMarshaller: array not surrounded by sequence.");
-		}
+    @Override
+    public void bind(final TypeLibrary library, final int definitionId, final TypeElement definition) throws TypeException {
+        if (!(definition instanceof MetaSequence)) {
+            throw new TypeException("TypeListMarshaller: array not surrounded by sequence.");
+        }
 
-		final MetaSequence sequence = (MetaSequence) definition;
+        final MetaSequence sequence = (MetaSequence) definition;
 
-		final MetaExpression expression = sequence.getElement(0);
-		if (!(expression instanceof MetaArray))
-		{
-			throw new TypeException("TypeListMarshaller: not an array instance");
-		}
+        final MetaExpression expression = sequence.getElement(0);
+        if (!(expression instanceof MetaArray)) {
+            throw new TypeException("TypeListMarshaller: not an array instance");
+        }
 
-		final MetaArray array = (MetaArray) expression;
-		_sizeExpression = array.getSizeExpression();
-		_dataExpression = array.getTypeExpression();
-		final Class<?> arrayClass = library.getClass(definitionId);
-		if (!arrayClass.isArray())
-		{
-			throw new TypeException("TypeListMarshaller: not bound to array data type");
-		}
-		_typeClass = arrayClass.getComponentType();
+        final MetaArray array = (MetaArray) expression;
+        _sizeExpression = array.getSizeExpression();
+        _dataExpression = array.getTypeExpression();
+        final Class<?> arrayClass = library.getClass(definitionId);
+        if (!arrayClass.isArray()) {
+            throw new TypeException("TypeListMarshaller: not bound to array data type");
+        }
+        _typeClass = arrayClass.getComponentType();
 
-		if (_instantiator == null)
-		{
-			_instantiator = library.getInstantiator(definitionId);
-		}
+        if (_instantiator == null) {
+            _instantiator = library.getInstantiator(definitionId);
+        }
 
-	}
+    }
 
-	private class TypeArrayMarshallerReader implements TypeReader
-	{
-		private final Class<?> _typeClass;
-		private final TypeReader _size;
-		private final TypeReader _data;
+    private class TypeArrayMarshallerReader implements TypeReader {
+        private final Class<?> _typeClass;
+        private final TypeReader _size;
+        private final TypeReader _data;
 
-		public TypeArrayMarshallerReader(final Class<?> typeClass, final TypeReader size, final TypeReader data)
-		{
-			_typeClass = typeClass;
-			_size = size;
-			_data = data;
-		}
+        public TypeArrayMarshallerReader(final Class<?> typeClass, final TypeReader size, final TypeReader data) {
+            _typeClass = typeClass;
+            _size = size;
+            _data = data;
+        }
 
-		@SuppressWarnings("unchecked")
-		public Object read(final TypeInputStream in) throws TypeException, IOException
-		{
-			final Object size = _size.read(in);
-			int s = 0;
-			if (size instanceof Byte)
-			{
-				s = ((Byte) size).intValue();
-			}
-			else if (size instanceof Short)
-			{
-				s = ((Short) size).intValue();
-			}
-			else if (size instanceof Integer)
-			{
-				s = ((Integer) size).intValue();
-			}
-			else if (size instanceof Long)
-			{
-				s = ((Long) size).intValue();
-			}
-			else
-			{
-				if (size != null)
-				{
-					throw new TypeException("TypeListMarshaller: Size type not an integer type: " + size.getClass().getName());
-				}
-				throw new TypeException("TypeListMarshaller: Size returned null value");
-			}
+        @Override
+        @SuppressWarnings("unchecked")
+        public Object read(final TypeInputStream in) throws TypeException, IOException {
+            final Object size = _size.read(in);
+            int s = 0;
+            if (size instanceof Byte) {
+                s = ((Byte) size).intValue();
+            } else if (size instanceof Short) {
+                s = ((Short) size).intValue();
+            } else if (size instanceof Integer) {
+                s = ((Integer) size).intValue();
+            } else if (size instanceof Long) {
+                s = ((Long) size).intValue();
+            } else {
+                if (size != null) {
+                    throw new TypeException("TypeListMarshaller: Size type not an integer type: " + size.getClass().getName());
+                }
+                throw new TypeException("TypeListMarshaller: Size returned null value");
+            }
 
-			@SuppressWarnings("rawtypes")
-			final List array = (List) _instantiator.newInstance();
-			for (int x = 0; x < s; x++)
-			{
-				final Object v = _data.read(in);
-				try
-				{
-					array.set(x, v);
-				}
-				catch (final IllegalArgumentException ex)
-				{
-					throw new TypeException("Failed to set array with Object:" + (v == null ? "null" : v.getClass().getName()) + " to " + _typeClass.getName(), ex);
-				}
-			}
-			return array;
-		}
-	}
+            @SuppressWarnings("rawtypes")
+            final List array = (List) _instantiator.newInstance();
+            for (int x = 0; x < s; x++) {
+                final Object v = _data.read(in);
+                try {
+                    array.set(x, v);
+                } catch (final IllegalArgumentException ex) {
+                    throw new TypeException("Failed to set array with Object:" + (v == null ? "null" : v.getClass().getName()) + " to " + _typeClass.getName(), ex);
+                }
+            }
+            return array;
+        }
+    }
 
-	public TypeReader getReader(final TypeMap map) throws TypeException
-	{
-		return new TypeArrayMarshallerReader(_typeClass, _resolver.getExpressionReader(map, _sizeExpression), _resolver.getExpressionReader(map, _dataExpression));
-	}
+    @Override
+    public TypeReader getReader(final TypeMap map) throws TypeException {
+        return new TypeArrayMarshallerReader(_typeClass, _resolver.getExpressionReader(map, _sizeExpression), _resolver.getExpressionReader(map, _dataExpression));
+    }
 
-	private class TypeArrayMarshallerWriter implements TypeWriter
-	{
-		private final TypeWriter _size;
-		private final TypeWriter _data;
+    private class TypeArrayMarshallerWriter implements TypeWriter {
+        private final TypeWriter _size;
+        private final TypeWriter _data;
 
-		public TypeArrayMarshallerWriter(final TypeWriter size, final TypeWriter data)
-		{
-			_size = size;
-			_data = data;
-		}
+        public TypeArrayMarshallerWriter(final TypeWriter size, final TypeWriter data) {
+            _size = size;
+            _data = data;
+        }
 
-		public void write(final TypeOutputStream out, final Object o) throws TypeException, IOException
-		{
-			if (o == null)
-			{
-				throw new TypeException("TypeListMarshaller: Object value is null");
-			}
+        @Override
+        public void write(final TypeOutputStream out, final Object o) throws TypeException, IOException {
+            if (o == null) {
+                throw new TypeException("TypeListMarshaller: Object value is null");
+            }
 
-			if (!(o instanceof List))
-			{
-				throw new TypeException("TypeListMarshaller: Object value is not an array type. " + o.getClass().getName());
-			}
+            if (!(o instanceof List)) {
+                throw new TypeException("TypeListMarshaller: Object value is not an array type. " + o.getClass().getName());
+            }
 
-			final List<?> list = (List<?>) o;
-			final int length = list.size();
-			_size.write(out, new Integer(length));
+            final List<?> list = (List<?>) o;
+            final int length = list.size();
+            _size.write(out, Integer.valueOf(length));
 
-			for (int x = 0; x < length; x++)
-			{
-				_data.write(out, list.get(x));
-			}
-		}
-	}
+            for (int x = 0; x < length; x++) {
+                _data.write(out, list.get(x));
+            }
+        }
+    }
 
-	public TypeWriter getWriter(final TypeMap map) throws TypeException
-	{
-		return new TypeArrayMarshallerWriter(_resolver.getExpressionWriter(map, _sizeExpression), _resolver.getExpressionWriter(map, _dataExpression));
-	}
+    @Override
+    public TypeWriter getWriter(final TypeMap map) throws TypeException {
+        return new TypeArrayMarshallerWriter(_resolver.getExpressionWriter(map, _sizeExpression), _resolver.getExpressionWriter(map, _dataExpression));
+    }
 
 }

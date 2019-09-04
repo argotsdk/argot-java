@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -26,21 +26,19 @@
 package com.argot;
 
 /**
- * TypeMapper is an interface which is used to manage the mapping of data
- * types from a TypeMap to a type library.  If there are particular requirements
- * regarding type versions or constraints on selected types, they should be
- * handled by an implementation of this interface.
+ * TypeMapper is an interface which is used to manage the mapping of data types from a TypeMap to a type library. If
+ * there are particular requirements regarding type versions or constraints on selected types, they should be handled by
+ * an implementation of this interface.
  * 
  * @author David Ryan
  *
  */
-public interface TypeMapper 
-{
-	public void initialise(TypeMap map) throws TypeException;
-		
-	public int map(int definitionId) throws TypeException;
-	
-	public int mapReverse(int streamId) throws TypeException;
+public interface TypeMapper {
+    public void initialise(TypeMap map) throws TypeException;
 
-	public int mapDefault(int nameId) throws TypeException;
+    public int map(int definitionId) throws TypeException;
+
+    public int mapReverse(int streamId) throws TypeException;
+
+    public int mapDefault(int nameId) throws TypeException;
 }

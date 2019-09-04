@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -30,55 +30,49 @@ import com.argot.TypeException;
 import com.argot.TypeLibrary;
 import com.argot.TypeLocation;
 
-public abstract class MetaExpression
-implements TypeElement
-{
-	public static final String TYPENAME = "meta.expression";
-	public static final String VERSION = "1.3";
-	
+public abstract class MetaExpression implements TypeElement {
+    public static final String TYPENAME = "meta.expression";
+    public static final String VERSION = "1.3";
+
     private TypeLibrary _library;
     private TypeElement _definition;
     private TypeLocation _location;
     private int _memberTypeId;
     private int _typeId;
- 
-    public void bind(TypeLibrary library, int memberTypeId, TypeLocation location, TypeElement definition) 
-    throws TypeException
-    {
+
+    @Override
+    public void bind(TypeLibrary library, int memberTypeId, TypeLocation location, TypeElement definition) throws TypeException {
         _library = library;
         _memberTypeId = memberTypeId;
         _location = location;
         _definition = definition;
-        _typeId = _library.getTypeId( getTypeName() );
+        _typeId = _library.getTypeId(getTypeName());
     }
-    
-    public TypeLibrary getLibrary()
-    {
+
+    @Override
+    public TypeLibrary getLibrary() {
         return _library;
     }
-    
-    public TypeElement getTypeDefinition()
-    {
+
+    @Override
+    public TypeElement getTypeDefinition() {
         return _definition;
     }
-    
-    public int getMemberTypeId()
-    {
+
+    public int getMemberTypeId() {
         return _memberTypeId;
     }
-    
-    public int getTypeId()
-    {
+
+    @Override
+    public int getTypeId() {
         return _typeId;
     }
-    
-    public TypeLocation getLocation()
-    {
-    	return _location;
-    }
-    
-    public abstract String getTypeName();
-    
 
-    
+    public TypeLocation getLocation() {
+        return _location;
+    }
+
+    @Override
+    public abstract String getTypeName();
+
 }

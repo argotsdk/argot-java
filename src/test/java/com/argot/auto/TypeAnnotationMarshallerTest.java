@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -43,41 +43,35 @@ import com.argot.meta.MetaLoader;
 
 import junit.framework.TestCase;
 
-public class TypeAnnotationMarshallerTest 
-extends TestCase
-{
-	private TypeLibrary _library;
-	
-	TypeLibraryLoader libraryLoaders[] = {
-		new MetaLoader(),
-		new CommonLoader(),
-	};
-	
-    protected void setUp() throws Exception
-    {
+public class TypeAnnotationMarshallerTest extends TestCase {
+    private TypeLibrary _library;
+
+    TypeLibraryLoader libraryLoaders[] = { new MetaLoader(), new CommonLoader(), };
+
+    @Override
+    protected void setUp() throws Exception {
         super.setUp();
-        _library = new TypeLibrary( libraryLoaders );
-        MixedDataAnnotated.register( _library );
+        _library = new TypeLibrary(libraryLoaders);
+        MixedDataAnnotated.register(_library);
     }
-    
-    public void testTypeMapCore() throws Exception
-    {
-        MixedDataAnnotated data = new MixedDataAnnotated( 2345, (short)234, "Testing");
+
+    public void testTypeMapCore() throws Exception {
+        MixedDataAnnotated data = new MixedDataAnnotated(2345, (short) 234, "Testing");
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        TypeMap map = new TypeMap( _library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperError())));
-        TypeOutputStream out = new TypeOutputStream( baos, map );
-        out.writeObject( MixedDataAnnotated.TYPENAME, data );
+        TypeMap map = new TypeMap(_library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperError())));
+        TypeOutputStream out = new TypeOutputStream(baos, map);
+        out.writeObject(MixedDataAnnotated.TYPENAME, data);
         baos.close();
-        
-        ByteArrayInputStream bais = new ByteArrayInputStream( baos.toByteArray() );
-        TypeInputStream in = new TypeInputStream( bais, map );
-        Object o = in.readObject( MixedDataAnnotated.TYPENAME );
-        assertEquals( o.getClass(), data.getClass() );
-        MixedDataAnnotated readData = (MixedDataAnnotated) data;
-        assertEquals( readData.getInt(), data.getInt() );
-        assertEquals( readData.getShort(), data.getShort() );
-        assertEquals( readData.getString(), data.getString() );
-        
-     }
+
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        TypeInputStream in = new TypeInputStream(bais, map);
+        Object o = in.readObject(MixedDataAnnotated.TYPENAME);
+        assertEquals(o.getClass(), data.getClass());
+        MixedDataAnnotated readData = data;
+        assertEquals(readData.getInt(), data.getInt());
+        assertEquals(readData.getShort(), data.getShort());
+        assertEquals(readData.getString(), data.getString());
+
+    }
 }

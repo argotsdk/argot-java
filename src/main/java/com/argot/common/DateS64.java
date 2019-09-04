@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -36,43 +36,35 @@ import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
 
-public class DateS64
-implements TypeLibraryReader, TypeLibraryWriter
-{
+public class DateS64 implements TypeLibraryReader, TypeLibraryWriter {
 
-	public static final String TYPENAME = "date.java";
-	public static final String VERSION = "1.3";
-	
-	private static class DateS64Writer
-	implements TypeWriter
-	{
-		private TypeWriter _int64;
-		
-		public DateS64Writer( TypeWriter int64 )
-		{
-			_int64 = int64;
-		}
-		
-		public void write(TypeOutputStream out, Object o)
-		throws TypeException, IOException
-		{
-			Date d = (Date) o;
-			if ( d == null )
-				_int64.write( out, new Long( Long.MIN_VALUE ) );
-			else
-				_int64.write( out, new Long( d.getTime() ) );
-		}
-	}
-	
-	public TypeReader getReader(TypeMap map) 
-	throws TypeException 
-	{
+    public static final String TYPENAME = "date.java";
+    public static final String VERSION = "1.3";
+
+    private static class DateS64Writer implements TypeWriter {
+        private TypeWriter _int64;
+
+        public DateS64Writer(TypeWriter int64) {
+            _int64 = int64;
+        }
+
+        @Override
+        public void write(TypeOutputStream out, Object o) throws TypeException, IOException {
+            Date d = (Date) o;
+            if (d == null)
+                _int64.write(out, Long.valueOf(Long.MIN_VALUE));
+            else
+                _int64.write(out, Long.valueOf(d.getTime()));
+        }
+    }
+
+    @Override
+    public TypeReader getReader(TypeMap map) throws TypeException {
         throw new TypeException("not implemented");
     }
 
-	public TypeWriter getWriter(TypeMap map) 
-	throws TypeException 
-	{
-		return new DateS64Writer(map.getWriter(map.getStreamId(Int64.TYPENAME)));
-	}
+    @Override
+    public TypeWriter getWriter(TypeMap map) throws TypeException {
+        return new DateS64Writer(map.getWriter(map.getStreamId(Int64.TYPENAME)));
+    }
 }

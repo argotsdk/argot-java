@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -45,81 +45,60 @@ import com.argot.meta.MetaSequence;
 import com.argot.meta.MetaTag;
 import com.argot.meta.MetaVersion;
 
-
-/*
+/* 
  * A simple mixed data used for testing purposes.
  */
-public class MixedData
-{
-	public static final String TYPENAME = "data";
-	public static final String VERSION = "1.0";
+public class MixedData {
+    public static final String TYPENAME = "data";
+    public static final String VERSION = "1.0";
 
-	private final int _anInt;
-	private final short _aShort;
-	private final String _anUtf8;
+    private final int _anInt;
+    private final short _aShort;
+    private final String _anUtf8;
 
-	public MixedData( final int anInt, final short aShort, final String anUtf8 )
-	{
-		_anInt = anInt;
-		_aShort = aShort;
-		_anUtf8 = anUtf8;
-	}
+    public MixedData(final int anInt, final short aShort, final String anUtf8) {
+        _anInt = anInt;
+        _aShort = aShort;
+        _anUtf8 = anUtf8;
+    }
 
-	public int getInt()
-	{
-		return _anInt;
-	}
+    public int getInt() {
+        return _anInt;
+    }
 
-	public short getShort()
-	{
-		return _aShort;
-	}
+    public short getShort() {
+        return _aShort;
+    }
 
-	public String getString()
-	{
-		return _anUtf8;
-	}
+    public String getString() {
+        return _anUtf8;
+    }
 
-	public static class MixedDataWriter
-	implements TypeLibraryWriter,TypeWriter
-	{
-        public void write(final TypeOutputStream out, final Object o)
-		throws TypeException, IOException
-		{
-			final MixedData data = (MixedData) o;
-			out.writeObject("uint16", new Integer( data._anInt ));
-			out.writeObject("uint8", new Short( data._aShort ));
-			out.writeObject("u8utf8", data._anUtf8 );
-		}
+    public static class MixedDataWriter implements TypeLibraryWriter, TypeWriter {
+        @Override
+        public void write(final TypeOutputStream out, final Object o) throws TypeException, IOException {
+            final MixedData data = (MixedData) o;
+            out.writeObject("uint16", Integer.valueOf(data._anInt));
+            out.writeObject("uint8", Short.valueOf(data._aShort));
+            out.writeObject("u8utf8", data._anUtf8);
+        }
 
-        public TypeWriter getWriter(final TypeMap map)
-		throws TypeException
-		{
-			return this;
-		}
-	}
+        @Override
+        public TypeWriter getWriter(final TypeMap map) throws TypeException {
+            return this;
+        }
+    }
 
-	/*
-	 * This should be contained in a dictionary file instead
-	 * of being created in code.  Useful here for testing.
-	 */
-	public static int register( final TypeLibrary library )
-	throws TypeException
-	{
-		final int id = library.register( new DictionaryName(MetaName.parseName(library,TYPENAME)), new MetaIdentity() );
+    /*
+     * This should be contained in a dictionary file instead
+     * of being created in code.  Useful here for testing.
+     */
+    public static int register(final TypeLibrary library) throws TypeException {
+        final int id = library.register(new DictionaryName(MetaName.parseName(library, TYPENAME)), new MetaIdentity());
 
-		return library.register(
-				new DictionaryDefinition(id, MetaName.parseName(library,TYPENAME), MetaVersion.parseVersion("1.0")),
-				new MetaSequence(
-					new MetaExpression[]{
-					    new MetaTag( "short", new MetaReference( library.getTypeId("uint16"))),
-					    new MetaTag( "byte", new MetaReference( library.getTypeId("uint8"))),
-					    new MetaTag( "u8utf8", new MetaReference( library.getTypeId("u8utf8")))
-					}
-				),
-			new TypeReaderAuto( MixedData.class ),
-			new MixedDataWriter(),
-			MixedData.class
-		);
-	}
+        return library.register(new DictionaryDefinition(id, MetaName.parseName(library, TYPENAME), MetaVersion.parseVersion("1.0")),
+                        new MetaSequence(new MetaExpression[] { new MetaTag("short", new MetaReference(library.getTypeId("uint16"))),
+                                        new MetaTag("byte", new MetaReference(library.getTypeId("uint8"))), new MetaTag("u8utf8", new MetaReference(library.getTypeId("u8utf8"))) }),
+                        new TypeReaderAuto(MixedData.class), new MixedDataWriter(), MixedData.class);
+    }
 }

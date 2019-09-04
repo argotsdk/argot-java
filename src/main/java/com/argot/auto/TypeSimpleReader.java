@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -34,41 +34,31 @@ import com.argot.TypeLibraryReader;
 import com.argot.TypeMap;
 import com.argot.TypeReader;
 
-public class TypeSimpleReader 
-implements TypeLibraryReader,TypeBound
-{
-	private TypeReader _reader;
-	
-	public TypeSimpleReader(TypeReader reader)
-	{
-		_reader = reader;
-	}
-	
-	protected TypeSimpleReader()
-	{
-		_reader = null;
-	}
+public class TypeSimpleReader implements TypeLibraryReader, TypeBound {
+    private TypeReader _reader;
 
-	protected void setReader(TypeReader reader)
-	{
-		_reader = reader;
-	}
-	
-	public void bind(TypeLibrary library, int definitionId, TypeElement definition) 
-	throws TypeException 
-	{
-		if (_reader instanceof TypeBound && _reader != this)
-		{
-			((TypeBound)_reader).bind(library, definitionId, definition);
-		}		
-	}
-	
-	public TypeReader getReader(TypeMap map) 
-	throws TypeException 
-	{
-		return _reader;
-	}
+    public TypeSimpleReader(TypeReader reader) {
+        _reader = reader;
+    }
 
+    protected TypeSimpleReader() {
+        _reader = null;
+    }
 
+    protected void setReader(TypeReader reader) {
+        _reader = reader;
+    }
+
+    @Override
+    public void bind(TypeLibrary library, int definitionId, TypeElement definition) throws TypeException {
+        if (_reader instanceof TypeBound && _reader != this) {
+            ((TypeBound) _reader).bind(library, definitionId, definition);
+        }
+    }
+
+    @Override
+    public TypeReader getReader(TypeMap map) throws TypeException {
+        return _reader;
+    }
 
 }

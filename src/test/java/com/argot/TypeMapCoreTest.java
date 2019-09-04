@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -33,76 +33,67 @@ import com.argot.meta.MetaLoader;
 
 import junit.framework.TestCase;
 
-public class TypeMapCoreTest
-extends TestCase
-{
+public class TypeMapCoreTest extends TestCase {
     private TypeLibrary _library;
-    
-    protected void setUp() throws Exception
-    {
+
+    @Override
+    protected void setUp() throws Exception {
         super.setUp();
         _library = new TypeLibrary(false);
-        _library.loadLibrary( new MetaLoader() );
+        _library.loadLibrary(new MetaLoader());
     }
-    
-    public void testTypeMapCore() throws Exception
-    {
-		TypeMap baseMap = new TypeMap( _library, new TypeMapperCore(new TypeMapperError()));
-		TypeMap coreMap = new TypeMap( _library, new TypeMapperCore(new TypeMapperError()));
-		coreMap.setReference(TypeMap.REFERENCE_MAP, baseMap);
-  	
+
+    public void testTypeMapCore() throws Exception {
+        TypeMap baseMap = new TypeMap(_library, new TypeMapperCore(new TypeMapperError()));
+        TypeMap coreMap = new TypeMap(_library, new TypeMapperCore(new TypeMapperError()));
+        coreMap.setReference(TypeMap.REFERENCE_MAP, baseMap);
+
         byte[] core = writeCore(coreMap);
-        
-        int count=0;
+
+        int count = 0;
         System.out.println("Core Size: " + core.length);
-        for (int x=0; x<core.length;x++)
-        {
-        	count++;
-        	
-        	if (core[x] >= 48 && core[x] <= 122 )
-        	{
-        		String value = String.valueOf((char)core[x]);
-        		System.out.print( value + "  ");
-        	}
-        	else
-        	{
-	        	String value = Integer.toString( core[x], 16 );
-	        	if (value.length()==1) value = "0" + value;
-	        	value = "" + value;
-	        	
-	        	System.out.print( "" + value + " ");
-        	}
-        	if (count>23)
-        	{
-        		count=0;
-        		System.out.println("");
-        	}
+        for (int x = 0; x < core.length; x++) {
+            count++;
+
+            if (core[x] >= 48 && core[x] <= 122) {
+                String value = String.valueOf((char) core[x]);
+                System.out.print(value + "  ");
+            } else {
+                String value = Integer.toString(core[x], 16);
+                if (value.length() == 1)
+                    value = "0" + value;
+                value = "" + value;
+
+                System.out.print("" + value + " ");
+            }
+            if (count > 23) {
+                count = 0;
+                System.out.println("");
+            }
         }
-        
+
         int zeros = 0;
-        for (int x=0; x<core.length;x++)
-        {
-        	if ( core[x] == 0 ) zeros++;
+        for (int x = 0; x < core.length; x++) {
+            if (core[x] == 0)
+                zeros++;
         }
-        System.out.println("\n\nZeros:" + zeros );
+        System.out.println("\n\nZeros:" + zeros);
     }
-    
-    public void testGetClass() throws Exception
-    {
-       // TypeMap map = TypeMapCore.getCoreTypeMap( _library );
-        
-      //  int id = map.getStreamId( MetaFixedWidth.class );
-      //  assertEquals( id, map.getStreamId( MetaFixedWidth.TYPENAME ));
+
+    public void testGetClass() throws Exception {
+        // TypeMap map = TypeMapCore.getCoreTypeMap( _library );
+
+        //  int id = map.getStreamId( MetaFixedWidth.class );
+        //  assertEquals( id, map.getStreamId( MetaFixedWidth.TYPENAME ));
     }
-    
-	public static byte[] writeCore( TypeMap map ) throws TypeException, IOException
-	{
-		TypeMap refCore = new TypeMap(map.getLibrary(), new TypeMapperCore(new TypeMapperError()));
-		ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
-		TypeOutputStream coreObjectStream = new TypeOutputStream( baos1, map );
-		coreObjectStream.writeObject( Dictionary.DICTIONARY_ENTRY_LIST, refCore );
-		baos1.close();		
-		return baos1.toByteArray();
-	}    
+
+    public static byte[] writeCore(TypeMap map) throws TypeException, IOException {
+        TypeMap refCore = new TypeMap(map.getLibrary(), new TypeMapperCore(new TypeMapperError()));
+        ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
+        TypeOutputStream coreObjectStream = new TypeOutputStream(baos1, map);
+        coreObjectStream.writeObject(Dictionary.DICTIONARY_ENTRY_LIST, refCore);
+        baos1.close();
+        return baos1.toByteArray();
+    }
 
 }

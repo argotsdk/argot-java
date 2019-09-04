@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -35,64 +35,57 @@ import com.argot.meta.MetaTag;
 
 import junit.framework.TestCase;
 
-public class TypeMapTest
-extends TestCase
-{
+public class TypeMapTest extends TestCase {
     private TypeLibrary _library;
     private TypeMap _map;
-    
-    protected void setUp() throws Exception
-    {
+
+    @Override
+    protected void setUp() throws Exception {
         super.setUp();
         _library = new TypeLibrary(false);
-        _library.loadLibrary( new MetaLoader() );
-		_map = new TypeMap( _library, new TypeMapperCore(new TypeMapperError()));
-    }
-    
-    public void testGetIdByName() throws Exception
-    {
-        int id = _map.getStreamId( MetaReference.TYPENAME );
-        assertEquals( TypeMapperCore.REFERENCE_ID, id );
+        _library.loadLibrary(new MetaLoader());
+        _map = new TypeMap(_library, new TypeMapperCore(new TypeMapperError()));
     }
 
-    public void testGetSystemId() throws Exception
-    {
-        int id = _map.getStreamId( MetaReference.TYPENAME );
-        int systemId = _map.getDefinitionId( id );
-
-        assertEquals( systemId, _library.getTypeId( MetaReference.TYPENAME, "1.3" ));
+    public void testGetIdByName() throws Exception {
+        int id = _map.getStreamId(MetaReference.TYPENAME);
+        assertEquals(TypeMapperCore.REFERENCE_ID, id);
     }
-    
-    public void testGetName() throws Exception
-    {
-        MetaName name = _map.getName( TypeMapperCore.REFERENCE_ID );
-        assertEquals( MetaReference.TYPENAME, name.getFullName() );
-    }
-    
-    public void testGetIdBySystemId() throws Exception
-    {
-        int id = _map.getStreamId( _library.getTypeId( MetaReference.TYPENAME, "1.3" ));
-        assertEquals( TypeMapperCore.REFERENCE_ID, id );
-    }
-    
-    public void testIterator() throws Exception
-    {
-    	_map = new TypeMap( _library, new TypeMapperError() );
-    	_map.map( 34, _library.getTypeId( MetaReference.TYPENAME, "1.3") );
-    	_map.map( 20, _library.getTypeId( MetaTag.TYPENAME, "1.3") );
-    	_map.map( 45, _library.getTypeId( MetaSequence.TYPENAME, "1.3") );
-    	
-    	Iterator<Integer> iter = _map.getIdList().iterator();
-    	
-    	Integer i = iter.next();
-    	assertEquals( 20, i.intValue() );
 
-    	i = iter.next();
-    	assertEquals( 34, i.intValue() );
+    public void testGetSystemId() throws Exception {
+        int id = _map.getStreamId(MetaReference.TYPENAME);
+        int systemId = _map.getDefinitionId(id);
 
-    	i = iter.next();
-    	assertEquals( 45, i.intValue() );
-    	
-    	assertFalse( iter.hasNext() );
+        assertEquals(systemId, _library.getTypeId(MetaReference.TYPENAME, "1.3"));
+    }
+
+    public void testGetName() throws Exception {
+        MetaName name = _map.getName(TypeMapperCore.REFERENCE_ID);
+        assertEquals(MetaReference.TYPENAME, name.getFullName());
+    }
+
+    public void testGetIdBySystemId() throws Exception {
+        int id = _map.getStreamId(_library.getTypeId(MetaReference.TYPENAME, "1.3"));
+        assertEquals(TypeMapperCore.REFERENCE_ID, id);
+    }
+
+    public void testIterator() throws Exception {
+        _map = new TypeMap(_library, new TypeMapperError());
+        _map.map(34, _library.getTypeId(MetaReference.TYPENAME, "1.3"));
+        _map.map(20, _library.getTypeId(MetaTag.TYPENAME, "1.3"));
+        _map.map(45, _library.getTypeId(MetaSequence.TYPENAME, "1.3"));
+
+        Iterator<Integer> iter = _map.getIdList().iterator();
+
+        Integer i = iter.next();
+        assertEquals(20, i.intValue());
+
+        i = iter.next();
+        assertEquals(34, i.intValue());
+
+        i = iter.next();
+        assertEquals(45, i.intValue());
+
+        assertFalse(iter.hasNext());
     }
 }

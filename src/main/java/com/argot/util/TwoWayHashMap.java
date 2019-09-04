@@ -1,9 +1,5 @@
-package com.argot.util;
-
-import java.util.Iterator;
-
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -27,251 +23,216 @@ import java.util.Iterator;
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.argot.util;
 
+import java.util.Iterator;
 
+public class TwoWayHashMap {
+    private TwoWayHashItem[] _forwards;
+    private TwoWayHashItem[] _backwards;
+    private int _mask;
+    private int _table_size;
+    private int _count;
 
-public class TwoWayHashMap
-{
-	private TwoWayHashItem[] _forwards;
-	private TwoWayHashItem[] _backwards;
-	private int _mask;
-	private int _table_size;
-	private int _count;
+    public TwoWayHashMap() {
+        _table_size = 32;
+        _forwards = new TwoWayHashItem[_table_size];
+        _backwards = new TwoWayHashItem[_table_size];
+        _mask = _table_size - 1;
+        _count = 0;
+    }
 
+    /*
+     * int hash(int key)
+     * 
+     * fast integer hash function taken from
+     * http://www.concentric.net/~Ttwang/tech/inthash.htm
+     */
+    int inthash(int key) {
+        key += (key << 12);
+        key ^= (key >> 22);
+        key += (key << 4);
+        key ^= (key >> 9);
+        key += (key << 10);
+        key ^= (key >> 2);
+        key += (key << 7);
+        key ^= (key >> 12);
+        return key;
+    }
 
-	public TwoWayHashMap()
-	{
-		_table_size = 32;
-		_forwards = new TwoWayHashItem[_table_size];
-		_backwards = new TwoWayHashItem[_table_size];
-		_mask = _table_size-1;
-		_count = 0;
-	}
+    public int size() {
+        return _count;
+    }
 
-	/*
-	 * int hash(int key)
-	 * 
-	 * fast integer hash function taken from
-	 * http://www.concentric.net/~Ttwang/tech/inthash.htm
-	 */
-	int inthash(int key)
-	{
-		key += (key << 12);
-		key ^= (key >> 22);
-		key += (key << 4);
-		key ^= (key >> 9);
-		key += (key << 10);
-		key ^= (key >> 2);
-		key += (key << 7);
-		key ^= (key >> 12);
-		return key;
-	}
+    public int findKey(int val) {
+        TwoWayHashItem item = null;
+        int hashvalue = inthash(val);
 
-	public int size()
-	{
-		return _count;
-	}
+        for (item = _backwards[hashvalue & _mask]; item != null; item = item.next_b) {
+            if ((hashvalue == item.hash_b) && (val == item.val)) {
+                return item.key;
+            }
+        }
+        return -1;
+    }
 
-	public int findKey( int val )
-	{
-		TwoWayHashItem item = null;
-		int hashvalue = inthash(val);
+    public Object getObjectFromKey(int key) {
+        TwoWayHashItem item = null;
+        int hashvalue = inthash(key);
 
-		for (item = _backwards[ hashvalue & _mask ]; item != null; item = item.next_b)
-		{
-			if ((hashvalue == item.hash_b) && (val == item.val))
-			{
-				return item.key;
-			}
-		}
-		return -1;
-	}
-	
-	public Object getObjectFromKey( int key )
-	{
-		TwoWayHashItem item = null;
-		int hashvalue = inthash(key);
+        for (item = _forwards[hashvalue & _mask]; item != null; item = item.next_f) {
+            if ((hashvalue == item.hash_f) && (key == item.key)) {
+                return item.object;
+            }
+        }
+        return null;
+    }
 
-		for (item = _forwards[ hashvalue & _mask ]; item != null; item = item.next_f)
-		{
-			if ((hashvalue == item.hash_f) && (key == item.key))
-			{
-				return item.object;
-			}
-		}
-		return null;
-	}	
+    public int findValue(int key) {
+        TwoWayHashItem item = null;
+        int hashvalue = inthash(key);
 
-	public int findValue( int key )
-	{
-		TwoWayHashItem item = null;
-		int hashvalue = inthash(key);
+        for (item = _forwards[hashvalue & _mask]; item != null; item = item.next_f) {
+            if ((hashvalue == item.hash_f) && (key == item.key)) {
+                return item.val;
+            }
+        }
+        return -1;
+    }
 
-		for (item = _forwards[ hashvalue & _mask ]; item != null; item = item.next_f)
-		{
-			if ((hashvalue == item.hash_f) && (key == item.key))
-			{
-				return item.val;
-			}
-		}
-		return -1;
-	}
+    public void add(int key, int val, Object object) {
+        if (object == null)
+            throw new IllegalArgumentException();
 
-	public void add( int key, int val, Object object )
-	{
-		if ( object == null )
-			throw new IllegalArgumentException();
-		
-		TwoWayHashItem item = null;
-		int hash = inthash(key);
-		int index = (hash & _mask);
-		
-		/* return false if key already there. */
-		for (item = _forwards[ index ]; item != null; item = item.next_f)
-		{
-			if ((hash == item.hash_f) && (key == item.key))
-			{
-  				throw new IllegalArgumentException();
-			}
-		}
+        TwoWayHashItem item = null;
+        int hash = inthash(key);
+        int index = (hash & _mask);
 
-		TwoWayHashItem new_item = new TwoWayHashItem();			
-		new_item.key = key;
-		new_item.val = val;
-		new_item.object = object;
+        /* return false if key already there. */
+        for (item = _forwards[index]; item != null; item = item.next_f) {
+            if ((hash == item.hash_f) && (key == item.key)) {
+                throw new IllegalArgumentException();
+            }
+        }
 
-		new_item.hash_f = hash;
-		new_item.next_f = _forwards[ index ];
-		_forwards[index] = new_item;
+        TwoWayHashItem new_item = new TwoWayHashItem();
+        new_item.key = key;
+        new_item.val = val;
+        new_item.object = object;
 
-		/* now calculate the backwards map. */
-		hash = inthash(val);
-		index = (hash & _mask);
+        new_item.hash_f = hash;
+        new_item.next_f = _forwards[index];
+        _forwards[index] = new_item;
 
-		new_item.hash_b = hash;	
-		new_item.next_b = _backwards[ index ];
-		_backwards[index] = new_item;
+        /* now calculate the backwards map. */
+        hash = inthash(val);
+        index = (hash & _mask);
 
-		/* set current and increment. */
-		_count++;
-	}
+        new_item.hash_b = hash;
+        new_item.next_b = _backwards[index];
+        _backwards[index] = new_item;
 
-	public void remove( int key )
-	{
-		TwoWayHashItem ip,item;
-		int index;
-		int hashvalue = inthash(key);
+        /* set current and increment. */
+        _count++;
+    }
 
-		for (item = _forwards[ hashvalue & _mask ]; item != null; item = item.next_f)
-		{
-			if ((hashvalue == item.hash_f) && (key == item.key))
-			{
-				break;
-			}
-		}
-		
-		/* item wasn't found.  Return */
-		if ( item == null ) return;
+    public void remove(int key) {
+        TwoWayHashItem ip, item;
+        int index;
+        int hashvalue = inthash(key);
 
-		/* remove forward reference. */
-		index = item.hash_f & _mask;
-		if ( _forwards[index] == item )
-		{
-			_forwards[index] = item.next_f;
-		}
-		else
-		{
-			for (ip = _forwards[index]; ip.next_f != item; ip = ip.next_f)
-				;
-			ip.next_f = item.next_f;
-		}
+        for (item = _forwards[hashvalue & _mask]; item != null; item = item.next_f) {
+            if ((hashvalue == item.hash_f) && (key == item.key)) {
+                break;
+            }
+        }
 
-		/* remove backward reference */
-		index = item.hash_b & _mask;
-		if ( _backwards[index] == item )
-		{
-			_backwards[index] = item.next_f;
-		}
-		else
-		{
-			for (ip = _backwards[index]; ip.next_f != item; ip = ip.next_b)
-				;
-			ip.next_b = item.next_b;
-		}
+        /* item wasn't found.  Return */
+        if (item == null)
+            return;
 
-		/* decrement and free item. */
-		_count--;  	
-	}
+        /* remove forward reference. */
+        index = item.hash_f & _mask;
+        if (_forwards[index] == item) {
+            _forwards[index] = item.next_f;
+        } else {
+            for (ip = _forwards[index]; ip.next_f != item; ip = ip.next_f)
+                ;
+            ip.next_f = item.next_f;
+        }
 
-	public Iterator<Integer> iterator()
-	{
-		return new TwoWayHashMapIterator(this);
-	}
+        /* remove backward reference */
+        index = item.hash_b & _mask;
+        if (_backwards[index] == item) {
+            _backwards[index] = item.next_f;
+        } else {
+            for (ip = _backwards[index]; ip.next_f != item; ip = ip.next_b)
+                ;
+            ip.next_b = item.next_b;
+        }
 
-	public class TwoWayHashMapIterator
-	implements Iterator<Integer>
-	{
-		private TwoWayHashMap _map;
-		private int _index;
-		private TwoWayHashItem _current;
+        /* decrement and free item. */
+        _count--;
+    }
 
-		public TwoWayHashMapIterator(TwoWayHashMap map)
-		{
-			_map = map;
-			_index = -1;
-			_current = null;
-		}
+    public Iterator<Integer> iterator() {
+        return new TwoWayHashMapIterator(this);
+    }
 
-		public void remove()
-		{
-			throw new RuntimeException("Not implemented");
-		}
-		
-		public boolean hasNext()
-		{
-			/* check if we can find the next one quickly */
-			if ( _current != null )
-			{
-				_current = _current.next_f;
-				if  ( _current != null )
-				{
-					return true;
-				}
-			}
+    public class TwoWayHashMapIterator implements Iterator<Integer> {
+        private TwoWayHashMap _map;
+        private int _index;
+        private TwoWayHashItem _current;
 
-			/* search through the table for a valid entry */
-			while ( _current == null && _index < (_map._table_size-1) )
-			{
-				_index++;
-				_current = _map._forwards[_index];
-			}
-							
+        public TwoWayHashMapIterator(TwoWayHashMap map) {
+            _map = map;
+            _index = -1;
+            _current = null;
+        }
 
-			/* hit the end.  No more to get */
-			if ( _current == null )
-			{
-				return false;
-			}
+        @Override
+        public void remove() {
+            throw new RuntimeException("Not implemented");
+        }
 
-			return true;
-		}
-		
-		public Integer next()
-		{
-			return new Integer( _current.key );
-		}
+        @Override
+        public boolean hasNext() {
+            /* check if we can find the next one quickly */
+            if (_current != null) {
+                _current = _current.next_f;
+                if (_current != null) {
+                    return true;
+                }
+            }
 
-	
-	}	
+            /* search through the table for a valid entry */
+            while (_current == null && _index < (_map._table_size - 1)) {
+                _index++;
+                _current = _map._forwards[_index];
+            }
 
-	public class TwoWayHashItem
-	{
-		public TwoWayHashItem next_b;
-		public TwoWayHashItem next_f;
-		public int hash_b;
-		public int hash_f;
-		public int val;
-		public int key;
-		public Object object;
-	}		
+            /* hit the end.  No more to get */
+            if (_current == null) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public Integer next() {
+            return Integer.valueOf(_current.key);
+        }
+
+    }
+
+    public class TwoWayHashItem {
+        public TwoWayHashItem next_b;
+        public TwoWayHashItem next_f;
+        public int hash_b;
+        public int hash_f;
+        public int val;
+        public int key;
+        public Object object;
+    }
 }

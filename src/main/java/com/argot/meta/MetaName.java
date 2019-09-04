@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -43,147 +43,118 @@ import com.argot.TypeReader;
 import com.argot.TypeWriter;
 import com.argot.common.U8Utf8;
 
-public class MetaName 
-{
-	public static final String TYPENAME = "meta.name";
-	public static final String VERSION = "1.3";
+public class MetaName {
+    public static final String TYPENAME = "meta.name";
+    public static final String VERSION = "1.3";
 
-	private int _group;
-	private String _fullName;
-	private String _name;
-	
-	public MetaName( int group, String fullName, String name )
-	{
-		_group = group;
-		_fullName = fullName;
-		_name = name;
-	}
-	
-	public int getGroup()
-	{
-		return _group;
-	}
-	
-	public String getName()
-	{
-		return _name;
-	}
-	
-	public String getFullName()
-	{
-		return _fullName;
-	}
-	
-	public String toString()
-	{
-		throw new RuntimeException("Don't use this");
-	}
-	
-	
-	public static MetaName parseName(TypeLibrary library, String name)
-	throws TypeException
-	{
-		if ( library == null ) throw new IllegalArgumentException("DictionaryName: library is null");
-		if ( name == null ) throw new IllegalArgumentException("DictionaryName: name is null");
+    private int _group;
+    private String _fullName;
+    private String _name;
 
-		int index = name.lastIndexOf(".");
-		if ( index > -1 )
-		{
-			String group = name.substring(0,index);
-			int groupId = library.getTypeId(group);
-			return new MetaName(groupId,name, name.substring(index+1));
-		}
-		else
-		{
-			return new MetaName(0,name,name);
-		}
-		
-	}
-	
-	
-	public static class MetaNameTypeWriter
-	implements TypeLibraryWriter,TypeWriter
-	{
-		public void write(TypeOutputStream out, Object obj ) 
-		throws TypeException, IOException
-		{
-			MetaName mn = (MetaName) obj;
-			//String[] nameParts = mn.getParts();
-			
-			TypeMap refMap = (TypeMap) out.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
-			if (refMap==null)
-			{
-				throw new TypeException("Reference map not set");
-			}
-			int streamId = refMap.getStreamId(mn.getGroup());
-			out.writeObject( "meta.id", new Integer(streamId) );
-			out.writeObject(  U8Utf8.TYPENAME, mn.getName() );
-		}
-		
-		public TypeWriter getWriter(TypeMap map) 
-		throws TypeException 
-		{
-			return this;
-		}
-	}
+    public MetaName(int group, String fullName, String name) {
+        _group = group;
+        _fullName = fullName;
+        _name = name;
+    }
 
-	public static class MetaNameTypeLibraryReader
-	implements TypeLibraryReader, TypeBound
-	{
-		MetaMarshaller _marshaller = new MetaMarshaller();
+    public int getGroup() {
+        return _group;
+    }
 
-		public TypeReader getReader(TypeMap map) 
-		throws TypeException 
-		{
-			return new MetaNameTypeReader( _marshaller.getReader(map));
-		}
+    public String getName() {
+        return _name;
+    }
 
-		public void bind(TypeLibrary library, int definitionId, TypeElement definition) 
-		throws TypeException 
-		{
-			_marshaller.bind(library, definitionId, definition);
-		}
-	}
-	
+    public String getFullName() {
+        return _fullName;
+    }
 
-	public static class MetaNameTypeReader
-	implements TypeReader
-	{
-		TypeReader _reader;
+    @Override
+    public String toString() {
+        throw new RuntimeException("Don't use this");
+    }
 
-		public MetaNameTypeReader(TypeReader reader) 
-		{
-			_reader = reader;
-		}
+    public static MetaName parseName(TypeLibrary library, String name) throws TypeException {
+        if (library == null)
+            throw new IllegalArgumentException("DictionaryName: library is null");
+        if (name == null)
+            throw new IllegalArgumentException("DictionaryName: name is null");
 
-		public Object read(TypeInputStream in) 
-		throws TypeException, IOException 
-		{
-			Object[] object = (Object[]) _reader.read(in);
-			Integer groupId = (Integer) object[0];
-			String name = (String) object[1];
+        int index = name.lastIndexOf(".");
+        if (index > -1) {
+            String group = name.substring(0, index);
+            int groupId = library.getTypeId(group);
+            return new MetaName(groupId, name, name.substring(index + 1));
+        } else {
+            return new MetaName(0, name, name);
+        }
 
-			TypeMap refMap = (TypeMap) in.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
-			
-			int defId = refMap.getDefinitionId(groupId.intValue());
-			
-			TypeLocation location = refMap.getLocation(groupId.intValue());
-			if (location instanceof TypeLocationName) 
-			{
-				TypeLocationName locName = (TypeLocationName) location;
-				String fullName = locName.getName().getFullName();				
-				return new MetaName(defId,fullName+"."+name,name);
-			}
-			else if (location instanceof TypeLocationBase)
-			{
-				return new MetaName(defId, name, name );
-			}
-			else
-			{
-				throw new TypeException("Name group id not a group");				
-			}
-		}
-		
-	}
+    }
+
+    public static class MetaNameTypeWriter implements TypeLibraryWriter, TypeWriter {
+        @Override
+        public void write(TypeOutputStream out, Object obj) throws TypeException, IOException {
+            MetaName mn = (MetaName) obj;
+            //String[] nameParts = mn.getParts();
+
+            TypeMap refMap = (TypeMap) out.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
+            if (refMap == null) {
+                throw new TypeException("Reference map not set");
+            }
+            int streamId = refMap.getStreamId(mn.getGroup());
+            out.writeObject("meta.id", Integer.valueOf(streamId));
+            out.writeObject(U8Utf8.TYPENAME, mn.getName());
+        }
+
+        @Override
+        public TypeWriter getWriter(TypeMap map) throws TypeException {
+            return this;
+        }
+    }
+
+    public static class MetaNameTypeLibraryReader implements TypeLibraryReader, TypeBound {
+        MetaMarshaller _marshaller = new MetaMarshaller();
+
+        @Override
+        public TypeReader getReader(TypeMap map) throws TypeException {
+            return new MetaNameTypeReader(_marshaller.getReader(map));
+        }
+
+        @Override
+        public void bind(TypeLibrary library, int definitionId, TypeElement definition) throws TypeException {
+            _marshaller.bind(library, definitionId, definition);
+        }
+    }
+
+    public static class MetaNameTypeReader implements TypeReader {
+        TypeReader _reader;
+
+        public MetaNameTypeReader(TypeReader reader) {
+            _reader = reader;
+        }
+
+        @Override
+        public Object read(TypeInputStream in) throws TypeException, IOException {
+            Object[] object = (Object[]) _reader.read(in);
+            Integer groupId = (Integer) object[0];
+            String name = (String) object[1];
+
+            TypeMap refMap = (TypeMap) in.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
+
+            int defId = refMap.getDefinitionId(groupId.intValue());
+
+            TypeLocation location = refMap.getLocation(groupId.intValue());
+            if (location instanceof TypeLocationName) {
+                TypeLocationName locName = (TypeLocationName) location;
+                String fullName = locName.getName().getFullName();
+                return new MetaName(defId, fullName + "." + name, name);
+            } else if (location instanceof TypeLocationBase) {
+                return new MetaName(defId, name, name);
+            } else {
+                throw new TypeException("Name group id not a group");
+            }
+        }
+
+    }
 
 }

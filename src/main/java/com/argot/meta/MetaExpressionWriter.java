@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -31,8 +31,6 @@ import com.argot.TypeException;
 import com.argot.TypeMap;
 import com.argot.TypeWriter;
 
-public interface MetaExpressionWriter 
-{
-	public TypeWriter getExpressionWriter(TypeMap map, MetaExpressionResolver resolver, TypeElement element)
-	throws TypeException;
+public interface MetaExpressionWriter {
+    public TypeWriter getExpressionWriter(TypeMap map, MetaExpressionResolver resolver, TypeElement element) throws TypeException;
 }

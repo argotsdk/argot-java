@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -25,16 +25,13 @@
  */
 package com.argot;
 
-public class TestTypeElement 
-implements TypeElement
-{
+public class TestTypeElement implements TypeElement {
 
     /* (non-Javadoc)
      * @see com.argot.TypeElement#bind(com.argot.TypeLibrary, com.argot.TypeElement, java.lang.String, int)
      */
-    public void bind(TypeLibrary library, int definitionId, TypeLocation location, TypeElement definition) 
-    throws TypeException
-    {
+    @Override
+    public void bind(TypeLibrary library, int definitionId, TypeLocation location, TypeElement definition) throws TypeException {
         // TODO Auto-generated method stub
 
     }
@@ -42,8 +39,8 @@ implements TypeElement
     /* (non-Javadoc)
      * @see com.argot.TypeElement#getLibrary()
      */
-    public TypeLibrary getLibrary()
-    {
+    @Override
+    public TypeLibrary getLibrary() {
         // TODO Auto-generated method stub
         return null;
     }
@@ -51,8 +48,8 @@ implements TypeElement
     /* (non-Javadoc)
      * @see com.argot.TypeElement#getTypeDefinition()
      */
-    public TypeElement getTypeDefinition()
-    {
+    @Override
+    public TypeElement getTypeDefinition() {
         // TODO Auto-generated method stub
         return null;
     }
@@ -60,8 +57,8 @@ implements TypeElement
     /* (non-Javadoc)
      * @see com.argot.TypeElement#getTypeName()
      */
-    public String getTypeName()
-    {
+    @Override
+    public String getTypeName() {
         // TODO Auto-generated method stub
         return null;
     }
@@ -69,8 +66,8 @@ implements TypeElement
     /* (non-Javadoc)
      * @see com.argot.TypeElement#getTypeId()
      */
-    public int getTypeId()
-    {
+    @Override
+    public int getTypeId() {
         // TODO Auto-generated method stub
         return 0;
     }

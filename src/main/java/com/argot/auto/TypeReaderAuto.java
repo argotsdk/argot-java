@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -40,69 +40,54 @@ import com.argot.meta.MetaExpressionLibraryResolver;
 import com.argot.meta.MetaExpressionResolver;
 import com.argot.meta.MetaSequence;
 
+public class TypeReaderAuto implements TypeBound, TypeLibraryReader {
+    private MetaExpressionResolver _resolver;
+    private TypeConstructor _constructor;
+    private MetaSequence _metaSequence;
 
-public class TypeReaderAuto
-implements TypeBound,TypeLibraryReader
-{
-	private MetaExpressionResolver _resolver;
-	private TypeConstructor _constructor;
-	private MetaSequence _metaSequence;
-	
-	public TypeReaderAuto( Class<?> clss )
-	{
-		_resolver = new MetaExpressionLibraryResolver();
-		_constructor = new TypeConstructorAuto( clss );
-		_metaSequence = null;
-	}
-	
-	public TypeReaderAuto( TypeConstructor constructor )
-	{
-		_resolver = new MetaExpressionLibraryResolver();
-		_constructor = constructor;
-	}
+    public TypeReaderAuto(Class<?> clss) {
+        _resolver = new MetaExpressionLibraryResolver();
+        _constructor = new TypeConstructorAuto(clss);
+        _metaSequence = null;
+    }
 
-	public void bind(TypeLibrary library, int definitionId, TypeElement definition) 
-	throws TypeException 
-	{
-		if ( !( definition instanceof MetaSequence))
-		{
-			if (!(definition instanceof MetaSequence))
-			{
-				throw new TypeException( "TypeReaderAuto: required MetaSequence to read data." );
-			}
+    public TypeReaderAuto(TypeConstructor constructor) {
+        _resolver = new MetaExpressionLibraryResolver();
+        _constructor = constructor;
+    }
 
-			_metaSequence = (MetaSequence) definition;
-			return;
-		}
-		_metaSequence = (MetaSequence) definition;
-	}	
-	
-	private class TypeAutoReader
-	implements TypeReader
-	{
-		private TypeReader _sequence;
-		private MetaSequence _metaSequence;
-		
-		public TypeAutoReader( TypeReader sequence, MetaSequence metaSequence )
-		{
-			_sequence = sequence;
-			_metaSequence = metaSequence;
-		}
-		
-		public Object read(TypeInputStream in)
-		throws TypeException, IOException
-		{
-			Object[] objects = (Object[]) _sequence.read( in );
-			return _constructor.construct( _metaSequence, objects );									
-		}
-	}
-	
-	public TypeReader getReader(TypeMap map) 
-	throws TypeException 
-	{
-		return new TypeAutoReader( _resolver.getExpressionReader(map, _metaSequence), _metaSequence );
-	}
+    @Override
+    public void bind(TypeLibrary library, int definitionId, TypeElement definition) throws TypeException {
+        if (!(definition instanceof MetaSequence)) {
+            if (!(definition instanceof MetaSequence)) {
+                throw new TypeException("TypeReaderAuto: required MetaSequence to read data.");
+            }
 
+            _metaSequence = (MetaSequence) definition;
+            return;
+        }
+        _metaSequence = (MetaSequence) definition;
+    }
 
+    private class TypeAutoReader implements TypeReader {
+        private TypeReader _sequence;
+        private MetaSequence _metaSequence;
+
+        public TypeAutoReader(TypeReader sequence, MetaSequence metaSequence) {
+            _sequence = sequence;
+            _metaSequence = metaSequence;
+        }
+
+        @Override
+        public Object read(TypeInputStream in) throws TypeException, IOException {
+            Object[] objects = (Object[]) _sequence.read(in);
+            return _constructor.construct(_metaSequence, objects);
+        }
+    }
+
+    @Override
+    public TypeReader getReader(TypeMap map) throws TypeException {
+        return new TypeAutoReader(_resolver.getExpressionReader(map, _metaSequence), _metaSequence);
+    }
 
 }

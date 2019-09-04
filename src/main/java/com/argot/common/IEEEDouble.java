@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -36,49 +36,43 @@ import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
 
-public class IEEEDouble
-{
-	public static final String TYPENAME = "double";
-	public static final String VERSION = "1.3";
+public class IEEEDouble {
+    public static final String TYPENAME = "double";
+    public static final String VERSION = "1.3";
 
-	public static class Reader implements TypeReader
-	{
-		@Override
-		public Object read(final TypeInputStream in) throws TypeException, IOException
-		{
-			final InputStream is = in.getStream();
+    public static class Reader implements TypeReader {
+        @Override
+        public Object read(final TypeInputStream in) throws TypeException, IOException {
+            final InputStream is = in.getStream();
 
-			final long value = ((((long) is.read() & 0xff) << 56) | (((long) is.read() & 0xff) << 48) | (((long) is.read() & 0xff) << 40) | (((long) is.read() & 0xff) << 32)
-					| (((long) is.read() & 0xff) << 24) | (((long) is.read() & 0xff) << 16) | (((long) is.read() & 0xff) << 8) | ((long) is.read() & 0xff));
+            final long value = ((((long) is.read() & 0xff) << 56) | (((long) is.read() & 0xff) << 48) | (((long) is.read() & 0xff) << 40) | (((long) is.read() & 0xff) << 32)
+                            | (((long) is.read() & 0xff) << 24) | (((long) is.read() & 0xff) << 16) | (((long) is.read() & 0xff) << 8) | ((long) is.read() & 0xff));
 
-			return new Double(Double.longBitsToDouble(value));
-		}
-	}
+            return Double.valueOf(Double.longBitsToDouble(value));
+        }
+    }
 
-	public static class Writer implements TypeWriter
-	{
-		@Override
-		public void write(final TypeOutputStream out, final Object o) throws TypeException, IOException
-		{
-			if (!(o instanceof Double))
-			{
-				throw new TypeException("ieee.double: requires Double");
-			}
+    public static class Writer implements TypeWriter {
+        @Override
+        public void write(final TypeOutputStream out, final Object o) throws TypeException, IOException {
+            if (!(o instanceof Double)) {
+                throw new TypeException("ieee.double: requires Double");
+            }
 
-			final Double dble = ((Double) o);
-			final long s = Double.doubleToRawLongBits(dble.doubleValue());
+            final Double dble = ((Double) o);
+            final long s = Double.doubleToRawLongBits(dble.doubleValue());
 
-			final OutputStream os = out.getStream();
-			os.write((byte) ((s >> 56) & 0xff));
-			os.write((byte) ((s >> 48) & 0xff));
-			os.write((byte) ((s >> 40) & 0xff));
-			os.write((byte) ((s >> 32) & 0xff));
-			os.write((byte) ((s >> 24) & 0xff));
-			os.write((byte) ((s >> 16) & 0xff));
-			os.write((byte) ((s >> 8) & 0xff));
-			os.write((byte) (s & 0xff));
+            final OutputStream os = out.getStream();
+            os.write((byte) ((s >> 56) & 0xff));
+            os.write((byte) ((s >> 48) & 0xff));
+            os.write((byte) ((s >> 40) & 0xff));
+            os.write((byte) ((s >> 32) & 0xff));
+            os.write((byte) ((s >> 24) & 0xff));
+            os.write((byte) ((s >> 16) & 0xff));
+            os.write((byte) ((s >> 8) & 0xff));
+            os.write((byte) (s & 0xff));
 
-		}
-	}
+        }
+    }
 
 }

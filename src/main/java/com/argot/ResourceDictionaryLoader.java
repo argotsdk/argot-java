@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -23,7 +23,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
 package com.argot;
 
 import java.io.File;
@@ -34,75 +34,56 @@ import java.io.InputStream;
 
 import com.argot.dictionary.Dictionary;
 
-public class ResourceDictionaryLoader
-implements TypeLibraryLoader
-{
-	private String _resource; 
+public class ResourceDictionaryLoader implements TypeLibraryLoader {
+    private String _resource;
 
-	public ResourceDictionaryLoader( String resource )
-	{
-		_resource = resource;
-	}
-	
-	private InputStream getDictionaryStream( String location )
-	{
-		File dictionaryFile = new File( location );
-		if ( dictionaryFile.exists())
-		{
-			try
-			{
-				return new FileInputStream( dictionaryFile );
-			}
-			catch (FileNotFoundException e)
-			{
-				// ignore and drop through.
-			}
-		}
+    public ResourceDictionaryLoader(String resource) {
+        _resource = resource;
+    }
 
-		ClassLoader cl = this.getClass().getClassLoader();
-		InputStream is = cl.getResourceAsStream( location );
-		if ( is == null )
-		{
-			return null;
-		}				
-		return is;
-	}
-	
-	
-	public void load( TypeLibrary library ) 
-	throws TypeException
-	{
-		InputStream is = getDictionaryStream( _resource );
-		if ( is == null )
-		{
-			throw new TypeException("Failed to load:" + _resource );
-		}
-		
-		try
-		{
-			Dictionary.readDictionary( library, is );
-		}
-		catch (TypeException e)
-		{
-			throw new TypeException("Error loading dictionary: " + _resource, e );
-		}
-		catch (IOException e)
-		{
-			throw new TypeException("Error loading dictionary: " + _resource, e );
-		}
-		
-		bind(library);
-	}
-	
-	public void bind( TypeLibrary library ) 
-	throws TypeException
-	{
-		
-	}
+    private InputStream getDictionaryStream(String location) {
+        File dictionaryFile = new File(location);
+        if (dictionaryFile.exists()) {
+            try {
+                return new FileInputStream(dictionaryFile);
+            } catch (FileNotFoundException e) {
+                // ignore and drop through.
+            }
+        }
 
-	public String getName()
-	{
-		return _resource;
-	}
+        ClassLoader cl = this.getClass().getClassLoader();
+        InputStream is = cl.getResourceAsStream(location);
+        if (is == null) {
+            return null;
+        }
+        return is;
+    }
+
+    @Override
+    public void load(TypeLibrary library) throws TypeException {
+        InputStream is = getDictionaryStream(_resource);
+        if (is == null) {
+            throw new TypeException("Failed to load:" + _resource);
+        }
+
+        try {
+            Dictionary.readDictionary(library, is);
+        } catch (TypeException e) {
+            throw new TypeException("Error loading dictionary: " + _resource, e);
+        } catch (IOException e) {
+            throw new TypeException("Error loading dictionary: " + _resource, e);
+        }
+
+        bind(library);
+    }
+
+    public void bind(TypeLibrary library) throws TypeException {
+
+    }
+
+    @Override
+    public String getName() {
+        return _resource;
+    }
 
 }

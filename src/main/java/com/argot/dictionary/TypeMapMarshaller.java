@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -38,41 +38,34 @@ import com.argot.common.UVInt28;
 import com.argot.meta.DictionaryLocation;
 import com.argot.meta.MetaDefinition;
 
-public class TypeMapMarshaller
-implements TypeLibraryWriter, TypeWriter
-{
-    public void write(TypeOutputStream out, Object o) throws TypeException, IOException
-    {
-		TypeMap map = (TypeMap) o;
-		TypeLibrary library = map.getLibrary();
-		
-		// write the length out first.
-		out.writeObject( UVInt28.TYPENAME, new Integer( map.size() ));
-				
-		Iterator<Integer> i = map.getIdList().iterator();
-		while (i.hasNext() )
-		{
-			int streamId = ((Integer) i.next()).intValue();
-			int definitionId = map.getDefinitionId(streamId);
+public class TypeMapMarshaller implements TypeLibraryWriter, TypeWriter {
+    @Override
+    public void write(TypeOutputStream out, Object o) throws TypeException, IOException {
+        TypeMap map = (TypeMap) o;
+        TypeLibrary library = map.getLibrary();
 
-			try {
-				out.writeObject( UVInt28.TYPENAME, new Integer(streamId));
-				out.writeObject( DictionaryLocation.TYPENAME, library.getLocation(definitionId));
-				out.writeObject( MetaDefinition.META_DEFINITION_ENVELOPE, library.getStructure( definitionId ) );
-			} 
-			catch (TypeException e) 
-			{
-				throw new TypeException("Failed to write:" + streamId + " " + library.getName(definitionId).getFullName(), e );
-			}			
-		}
+        // write the length out first.
+        out.writeObject(UVInt28.TYPENAME, Integer.valueOf(map.size()));
+
+        Iterator<Integer> i = map.getIdList().iterator();
+        while (i.hasNext()) {
+            int streamId = i.next().intValue();
+            int definitionId = map.getDefinitionId(streamId);
+
+            try {
+                out.writeObject(UVInt28.TYPENAME, Integer.valueOf(streamId));
+                out.writeObject(DictionaryLocation.TYPENAME, library.getLocation(definitionId));
+                out.writeObject(MetaDefinition.META_DEFINITION_ENVELOPE, library.getStructure(definitionId));
+            } catch (TypeException e) {
+                throw new TypeException("Failed to write:" + streamId + " " + library.getName(definitionId).getFullName(), e);
+            }
+        }
 
     }
-    
-	public TypeWriter getWriter(TypeMap map) 
-	throws TypeException 
-	{
-		return this;
-	}
-    
+
+    @Override
+    public TypeWriter getWriter(TypeMap map) throws TypeException {
+        return this;
+    }
 
 }

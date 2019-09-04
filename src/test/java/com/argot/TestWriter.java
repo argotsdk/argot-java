@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -29,23 +29,18 @@ import java.io.IOException;
 
 import com.argot.auto.TypeSimpleWriter;
 
-public class TestWriter
-extends TypeSimpleWriter
-implements TypeWriter
-{
+public class TestWriter extends TypeSimpleWriter implements TypeWriter {
 
-    public TestWriter() 
-    {
-		super();
-		this.setWriter(this);
-	}
+    public TestWriter() {
+        super();
+        this.setWriter(this);
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see com.argot.TypeWriter#write(com.argot.TypeOutputStream, java.lang.Object, com.argot.TypeElement)
      */
-    public void write(TypeOutputStream out, Object o)
-    throws TypeException, IOException
-    {
+    @Override
+    public void write(TypeOutputStream out, Object o) throws TypeException, IOException {
         // TODO Auto-generated method stub
 
     }

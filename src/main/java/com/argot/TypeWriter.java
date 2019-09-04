@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -30,9 +30,7 @@ import java.io.IOException;
 /**
  * Every element registered with the Type system must provide a TypeWriter.
  */
-public interface TypeWriter
-{
-	public void write( TypeOutputStream out, Object o )
-	throws TypeException, IOException;
-	
+public interface TypeWriter {
+    public void write(TypeOutputStream out, Object o) throws TypeException, IOException;
+
 }

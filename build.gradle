@@ -2,42 +2,58 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'com.bmuschko.nexus'
 
+buildscript {
+  repositories {
+    jcenter()
+    maven { 
+      url "http://repo.maven.apache.org/maven2"
+    }
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+  dependencies {
+    classpath "org.javamodularity:moduleplugin:1.5.0"
+    classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
+    
+  }
+}
+
 // Development environments
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 eclipse {
-     classpath {
+    classpath {
         defaultOutputDir = new File("$buildDir/eclipse");
-     }
+        file {
+            whenMerged {
+                entries.findAll { isModule(it) }.each {
+                    it.entryAttributes['module'] = 'true'
+                }
+
+                entries.findAll { isSource(it) && isTestScope(it) }.each {
+                    it.entryAttributes['test'] = 'true'
+                }
+
+                entries.findAll { isLibrary(it) && isTestScope(it) }.each {
+                    it.entryAttributes['test'] = 'true'
+                }
+            }
+        }
+    }
+
 }
 
 group = 'org.argot-sdk'
-version = '1.3.b19'
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+version = '1.4.0'
 
-repositories {
-    maven { url "http://repo.maven.apache.org/maven2" }
-}
-dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.11'
-}
-sourceSets {
-    test {
-        resources {
-            srcDir "src/test/resources/dictionaries"
-        }
-    }
-}
+sourceCompatibility = 11
+targetCompatibility = 11
 
-buildscript {
-    repositories {
-        jcenter()
-    }
 
-    dependencies {
-        classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
-    }
+
+test {
+	useJUnitPlatform()
 }
 
 modifyPom {
@@ -69,4 +85,14 @@ modifyPom {
 
     }
 }
+
+boolean isLibrary(entry) {
+  return entry.properties.kind.equals('lib') || entry.properties.kind.equals('src')
+}
+boolean isTestScope(entry) {
+  return entry.entryAttributes.get('gradle_used_by_scope').equals('test'); }
+boolean isModule(entry) {
+  return isLibrary(entry) && !isTestScope(entry); }
+boolean isSource(entry) { return entry.properties.kind.equals('src'); }
+
 

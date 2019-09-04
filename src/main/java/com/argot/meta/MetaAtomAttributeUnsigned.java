@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -25,9 +25,7 @@
  */
 package com.argot.meta;
 
-public class MetaAtomAttributeUnsigned 
-extends MetaAtomAttribute
-{
-	public static final String TYPENAME = "meta.attribute.unsigned";
+public class MetaAtomAttributeUnsigned extends MetaAtomAttribute {
+    public static final String TYPENAME = "meta.attribute.unsigned";
     public static final String VERSION = "1.3";
 }

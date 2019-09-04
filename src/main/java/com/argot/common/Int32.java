@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -37,53 +37,50 @@ import com.argot.TypeWriter;
 /**
  * This is a basic 32-bit signed int value stored in big endian format, two's compliment.
  */
-public class Int32 implements TypeReader, TypeWriter
-{
-	public static final String TYPENAME = "int32";
-	public static final String VERSION = "1.3";
+public class Int32 implements TypeReader, TypeWriter {
+    public static final String TYPENAME = "int32";
+    public static final String VERSION = "1.3";
 
-	public Object read(final TypeInputStream in) throws TypeException, IOException
-	{
-		// byte bytes[] = new byte[4];
-		// in.read(bytes,0,4);
+    @Override
+    public Object read(final TypeInputStream in) throws TypeException, IOException {
+        // byte bytes[] = new byte[4];
+        // in.read(bytes,0,4);
 
-		// reducing heap pressure by reading a byte at a time. Might be slightly heavier on CPU.
-		final int value = (((in.read() & 0xff) << 24) | ((in.read() & 0xff) << 16) | ((in.read() & 0xff) << 8) | (in.read() & 0xff));
+        // reducing heap pressure by reading a byte at a time. Might be slightly heavier on CPU.
+        final int value = (((in.read() & 0xff) << 24) | ((in.read() & 0xff) << 16) | ((in.read() & 0xff) << 8) | (in.read() & 0xff));
 
-		// need to return a long value here because an unsigned
-		// integer can be bigger than the java int.
-		return new Integer(value);
-	}
+        // need to return a long value here because an unsigned
+        // integer can be bigger than the java int.
+        return Integer.valueOf(value);
+    }
 
-	public void write(final TypeOutputStream out, final Object o) throws TypeException, IOException
-	{
-		if (!(o instanceof Integer))
-		{
-			throw new TypeException("s32: requires Integer");
-		}
+    @Override
+    public void write(final TypeOutputStream out, final Object o) throws TypeException, IOException {
+        if (!(o instanceof Integer)) {
+            throw new TypeException("s32: requires Integer");
+        }
 
-		final int s = ((Integer) o).intValue();
+        final int s = ((Integer) o).intValue();
 
-		if (s < MIN || s > MAX)
-		{
-			throw new TypeException("U16B: value out of range" + s);
-		}
+        if (s < MIN || s > MAX) {
+            throw new TypeException("U16B: value out of range" + s);
+        }
 
-		// This is going to turn our signed value into a unsigned
-		// 16 bits.
-		// byte[] bytes = new byte[4];
+        // This is going to turn our signed value into a unsigned
+        // 16 bits.
+        // byte[] bytes = new byte[4];
 
-		// write individual bytes to reduce heap pressue.
-		final OutputStream os = out.getStream();
+        // write individual bytes to reduce heap pressue.
+        final OutputStream os = out.getStream();
 
-		os.write((byte) ((s >> 24) & 0xff));
-		os.write((byte) ((s >> 16) & 0xff));
-		os.write((byte) ((s >> 8) & 0xff));
-		os.write((byte) (s & 0xff));
+        os.write((byte) ((s >> 24) & 0xff));
+        os.write((byte) ((s >> 16) & 0xff));
+        os.write((byte) ((s >> 8) & 0xff));
+        os.write((byte) (s & 0xff));
 
-		// out.getStream().write(bytes,0,4);
-	}
+        // out.getStream().write(bytes,0,4);
+    }
 
-	public final long MIN = -2147483648; // -2^31;
-	public final long MAX = 2147483647; // 2^31-1;
+    public final long MIN = -2147483648; // -2^31;
+    public final long MAX = 2147483647; // 2^31-1;
 }

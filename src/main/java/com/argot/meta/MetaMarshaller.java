@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -34,33 +34,27 @@ import com.argot.TypeMap;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
 
+public class MetaMarshaller implements TypeBound, TypeLibraryReaderWriter {
+    private MetaExpression _expression;
+    private MetaExpressionResolver _resolver;
 
-public class MetaMarshaller
-implements TypeBound,TypeLibraryReaderWriter
-{
-	private MetaExpression _expression;
-	private MetaExpressionResolver _resolver;
-	
-	public MetaMarshaller()
-	{
-		_resolver = new MetaExpressionLibraryResolver();
-	}
-	public void bind(TypeLibrary library, int definitionId, TypeElement definition) 
-	throws TypeException 
-	{
-		_expression = (MetaExpression) definition;
-	}
+    public MetaMarshaller() {
+        _resolver = new MetaExpressionLibraryResolver();
+    }
 
-	public TypeReader getReader(TypeMap map) 
-	throws TypeException 
-	{
-		return _resolver.getExpressionReader(map, _expression);
-	}
+    @Override
+    public void bind(TypeLibrary library, int definitionId, TypeElement definition) throws TypeException {
+        _expression = (MetaExpression) definition;
+    }
 
-	public TypeWriter getWriter(TypeMap map) 
-	throws TypeException 
-	{
-		return _resolver.getExpressionWriter(map, _expression);
-	}
- 
+    @Override
+    public TypeReader getReader(TypeMap map) throws TypeException {
+        return _resolver.getExpressionReader(map, _expression);
+    }
+
+    @Override
+    public TypeWriter getWriter(TypeMap map) throws TypeException {
+        return _resolver.getExpressionWriter(map, _expression);
+    }
+
 }

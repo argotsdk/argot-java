@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -27,49 +27,39 @@ package com.argot;
 
 import com.argot.meta.MetaName;
 
-public class TypeMapperError 
-implements TypeMapper 
-{
-	private TypeLibrary _library;
+public class TypeMapperError implements TypeMapper {
+    private TypeLibrary _library;
 
-	public TypeMapperError()
-	{
-	}
-	
-	public void initialise(TypeMap map) 
-	throws TypeException 
-	{
-		_library = map.getLibrary();
-	}
+    public TypeMapperError() {
+    }
 
-	public int map(int definitionId) 
-	throws TypeException 
-	{
-		String name = Integer.toString(definitionId);
-		try
-		{
-			name = _library.getName(definitionId).getFullName();
-			name += "/" + _library.getVersion(definitionId);
-		}
-		catch ( TypeException ex )
-		{
-			name += " - " + ex.getMessage();
-		}
-	
-		throw new TypeException("not mapped: " + name );
-	}
+    @Override
+    public void initialise(TypeMap map) throws TypeException {
+        _library = map.getLibrary();
+    }
 
-	public int mapReverse(int streamId) 
-	throws TypeException 
-	{
-		throw new TypeException("not mapped");
-	}
+    @Override
+    public int map(int definitionId) throws TypeException {
+        String name = Integer.toString(definitionId);
+        try {
+            name = _library.getName(definitionId).getFullName();
+            name += "/" + _library.getVersion(definitionId);
+        } catch (TypeException ex) {
+            name += " - " + ex.getMessage();
+        }
 
-	public int mapDefault(int nameId) 
-	throws TypeException 
-	{
-		MetaName name = _library.getName(nameId);
-		throw new TypeException("not mapped: " + name.getFullName() );
-	}
+        throw new TypeException("not mapped: " + name);
+    }
+
+    @Override
+    public int mapReverse(int streamId) throws TypeException {
+        throw new TypeException("not mapped");
+    }
+
+    @Override
+    public int mapDefault(int nameId) throws TypeException {
+        MetaName name = _library.getName(nameId);
+        throw new TypeException("not mapped: " + name.getFullName());
+    }
 
 }

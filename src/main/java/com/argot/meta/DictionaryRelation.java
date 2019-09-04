@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -42,108 +42,93 @@ import com.argot.TypeReader;
 import com.argot.TypeWriter;
 import com.argot.auto.TypeBeanMarshaller;
 
-public class DictionaryRelation 
-extends DictionaryLocation
-implements TypeLocationRelation
-{
-	public static final String TYPENAME = "dictionary.relation";
-	
-	private int _id;
-	private String _tag;
-	
-	public DictionaryRelation()
-	{
-		super(TypeLocation.RELATION);
-	}
-	
-	public DictionaryRelation(int targetId, String tag)
-	{
-		super(TypeLocation.RELATION);
-		_id = targetId;
-		_tag = tag;
-	}
-	
-	public int getId()
-	{
-		return _id;
-	}
-	
-	public void setId(int id)
-	{
-		_id = id;
-	}
-	
-	public String getTag()
-	{
-		return _tag;
-	}
-	
-	public void setTag(String tag)
-	{
-		_tag = tag;
-	}
-	
-	public static class DictionaryRelationTypeReader
-	implements TypeReader,TypeBound,TypeLibraryReader
-	{
-		TypeBeanMarshaller _reader = new TypeBeanMarshaller();
-		
-		public void bind(TypeLibrary library, int definitionId, TypeElement definition) 
-		throws TypeException 
-		{
-			_reader.bind(library, definitionId, definition);
-		}
-		
-		public TypeReader getReader(TypeMap map) 
-		throws TypeException 
-		{
-			return this;
-		}
-		
-	    public Object read(TypeInputStream in) throws TypeException, IOException
-	    {
-	    	
-			// Use the Automatic reader to read and create this object.
-			TypeReader reader = _reader.getReader(in.getTypeMap());
-			DictionaryRelation rel = (DictionaryRelation) reader.read( in );
-			
-			// Check that what its referencing exists and convert from
-			// external mapping to internal mapping.
-			TypeMap refMap = (TypeMap) in.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
-						
-			if (  refMap.isValid( rel.getId() ) )
-				rel.setId( refMap.getDefinitionId( rel.getId() ));
-			else
-				throw new TypeException( "DictionaryDefinition: invalid id " + rel.getId() );
+public class DictionaryRelation extends DictionaryLocation implements TypeLocationRelation {
+    public static final String TYPENAME = "dictionary.relation";
 
-			return rel;
-	    }
-	}
-	
-	public static class DicitonaryRelationTypeWriter
-	implements TypeWriter, TypeBound, TypeLibraryWriter
-	{
-		TypeBeanMarshaller _writer = new TypeBeanMarshaller();
-		
-	    public void write(TypeOutputStream out, Object o) throws TypeException, IOException
-	    {
-			DictionaryRelation dd = (DictionaryRelation) o;
-			TypeMap refMap = (TypeMap) out.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
-			int id = refMap.getStreamId( dd.getId() );
-			DictionaryRelation dr = new DictionaryRelation(id, dd._tag);
-			_writer.getWriter(out.getTypeMap()).write(out, dr);
-	    }
+    private int _id;
+    private String _tag;
 
-		public TypeWriter getWriter(TypeMap map) 
-		throws TypeException 
-		{
-			return this;
-		}
+    public DictionaryRelation() {
+        super(TypeLocation.RELATION);
+    }
 
-		public void bind(TypeLibrary library, int definitionId, TypeElement definition) 
-		throws TypeException 
-		{
-			_writer.bind(library, definitionId, definition);
-		} 
-	}	
+    public DictionaryRelation(int targetId, String tag) {
+        super(TypeLocation.RELATION);
+        _id = targetId;
+        _tag = tag;
+    }
+
+    @Override
+    public int getId() {
+        return _id;
+    }
+
+    public void setId(int id) {
+        _id = id;
+    }
+
+    @Override
+    public String getTag() {
+        return _tag;
+    }
+
+    public void setTag(String tag) {
+        _tag = tag;
+    }
+
+    public static class DictionaryRelationTypeReader implements TypeReader, TypeBound, TypeLibraryReader {
+        TypeBeanMarshaller _reader = new TypeBeanMarshaller();
+
+        @Override
+        public void bind(TypeLibrary library, int definitionId, TypeElement definition) throws TypeException {
+            _reader.bind(library, definitionId, definition);
+        }
+
+        @Override
+        public TypeReader getReader(TypeMap map) throws TypeException {
+            return this;
+        }
+
+        @Override
+        public Object read(TypeInputStream in) throws TypeException, IOException {
+
+            // Use the Automatic reader to read and create this object.
+            TypeReader reader = _reader.getReader(in.getTypeMap());
+            DictionaryRelation rel = (DictionaryRelation) reader.read(in);
+
+            // Check that what its referencing exists and convert from
+            // external mapping to internal mapping.
+            TypeMap refMap = (TypeMap) in.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
+
+            if (refMap.isValid(rel.getId()))
+                rel.setId(refMap.getDefinitionId(rel.getId()));
+            else
+                throw new TypeException("DictionaryDefinition: invalid id " + rel.getId());
+
+            return rel;
+        }
+    }
+
+    public static class DicitonaryRelationTypeWriter implements TypeWriter, TypeBound, TypeLibraryWriter {
+        TypeBeanMarshaller _writer = new TypeBeanMarshaller();
+
+        @Override
+        public void write(TypeOutputStream out, Object o) throws TypeException, IOException {
+            DictionaryRelation dd = (DictionaryRelation) o;
+            TypeMap refMap = (TypeMap) out.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
+            int id = refMap.getStreamId(dd.getId());
+            DictionaryRelation dr = new DictionaryRelation(id, dd._tag);
+            _writer.getWriter(out.getTypeMap()).write(out, dr);
+        }
+
+        @Override
+        public TypeWriter getWriter(TypeMap map) throws TypeException {
+            return this;
+        }
+
+        @Override
+        public void bind(TypeLibrary library, int definitionId, TypeElement definition) throws TypeException {
+            _writer.bind(library, definitionId, definition);
+        }
+    }
 }

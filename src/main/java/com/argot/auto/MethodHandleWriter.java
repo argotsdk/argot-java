@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2017, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -37,312 +37,257 @@ import java.nio.charset.CharsetEncoder;
 import com.argot.TypeException;
 import com.argot.TypeOutputStream;
 
-public interface MethodHandleWriter
-{
-	void write(Object o, TypeOutputStream out) throws Throwable;
+public interface MethodHandleWriter {
+    void write(Object o, TypeOutputStream out) throws Throwable;
 
-	public static MethodHandleWriter getWriter(final Method method, final String argotType, final boolean writeNotNull) throws IllegalAccessException
-	{
-		MethodHandleWriter writer = null;
+    public static MethodHandleWriter getWriter(final Method method, final String argotType, final boolean writeNotNull) throws IllegalAccessException {
+        MethodHandleWriter writer = null;
 
-		final Class<?> returnType = method.getReturnType();
-		if (returnType == boolean.class && "boolean".equals(argotType))
-		{
-			writer = new BooleanMethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
-		}
-		else if ((returnType == byte.class || returnType == short.class || returnType == int.class) && "uint8".equals(argotType))
-		{
-			writer = new UInt8MethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
-		}
-		else if (returnType == short.class && "int16".equals(argotType))
-		{
-			writer = new Int16MethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
-		}
-		else if (returnType == int.class && "int32".equals(argotType))
-		{
-			writer = new Int32MethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
-		}
-		else if (returnType == float.class && "float".equals(argotType))
-		{
-			writer = new IEEEFloatMethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
-		}
-		else if (returnType == long.class && "int64".equals(argotType))
-		{
-			writer = new Int64MethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
-		}
-		else if (returnType == double.class && "double".equals(argotType))
-		{
-			writer = new IEEEDoubleMethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
-		}
-		else if (returnType == String.class && "u8utf8".equals(argotType))
-		{
-			writer = new U8Utf8MethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
-		}
+        final Class<?> returnType = method.getReturnType();
+        if (returnType == boolean.class && "boolean".equals(argotType)) {
+            writer = new BooleanMethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
+        } else if ((returnType == byte.class || returnType == short.class || returnType == int.class) && "uint8".equals(argotType)) {
+            writer = new UInt8MethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
+        } else if (returnType == short.class && "int16".equals(argotType)) {
+            writer = new Int16MethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
+        } else if (returnType == int.class && "int32".equals(argotType)) {
+            writer = new Int32MethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
+        } else if (returnType == float.class && "float".equals(argotType)) {
+            writer = new IEEEFloatMethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
+        } else if (returnType == long.class && "int64".equals(argotType)) {
+            writer = new Int64MethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
+        } else if (returnType == double.class && "double".equals(argotType)) {
+            writer = new IEEEDoubleMethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
+        } else if (returnType == String.class && "u8utf8".equals(argotType)) {
+            writer = new U8Utf8MethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
+        }
 
-		return writer;
-	}
-	public static abstract class AbstractWriter implements MethodHandleWriter
-	{
-		protected final MethodHandle getHandle;
-		protected final boolean writeNotNull;
+        return writer;
+    }
 
-		public AbstractWriter(final MethodHandle getHandle, final boolean writeNotNull)
-		{
-			this.getHandle = getHandle;
-			this.writeNotNull = writeNotNull;
-		}
-	}
+    public static abstract class AbstractWriter implements MethodHandleWriter {
+        protected final MethodHandle getHandle;
+        protected final boolean writeNotNull;
 
-	public static final class BooleanMethodHandleWriter extends AbstractWriter
-	{
-		public BooleanMethodHandleWriter(final MethodHandle getHandle, final boolean writeNotNull)
-		{
-			super(getHandle, writeNotNull);
-		}
+        public AbstractWriter(final MethodHandle getHandle, final boolean writeNotNull) {
+            this.getHandle = getHandle;
+            this.writeNotNull = writeNotNull;
+        }
+    }
 
-		@Override
-		public void write(final Object o, final TypeOutputStream out) throws Throwable
-		{
-			final boolean b = (boolean) getHandle.invoke(o);
-			final OutputStream os = out.getStream();
-			if (writeNotNull)
-			{
-				os.write(1);
-			}
-			os.write((b == true ? 1 : 0));
-		}
-	}
+    public static final class BooleanMethodHandleWriter extends AbstractWriter {
+        public BooleanMethodHandleWriter(final MethodHandle getHandle, final boolean writeNotNull) {
+            super(getHandle, writeNotNull);
+        }
 
-	public static final class UInt8MethodHandleWriter extends AbstractWriter
-	{
-		public UInt8MethodHandleWriter(final MethodHandle getHandle, final boolean writeNotNull)
-		{
-			super(getHandle, writeNotNull);
-		}
+        @Override
+        public void write(final Object o, final TypeOutputStream out) throws Throwable {
+            final boolean b = (boolean) getHandle.invoke(o);
+            final OutputStream os = out.getStream();
+            if (writeNotNull) {
+                os.write(1);
+            }
+            os.write((b == true ? 1 : 0));
+        }
+    }
 
-		@Override
-		public void write(final Object o, final TypeOutputStream out) throws Throwable
-		{
-			final int i = (int) getHandle.invoke(o);
-			final OutputStream os = out.getStream();
-			if (writeNotNull)
-			{
-				os.write(1);
-			}
+    public static final class UInt8MethodHandleWriter extends AbstractWriter {
+        public UInt8MethodHandleWriter(final MethodHandle getHandle, final boolean writeNotNull) {
+            super(getHandle, writeNotNull);
+        }
 
-			os.write(i & 0xff);
-		}
-	}
+        @Override
+        public void write(final Object o, final TypeOutputStream out) throws Throwable {
+            final int i = (int) getHandle.invoke(o);
+            final OutputStream os = out.getStream();
+            if (writeNotNull) {
+                os.write(1);
+            }
 
-	public static final class Int16MethodHandleWriter extends AbstractWriter
-	{
-		public Int16MethodHandleWriter(final MethodHandle getHandle, final boolean writeNotNull)
-		{
-			super(getHandle, writeNotNull);
-		}
+            os.write(i & 0xff);
+        }
+    }
 
-		@Override
-		public void write(final Object o, final TypeOutputStream out) throws Throwable
-		{
-			final short s = (short) getHandle.invoke(o);
-			final OutputStream os = out.getStream();
+    public static final class Int16MethodHandleWriter extends AbstractWriter {
+        public Int16MethodHandleWriter(final MethodHandle getHandle, final boolean writeNotNull) {
+            super(getHandle, writeNotNull);
+        }
 
-			if (writeNotNull)
-			{
-				os.write(1);
-			}
+        @Override
+        public void write(final Object o, final TypeOutputStream out) throws Throwable {
+            final short s = (short) getHandle.invoke(o);
+            final OutputStream os = out.getStream();
 
-			os.write((s >> 8) & 0xff);
-			os.write(s & 0xff);
-		}
-	}
+            if (writeNotNull) {
+                os.write(1);
+            }
 
-	public static final class Int32MethodHandleWriter extends AbstractWriter
-	{
-		public Int32MethodHandleWriter(final MethodHandle getHandle, final boolean writeNotNull)
-		{
-			super(getHandle, writeNotNull);
-		}
+            os.write((s >> 8) & 0xff);
+            os.write(s & 0xff);
+        }
+    }
 
-		@Override
-		public void write(final Object o, final TypeOutputStream out) throws Throwable
-		{
-			final int s = (int) getHandle.invoke(o);
-			final OutputStream os = out.getStream();
+    public static final class Int32MethodHandleWriter extends AbstractWriter {
+        public Int32MethodHandleWriter(final MethodHandle getHandle, final boolean writeNotNull) {
+            super(getHandle, writeNotNull);
+        }
 
-			if (writeNotNull)
-			{
-				os.write(1);
-			}
+        @Override
+        public void write(final Object o, final TypeOutputStream out) throws Throwable {
+            final int s = (int) getHandle.invoke(o);
+            final OutputStream os = out.getStream();
 
-			os.write((byte) ((s >> 24) & 0xff));
-			os.write((byte) ((s >> 16) & 0xff));
-			os.write((byte) ((s >> 8) & 0xff));
-			os.write((byte) (s & 0xff));
-		}
-	}
+            if (writeNotNull) {
+                os.write(1);
+            }
 
-	public static final class IEEEFloatMethodHandleWriter extends AbstractWriter
-	{
-		public IEEEFloatMethodHandleWriter(final MethodHandle getHandle, final boolean writeNotNull)
-		{
-			super(getHandle, writeNotNull);
-		}
+            os.write((byte) ((s >> 24) & 0xff));
+            os.write((byte) ((s >> 16) & 0xff));
+            os.write((byte) ((s >> 8) & 0xff));
+            os.write((byte) (s & 0xff));
+        }
+    }
 
-		@Override
-		public void write(final Object o, final TypeOutputStream out) throws Throwable
-		{
-			final float f = (float) getHandle.invoke(o);
-			final int s = Float.floatToIntBits(f);
-			final OutputStream os = out.getStream();
+    public static final class IEEEFloatMethodHandleWriter extends AbstractWriter {
+        public IEEEFloatMethodHandleWriter(final MethodHandle getHandle, final boolean writeNotNull) {
+            super(getHandle, writeNotNull);
+        }
 
-			if (writeNotNull)
-			{
-				os.write(1);
-			}
+        @Override
+        public void write(final Object o, final TypeOutputStream out) throws Throwable {
+            final float f = (float) getHandle.invoke(o);
+            final int s = Float.floatToIntBits(f);
+            final OutputStream os = out.getStream();
 
-			os.write((byte) ((s >> 24) & 0xff));
-			os.write((byte) ((s >> 16) & 0xff));
-			os.write((byte) ((s >> 8) & 0xff));
-			os.write((byte) (s & 0xff));
-		}
-	}
+            if (writeNotNull) {
+                os.write(1);
+            }
 
-	public static final class Int64MethodHandleWriter extends AbstractWriter
-	{
-		public Int64MethodHandleWriter(final MethodHandle getHandle, final boolean writeNotNull)
-		{
-			super(getHandle, writeNotNull);
-		}
+            os.write((byte) ((s >> 24) & 0xff));
+            os.write((byte) ((s >> 16) & 0xff));
+            os.write((byte) ((s >> 8) & 0xff));
+            os.write((byte) (s & 0xff));
+        }
+    }
 
-		@Override
-		public void write(final Object o, final TypeOutputStream out) throws Throwable
-		{
-			final long s = (long) getHandle.invoke(o);
-			final OutputStream os = out.getStream();
+    public static final class Int64MethodHandleWriter extends AbstractWriter {
+        public Int64MethodHandleWriter(final MethodHandle getHandle, final boolean writeNotNull) {
+            super(getHandle, writeNotNull);
+        }
 
-			if (writeNotNull)
-			{
-				os.write(1);
-			}
+        @Override
+        public void write(final Object o, final TypeOutputStream out) throws Throwable {
+            final long s = (long) getHandle.invoke(o);
+            final OutputStream os = out.getStream();
 
-			os.write((byte) ((s >> 56) & 0xff));
-			os.write((byte) ((s >> 48) & 0xff));
-			os.write((byte) ((s >> 40) & 0xff));
-			os.write((byte) ((s >> 32) & 0xff));
-			os.write((byte) ((s >> 24) & 0xff));
-			os.write((byte) ((s >> 16) & 0xff));
-			os.write((byte) ((s >> 8) & 0xff));
-			os.write((byte) (s & 0xff));
-		}
-	}
+            if (writeNotNull) {
+                os.write(1);
+            }
 
-	public static final class IEEEDoubleMethodHandleWriter extends AbstractWriter
-	{
-		public IEEEDoubleMethodHandleWriter(final MethodHandle getHandle, final boolean writeNotNull)
-		{
-			super(getHandle, writeNotNull);
-		}
+            os.write((byte) ((s >> 56) & 0xff));
+            os.write((byte) ((s >> 48) & 0xff));
+            os.write((byte) ((s >> 40) & 0xff));
+            os.write((byte) ((s >> 32) & 0xff));
+            os.write((byte) ((s >> 24) & 0xff));
+            os.write((byte) ((s >> 16) & 0xff));
+            os.write((byte) ((s >> 8) & 0xff));
+            os.write((byte) (s & 0xff));
+        }
+    }
 
-		@Override
-		public void write(final Object o, final TypeOutputStream out) throws Throwable
-		{
-			final double d = (double) getHandle.invoke(o);
-			final long s = Double.doubleToLongBits(d);
-			final OutputStream os = out.getStream();
+    public static final class IEEEDoubleMethodHandleWriter extends AbstractWriter {
+        public IEEEDoubleMethodHandleWriter(final MethodHandle getHandle, final boolean writeNotNull) {
+            super(getHandle, writeNotNull);
+        }
 
-			if (writeNotNull)
-			{
-				os.write(1);
-			}
+        @Override
+        public void write(final Object o, final TypeOutputStream out) throws Throwable {
+            final double d = (double) getHandle.invoke(o);
+            final long s = Double.doubleToLongBits(d);
+            final OutputStream os = out.getStream();
 
-			os.write((byte) ((s >> 56) & 0xff));
-			os.write((byte) ((s >> 48) & 0xff));
-			os.write((byte) ((s >> 40) & 0xff));
-			os.write((byte) ((s >> 32) & 0xff));
-			os.write((byte) ((s >> 24) & 0xff));
-			os.write((byte) ((s >> 16) & 0xff));
-			os.write((byte) ((s >> 8) & 0xff));
-			os.write((byte) (s & 0xff));
-		}
-	}
+            if (writeNotNull) {
+                os.write(1);
+            }
 
-	public static final class StringBuffers
-	{
-		ByteBuffer buffer = ByteBuffer.allocate(512);
-		CharBuffer charBuffer = CharBuffer.allocate(300);
-		CharsetEncoder encoder = Charset.forName("UTF8").newEncoder();
-	}
+            os.write((byte) ((s >> 56) & 0xff));
+            os.write((byte) ((s >> 48) & 0xff));
+            os.write((byte) ((s >> 40) & 0xff));
+            os.write((byte) ((s >> 32) & 0xff));
+            os.write((byte) ((s >> 24) & 0xff));
+            os.write((byte) ((s >> 16) & 0xff));
+            os.write((byte) ((s >> 8) & 0xff));
+            os.write((byte) (s & 0xff));
+        }
+    }
 
-	public static final class U8Utf8MethodHandleWriter extends AbstractWriter
-	{
-		private final ThreadLocal<StringBuffers> buffers = new ThreadLocal<StringBuffers>()
-		{
-			@Override
-			public StringBuffers initialValue()
-			{
-				return new StringBuffers();
-			}
-		};
+    public static final class StringBuffers {
+        ByteBuffer buffer = ByteBuffer.allocate(512);
+        CharBuffer charBuffer = CharBuffer.allocate(300);
+        CharsetEncoder encoder = Charset.forName("UTF8").newEncoder();
+    }
 
-		public U8Utf8MethodHandleWriter(final MethodHandle getHandle, final boolean writeNotNull)
-		{
-			super(getHandle, writeNotNull);
-		}
+    public static final class U8Utf8MethodHandleWriter extends AbstractWriter {
+        private final ThreadLocal<StringBuffers> buffers = new ThreadLocal<StringBuffers>() {
+            @Override
+            public StringBuffers initialValue() {
+                return new StringBuffers();
+            }
+        };
 
-		@Override
-		public void write(final Object o, final TypeOutputStream out) throws Throwable
-		{
-			// get the string from the getter.
-			final String str = (String) getHandle.invoke(o);
+        public U8Utf8MethodHandleWriter(final MethodHandle getHandle, final boolean writeNotNull) {
+            super(getHandle, writeNotNull);
+        }
 
-			final OutputStream os = out.getStream();
+        @Override
+        public void write(final Object o, final TypeOutputStream out) throws Throwable {
+            // get the string from the getter.
+            final String str = (String) getHandle.invoke(o);
 
-			// empty strings just write 0 for null.
-			if (str == null)
-			{
-				os.write(0);
-				return;
-			}
+            final OutputStream os = out.getStream();
 
-			// Grab a thread local set of buffers to use temporarily.
-			final StringBuffers buf = buffers.get();
+            // empty strings just write 0 for null.
+            if (str == null) {
+                os.write(0);
+                return;
+            }
 
-			// get a reference to the buffers.
-			final ByteBuffer b = buf.buffer;
+            // Grab a thread local set of buffers to use temporarily.
+            final StringBuffers buf = buffers.get();
 
-			// copy the string into the charBuffer. Better than CharBuffer.wrap(str) because it doesn't allocate a buffer.
-			// replace CPU for allocations.
-			final CharBuffer c = buf.charBuffer;
-			c.clear();
-			c.append(str);
-			c.flip();
+            // get a reference to the buffers.
+            final ByteBuffer b = buf.buffer;
 
-			// clear the byte buffer.
-			b.clear();
+            // copy the string into the charBuffer. Better than CharBuffer.wrap(str) because it doesn't allocate a buffer.
+            // replace CPU for allocations.
+            final CharBuffer c = buf.charBuffer;
+            c.clear();
+            c.append(str);
+            c.flip();
 
-			// decode the bytes into the char buffer.
-			final CharsetEncoder encoder = buf.encoder;
-			encoder.reset();
-			encoder.encode(c, b, true);
+            // clear the byte buffer.
+            b.clear();
 
-			// flip the char buffer.
-			b.flip();
+            // decode the bytes into the char buffer.
+            final CharsetEncoder encoder = buf.encoder;
+            encoder.reset();
+            encoder.encode(c, b, true);
 
-			final int size = b.limit();
+            // flip the char buffer.
+            b.flip();
 
-			if (size > 255)
-			{
-				throw new TypeException("u8utf8: String length exceeded max length of 255.  len =" + size);
-			}
+            final int size = b.limit();
 
-			if (writeNotNull)
-			{
-				os.write(1);
-			}
+            if (size > 255) {
+                throw new TypeException("u8utf8: String length exceeded max length of 255.  len =" + size);
+            }
 
-			os.write(size);
-			os.write(b.array(), 0, size);
-		}
-	}
+            if (writeNotNull) {
+                os.write(1);
+            }
+
+            os.write(size);
+            os.write(b.array(), 0, size);
+        }
+    }
 }

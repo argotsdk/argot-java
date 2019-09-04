@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -29,49 +29,42 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * An output stream class which allows Objects to be written to the 
- * stream using the type system.
+ * An output stream class which allows Objects to be written to the stream using the type system.
  */
-public class TypeOutputStream
-{
-	private TypeMap _map;
-	private OutputStream _out;
-	
-	public TypeOutputStream( OutputStream out, TypeMap map )
-	{
-		if (out==null) throw new IllegalArgumentException();
-		if (map==null) throw new IllegalArgumentException();
-		
-		_out = out;
-		_map = map;	
-	}
-	
-	public OutputStream getStream()
-	{
-		return _out;
-	}
+public class TypeOutputStream {
+    private TypeMap _map;
+    private OutputStream _out;
 
-	public TypeMap getTypeMap()
-	{
-		return _map;
-	}
+    public TypeOutputStream(OutputStream out, TypeMap map) {
+        if (out == null)
+            throw new IllegalArgumentException();
+        if (map == null)
+            throw new IllegalArgumentException();
 
-	public void writeObject( int id, Object o )
-	throws TypeException, IOException
-	{
-		TypeWriter writer = _map.getWriter( id );
-		writer.write( this, o );
-	}
-	
-	public void writeObject( String name, Object o )
-	throws TypeException, IOException
-	{
-		int id = this.getTypeMap().getStreamId( name );
-		if ( id == TypeLibrary.NOTYPE )
-			throw new TypeException( "not found: " + name);
-		
-		TypeWriter writer = _map.getWriter( id );
-		writer.write( this, o );
-	}
+        _out = out;
+        _map = map;
+    }
+
+    public OutputStream getStream() {
+        return _out;
+    }
+
+    public TypeMap getTypeMap() {
+        return _map;
+    }
+
+    public void writeObject(int id, Object o) throws TypeException, IOException {
+        TypeWriter writer = _map.getWriter(id);
+        writer.write(this, o);
+    }
+
+    public void writeObject(String name, Object o) throws TypeException, IOException {
+        int id = this.getTypeMap().getStreamId(name);
+        if (id == TypeLibrary.NOTYPE)
+            throw new TypeException("not found: " + name);
+
+        TypeWriter writer = _map.getWriter(id);
+        writer.write(this, o);
+    }
 
 }

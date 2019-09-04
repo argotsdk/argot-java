@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -40,75 +40,55 @@ import com.argot.meta.MetaSequence;
 import com.argot.meta.MetaTag;
 import com.argot.meta.MetaVersion;
 
-
 /*
  * A simple mixed data used for testing purposes.
  */
 
-public class MixedDataAnnotated
-{
-	public static final String TYPENAME = "mixeddata";
-	public static final String VERSION = "1.0";
+public class MixedDataAnnotated {
+    public static final String TYPENAME = "mixeddata";
+    public static final String VERSION = "1.0";
 
-	@ArgotTag("uint16")
-	public int _anInt;
+    @ArgotTag("uint16")
+    public int _anInt;
 
-	@ArgotTag("uint8")
-	public short _aShort;
+    @ArgotTag("uint8")
+    public short _aShort;
 
-	@ArgotTag("u8utf8")
-	public String _anUtf8;
+    @ArgotTag("u8utf8")
+    public String _anUtf8;
 
-	public MixedDataAnnotated()
-	{
-		this(0,(short)0,"");
-	}
+    public MixedDataAnnotated() {
+        this(0, (short) 0, "");
+    }
 
-	public MixedDataAnnotated(final int i, final short s, final String string)
-	{
-		_anInt = i;
-		_aShort = s;
-		_anUtf8 = string;
-	}
+    public MixedDataAnnotated(final int i, final short s, final String string) {
+        _anInt = i;
+        _aShort = s;
+        _anUtf8 = string;
+    }
 
-	public int getInt()
-	{
-		return _anInt;
-	}
+    public int getInt() {
+        return _anInt;
+    }
 
-	public short getShort()
-	{
-		return _aShort;
-	}
+    public short getShort() {
+        return _aShort;
+    }
 
-	public String getString()
-	{
-		return _anUtf8;
-	}
+    public String getString() {
+        return _anUtf8;
+    }
 
+    /*
+     * This should be contained in a dictionary file instead
+     * of being created in code.  Useful here for testing.
+     */
+    public static int register(final TypeLibrary library) throws TypeException {
+        final int id = library.register(new DictionaryName(MetaName.parseName(library, TYPENAME)), new MetaIdentity());
 
-
-	/*
-	 * This should be contained in a dictionary file instead
-	 * of being created in code.  Useful here for testing.
-	 */
-	public static int register( final TypeLibrary library )
-	throws TypeException
-	{
-		final int id = library.register( new DictionaryName(MetaName.parseName(library,TYPENAME)), new MetaIdentity() );
-
-		return library.register(
-				new DictionaryDefinition(id, MetaName.parseName(library,TYPENAME), MetaVersion.parseVersion(VERSION)),
-				new MetaSequence(
-					new MetaExpression[]{
-					    new MetaTag( "uint16", new MetaReference( library.getTypeId("uint16"))),
-					    new MetaTag( "uint8", new MetaReference( library.getTypeId("uint8"))),
-					    new MetaTag( "u8utf8", new MetaReference( library.getTypeId("u8utf8")))
-					}
-				),
-			new TypeAnnotationMarshaller(),
-			new TypeAnnotationMarshaller(),
-			MixedDataAnnotated.class
-		);
-	}
+        return library.register(new DictionaryDefinition(id, MetaName.parseName(library, TYPENAME), MetaVersion.parseVersion(VERSION)),
+                        new MetaSequence(new MetaExpression[] { new MetaTag("uint16", new MetaReference(library.getTypeId("uint16"))),
+                                        new MetaTag("uint8", new MetaReference(library.getTypeId("uint8"))), new MetaTag("u8utf8", new MetaReference(library.getTypeId("u8utf8"))) }),
+                        new TypeAnnotationMarshaller(), new TypeAnnotationMarshaller(), MixedDataAnnotated.class);
+    }
 }

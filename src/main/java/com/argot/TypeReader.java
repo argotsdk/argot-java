@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -28,11 +28,8 @@ package com.argot;
 import java.io.IOException;
 
 /**
- * Every type registered to the system must implement the TypeReader
- * interface.
+ * Every type registered to the system must implement the TypeReader interface.
  */
-public interface TypeReader
-{
-	public Object read( TypeInputStream in )
-	throws TypeException, IOException;
+public interface TypeReader {
+    public Object read(TypeInputStream in) throws TypeException, IOException;
 }

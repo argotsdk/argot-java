@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -45,156 +45,125 @@ import com.argot.TypeWriter;
  * an expression as a reference to a size like u16.  Expressions have been allowed
  * because it can be specified that way.
  */
-public class MetaEnvelope
-extends MetaExpression
-implements MetaDefinition
-{
-	public static final String TYPENAME = "meta.envelope";
-	public static final String VERSION = "1.3";
-	
-	private MetaExpression _size;
-	private MetaExpression _type;
-	
-	public MetaEnvelope( MetaExpression size, MetaExpression type )
-	{
-		_size = size;
-		_type = type;
-	}
-	
-    public String getTypeName()
-    {
+public class MetaEnvelope extends MetaExpression implements MetaDefinition {
+    public static final String TYPENAME = "meta.envelope";
+    public static final String VERSION = "1.3";
+
+    private MetaExpression _size;
+    private MetaExpression _type;
+
+    public MetaEnvelope(MetaExpression size, MetaExpression type) {
+        _size = size;
+        _type = type;
+    }
+
+    @Override
+    public String getTypeName() {
         return TYPENAME;
     }
-    
-    public void bind(TypeLibrary library, int definitionId, TypeLocation location, TypeElement definition) throws TypeException
-    {
+
+    @Override
+    public void bind(TypeLibrary library, int definitionId, TypeLocation location, TypeElement definition) throws TypeException {
         super.bind(library, definitionId, location, definition);
         _size.bind(library, definitionId, null, definition);
         _type.bind(library, definitionId, null, definition);
     }
-    
-    public MetaExpression getSizeExpression()
-    {
-    	return _size;
-    }
-    
-    public MetaExpression getTypeExpression()
-    {
-    	return _type;
-    }
-    
-	public static class MetaEnvelopTypeReader
-	extends MetaExpressionReaderAuto
-	implements MetaExpressionReader
-	{
-		public MetaEnvelopTypeReader() 
-		{
-			super(MetaEnvelope.class);
-		}
 
-		public TypeReader getExpressionReader(TypeMap map, MetaExpressionResolver resolver, TypeElement element)
-		throws TypeException 
-		{
-			MetaEnvelope metaEnvelop = (MetaEnvelope) element;
-			return new MetaEnvelopReader(resolver.getExpressionReader(map, metaEnvelop._size));		
-		}	
-	}    
-    
-    public static class MetaEnvelopTypeWriter
-    implements TypeLibraryWriter,TypeWriter,MetaExpressionWriter
-    {
-		public void write(TypeOutputStream out, Object o )
-		throws TypeException, IOException
-		{
-			MetaEnvelope ma = (MetaEnvelope) o;
-	
-			out.writeObject( "meta.expression", ma._size );
-			out.writeObject( "meta.expression", ma._type );					
-		}
-
-		public TypeWriter getWriter(TypeMap map) 
-		throws TypeException 
-		{
-			return this;
-		}
-
-		public TypeWriter getExpressionWriter(TypeMap map, MetaExpressionResolver resolver, TypeElement element)
-		throws TypeException 
-		{
-			MetaEnvelope metaEnvelop = (MetaEnvelope) element;
-			return new MetaEnvelopWriter( resolver.getExpressionWriter(map, metaEnvelop._type), resolver.getExpressionWriter(map, metaEnvelop._size));
-		}
+    public MetaExpression getSizeExpression() {
+        return _size;
     }
 
-    private static class MetaEnvelopReader
-    implements TypeReader
-    {
-    	private TypeReader _size;
-    	
-    	private MetaEnvelopReader( TypeReader size )
-    	{
-    		_size = size;
-    	}
-    	
-		public Object read(TypeInputStream in)
-		throws TypeException, IOException 
-		{
-		    Object sizeObject = _size.read( in );
-		    
-			int size = 0;
-			
-			if ( sizeObject instanceof Byte )
-			{
-				size = ((Byte)sizeObject).intValue();
-			}
-			else if (sizeObject instanceof Short)
-			{
-				size = ((Short)sizeObject).intValue();
-				
-			}
-			else if (sizeObject instanceof Integer )
-			{
-				size = ((Integer)sizeObject).intValue();
-			}
-			else
-			{
-				throw new TypeException("meta.envelop not able to use size object");
-			}
-			
-			byte[] buffer = new byte[size];
-			in.read( buffer,0,buffer.length );
-			return buffer;
-		}
-    	
+    public MetaExpression getTypeExpression() {
+        return _type;
     }
- 
-	private static class MetaEnvelopWriter
-	implements TypeWriter
-	{
-		private TypeWriter _type;
-		private TypeWriter _size;
-		
-		public MetaEnvelopWriter(TypeWriter type, TypeWriter size )
-		{
-			_type = type;
-			_size = size;
-		}
-		
-		public void write(TypeOutputStream out, Object o)
-		throws TypeException, IOException 
-		{		
-			ByteArrayOutputStream bout = new ByteArrayOutputStream();
-			
-			TypeOutputStream tmos = new TypeOutputStream( bout, out.getTypeMap() );
-			
-			_type.write( tmos, o );
-			bout.close();
-			
-			byte b[] = bout.toByteArray();
 
-			_size.write( out, new Integer(b.length) );
-			out.getStream().write( b );	
-		}
-		
-	}
+    public static class MetaEnvelopTypeReader extends MetaExpressionReaderAuto implements MetaExpressionReader {
+        public MetaEnvelopTypeReader() {
+            super(MetaEnvelope.class);
+        }
+
+        @Override
+        public TypeReader getExpressionReader(TypeMap map, MetaExpressionResolver resolver, TypeElement element) throws TypeException {
+            MetaEnvelope metaEnvelop = (MetaEnvelope) element;
+            return new MetaEnvelopReader(resolver.getExpressionReader(map, metaEnvelop._size));
+        }
+    }
+
+    public static class MetaEnvelopTypeWriter implements TypeLibraryWriter, TypeWriter, MetaExpressionWriter {
+        @Override
+        public void write(TypeOutputStream out, Object o) throws TypeException, IOException {
+            MetaEnvelope ma = (MetaEnvelope) o;
+
+            out.writeObject("meta.expression", ma._size);
+            out.writeObject("meta.expression", ma._type);
+        }
+
+        @Override
+        public TypeWriter getWriter(TypeMap map) throws TypeException {
+            return this;
+        }
+
+        @Override
+        public TypeWriter getExpressionWriter(TypeMap map, MetaExpressionResolver resolver, TypeElement element) throws TypeException {
+            MetaEnvelope metaEnvelop = (MetaEnvelope) element;
+            return new MetaEnvelopWriter(resolver.getExpressionWriter(map, metaEnvelop._type), resolver.getExpressionWriter(map, metaEnvelop._size));
+        }
+    }
+
+    private static class MetaEnvelopReader implements TypeReader {
+        private TypeReader _size;
+
+        private MetaEnvelopReader(TypeReader size) {
+            _size = size;
+        }
+
+        @Override
+        public Object read(TypeInputStream in) throws TypeException, IOException {
+            Object sizeObject = _size.read(in);
+
+            int size = 0;
+
+            if (sizeObject instanceof Byte) {
+                size = ((Byte) sizeObject).intValue();
+            } else if (sizeObject instanceof Short) {
+                size = ((Short) sizeObject).intValue();
+
+            } else if (sizeObject instanceof Integer) {
+                size = ((Integer) sizeObject).intValue();
+            } else {
+                throw new TypeException("meta.envelop not able to use size object");
+            }
+
+            byte[] buffer = new byte[size];
+            in.read(buffer, 0, buffer.length);
+            return buffer;
+        }
+
+    }
+
+    private static class MetaEnvelopWriter implements TypeWriter {
+        private TypeWriter _type;
+        private TypeWriter _size;
+
+        public MetaEnvelopWriter(TypeWriter type, TypeWriter size) {
+            _type = type;
+            _size = size;
+        }
+
+        @Override
+        public void write(TypeOutputStream out, Object o) throws TypeException, IOException {
+            ByteArrayOutputStream bout = new ByteArrayOutputStream();
+
+            TypeOutputStream tmos = new TypeOutputStream(bout, out.getTypeMap());
+
+            _type.write(tmos, o);
+            bout.close();
+
+            byte b[] = bout.toByteArray();
+
+            _size.write(out, Integer.valueOf(b.length));
+            out.getStream().write(b);
+        }
+
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -29,27 +29,21 @@ import java.io.IOException;
 
 import com.argot.meta.MetaName;
 
-public class TypeReaderInvalid
-implements TypeLibraryReader, TypeBound
-{
-	MetaName _name;
-	
-    public Object read(TypeInputStream in) 
-    throws TypeException, IOException
-    {
-        throw new TypeException("TypeReader invalid - No valid reader for " + _name );
+public class TypeReaderInvalid implements TypeLibraryReader, TypeBound {
+    MetaName _name;
+
+    public Object read(TypeInputStream in) throws TypeException, IOException {
+        throw new TypeException("TypeReader invalid - No valid reader for " + _name);
     }
 
-	public TypeReader getReader(TypeMap map) 
-	throws TypeException 
-	{
-        throw new TypeException("TypeReader invalid - No valid reader for " + _name );
-	}
+    @Override
+    public TypeReader getReader(TypeMap map) throws TypeException {
+        throw new TypeException("TypeReader invalid - No valid reader for " + _name);
+    }
 
-	public void bind(TypeLibrary library, int definitionId, TypeElement definition) 
-	throws TypeException 
-	{
-		_name = library.getName(definitionId);
-	}
+    @Override
+    public void bind(TypeLibrary library, int definitionId, TypeElement definition) throws TypeException {
+        _name = library.getName(definitionId);
+    }
 
 }

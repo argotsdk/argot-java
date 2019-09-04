@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -34,36 +34,33 @@ import com.argot.TypeReader;
 import com.argot.TypeWriter;
 
 /**
- * The BOOL type is a single U8 character which has the value 0 or 1. if the actual value is anything other than 0 the final object will be true.
+ * The BOOL type is a single U8 character which has the value 0 or 1. if the actual value is anything other than 0 the
+ * final object will be true.
  *
  * It requires/returns a java.lang.Boolean
  */
-public class U8Boolean implements TypeReader, TypeWriter
-{
-	public static final String TYPENAME = "boolean";
-	public static final String VERSION = "1.3";
+public class U8Boolean implements TypeReader, TypeWriter {
+    public static final String TYPENAME = "boolean";
+    public static final String VERSION = "1.3";
 
-	public Object read(final TypeInputStream in) throws TypeException, IOException
-	{
-		int a;
+    @Override
+    public Object read(final TypeInputStream in) throws TypeException, IOException {
+        int a;
 
-		a = in.read();
+        a = in.read();
 
-		return (a == 0 ? Boolean.FALSE : Boolean.TRUE);
-	}
+        return (a == 0 ? Boolean.FALSE : Boolean.TRUE);
+    }
 
-	public void write(final TypeOutputStream out, final Object o) throws TypeException, IOException
-	{
-		int a;
-		if (o instanceof Boolean)
-		{
-			a = ((Boolean) o).booleanValue() == false ? 0 : 1;
-		}
-		else
-		{
-			throw new TypeException("U8Boolean requires Boolean object");
-		}
+    @Override
+    public void write(final TypeOutputStream out, final Object o) throws TypeException, IOException {
+        int a;
+        if (o instanceof Boolean) {
+            a = ((Boolean) o).booleanValue() == false ? 0 : 1;
+        } else {
+            throw new TypeException("U8Boolean requires Boolean object");
+        }
 
-		out.getStream().write(a);
-	}
+        out.getStream().write(a);
+    }
 }

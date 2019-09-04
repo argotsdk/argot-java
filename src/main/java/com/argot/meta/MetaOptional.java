@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -36,118 +36,95 @@ import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
 
-public class MetaOptional
-extends MetaExpression
-{
-	public static final String TYPENAME = "meta.optional";
+public class MetaOptional extends MetaExpression {
+    public static final String TYPENAME = "meta.optional";
     public static final String VERSION = "1.3";
 
-	private MetaExpression _option;
+    private MetaExpression _option;
 
-	public MetaOptional( MetaExpression option )
-	{
-		_option = option;
-	}
-	
-    public String getTypeName()
-    {
+    public MetaOptional(MetaExpression option) {
+        _option = option;
+    }
+
+    @Override
+    public String getTypeName() {
         return TYPENAME;
     }
-    
-    public MetaExpression getOptionalExpression()
-    {
+
+    public MetaExpression getOptionalExpression() {
         return _option;
     }
 
-	public static class MetaOptionalTypeReader
-	extends MetaExpressionReaderAuto
-	implements MetaExpressionReader
-	{
-		public MetaOptionalTypeReader() 
-		{
-			super(MetaOptional.class);
-		}
+    public static class MetaOptionalTypeReader extends MetaExpressionReaderAuto implements MetaExpressionReader {
+        public MetaOptionalTypeReader() {
+            super(MetaOptional.class);
+        }
 
-		public TypeReader getExpressionReader(TypeMap map, MetaExpressionResolver resolver, TypeElement element)
-		throws TypeException 
-		{
-			MetaOptional metaOptional = (MetaOptional) element;
-			return new MetaOptionalReader(map.getReader(map.getStreamId("bool")),resolver.getExpressionReader(map, metaOptional._option));		
-		}	
-	}    
-    
-    public static class MetaOptionalTypeWriter
-    implements TypeLibraryWriter,TypeWriter,MetaExpressionWriter
-    {
-		public void write(TypeOutputStream out, Object o )
-			throws TypeException, IOException
-		{
-			MetaOptional to = (MetaOptional) o;
-			
-			out.writeObject("meta.expression", to._option );
-		}
-
-		public TypeWriter getWriter(TypeMap map) 
-		throws TypeException 
-		{
-			return this;
-		}
-
-		public TypeWriter getExpressionWriter(TypeMap map, MetaExpressionResolver resolver, TypeElement element)
-		throws TypeException 
-		{
-			MetaOptional metaOptional = (MetaOptional) element;
-			return new MetaOptionalWriter(map.getWriter(map.getStreamId("bool")), resolver.getExpressionWriter(map, metaOptional._option));		
-		}
+        @Override
+        public TypeReader getExpressionReader(TypeMap map, MetaExpressionResolver resolver, TypeElement element) throws TypeException {
+            MetaOptional metaOptional = (MetaOptional) element;
+            return new MetaOptionalReader(map.getReader(map.getStreamId("bool")), resolver.getExpressionReader(map, metaOptional._option));
+        }
     }
-    
-    private static class MetaOptionalReader
-    implements TypeReader
-    {
-    	private TypeReader _bool;
-    	private TypeReader _option;
-    	
-    	public MetaOptionalReader(TypeReader bool, TypeReader option)
-    	{
-    		_bool = bool;
-    		_option = option;
-    	}
-    	
-		public Object read(TypeInputStream in)
-		throws TypeException, IOException 
-		{
-			Boolean id = (Boolean) _bool.read( in );
-			if ( id.booleanValue() )
-			    return _option.read( in );
-			return null;
-		}
-    	
+
+    public static class MetaOptionalTypeWriter implements TypeLibraryWriter, TypeWriter, MetaExpressionWriter {
+        @Override
+        public void write(TypeOutputStream out, Object o) throws TypeException, IOException {
+            MetaOptional to = (MetaOptional) o;
+
+            out.writeObject("meta.expression", to._option);
+        }
+
+        @Override
+        public TypeWriter getWriter(TypeMap map) throws TypeException {
+            return this;
+        }
+
+        @Override
+        public TypeWriter getExpressionWriter(TypeMap map, MetaExpressionResolver resolver, TypeElement element) throws TypeException {
+            MetaOptional metaOptional = (MetaOptional) element;
+            return new MetaOptionalWriter(map.getWriter(map.getStreamId("bool")), resolver.getExpressionWriter(map, metaOptional._option));
+        }
     }
-	
-	private static class MetaOptionalWriter
-	implements TypeWriter
-	{
-		private TypeWriter _bool;
-		private TypeWriter _option;
-		
-		public MetaOptionalWriter(TypeWriter bool, TypeWriter option)
-		{
-			_bool = bool;
-			_option = option;
-		}
-		
-		public void write(TypeOutputStream out, Object o)
-		throws TypeException, IOException 
-		{
-			if ( o == null )
-		    {
-		        _bool.write( out, new Boolean( false ));
-		        return;
-		    }
-		    
-			_bool.write( out, new Boolean( true ));
-			_option.write( out, o );	
-		}
-		
-	}
+
+    private static class MetaOptionalReader implements TypeReader {
+        private TypeReader _bool;
+        private TypeReader _option;
+
+        public MetaOptionalReader(TypeReader bool, TypeReader option) {
+            _bool = bool;
+            _option = option;
+        }
+
+        @Override
+        public Object read(TypeInputStream in) throws TypeException, IOException {
+            Boolean id = (Boolean) _bool.read(in);
+            if (id.booleanValue())
+                return _option.read(in);
+            return null;
+        }
+
+    }
+
+    private static class MetaOptionalWriter implements TypeWriter {
+        private TypeWriter _bool;
+        private TypeWriter _option;
+
+        public MetaOptionalWriter(TypeWriter bool, TypeWriter option) {
+            _bool = bool;
+            _option = option;
+        }
+
+        @Override
+        public void write(TypeOutputStream out, Object o) throws TypeException, IOException {
+            if (o == null) {
+                _bool.write(out, Boolean.FALSE);
+                return;
+            }
+
+            _bool.write(out, Boolean.TRUE);
+            _option.write(out, o);
+        }
+
+    }
 }

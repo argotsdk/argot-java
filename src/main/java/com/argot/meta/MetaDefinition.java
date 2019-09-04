@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -27,12 +27,10 @@ package com.argot.meta;
 
 import com.argot.TypeElement;
 
-public interface MetaDefinition
-extends TypeElement
-{
+public interface MetaDefinition extends TypeElement {
     public static String TYPENAME = "meta.definition";
-	public static String VERSION = "1.3";
-	
-	public static String META_DEFINITION_ENVELOPE = "dictionary.definition_envelope";
-	public static String META_DEFINITION_ENVELOPE_VERSION = "1.3";
+    public static String VERSION = "1.3";
+
+    public static String META_DEFINITION_ENVELOPE = "dictionary.definition_envelope";
+    public static String META_DEFINITION_ENVELOPE_VERSION = "1.3";
 }

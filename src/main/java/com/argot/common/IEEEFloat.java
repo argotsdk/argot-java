@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -35,52 +35,44 @@ import com.argot.TypeOutputStream;
 import com.argot.TypeReader;
 import com.argot.TypeWriter;
 
-public class IEEEFloat
-{
-	public static final String TYPENAME = "float";
-	public static final String VERSION = "1.3";
+public class IEEEFloat {
+    public static final String TYPENAME = "float";
+    public static final String VERSION = "1.3";
 
-	public static class Reader implements TypeReader
-	{
+    public static class Reader implements TypeReader {
 
-		@Override
-		public Object read(final TypeInputStream in) throws TypeException, IOException
-		{
-			final byte bytes[] = new byte[4];
-			in.getStream().read(bytes, 0, 4);
-			final int value = (((bytes[0] & 0xff) << 24) | ((bytes[1] & 0xff) << 16) | ((bytes[2] & 0xff) << 8) | (bytes[3] & 0xff));
-			return new Float(Float.intBitsToFloat(value));
-		}
+        @Override
+        public Object read(final TypeInputStream in) throws TypeException, IOException {
+            final byte bytes[] = new byte[4];
+            in.getStream().read(bytes, 0, 4);
+            final int value = (((bytes[0] & 0xff) << 24) | ((bytes[1] & 0xff) << 16) | ((bytes[2] & 0xff) << 8) | (bytes[3] & 0xff));
+            return Float.valueOf(Float.intBitsToFloat(value));
+        }
 
-	}
+    }
 
-	public static class Writer implements TypeWriter
-	{
+    public static class Writer implements TypeWriter {
 
-		@Override
-		public void write(final TypeOutputStream out, final Object o) throws TypeException, IOException
-		{
-			int s;
+        @Override
+        public void write(final TypeOutputStream out, final Object o) throws TypeException, IOException {
+            int s;
 
-			if (o instanceof Float)
-			{
-				s = Float.floatToIntBits(((Float) o).floatValue());
-			}
-			else
-			{
-				throw new TypeException("ieee.float: requires Float. ");
-			}
+            if (o instanceof Float) {
+                s = Float.floatToIntBits(((Float) o).floatValue());
+            } else {
+                throw new TypeException("ieee.float: requires Float. ");
+            }
 
-			// write individual bytes to reduce heap pressue.
-			final OutputStream os = out.getStream();
+            // write individual bytes to reduce heap pressue.
+            final OutputStream os = out.getStream();
 
-			os.write((byte) ((s >> 24) & 0xff));
-			os.write((byte) ((s >> 16) & 0xff));
-			os.write((byte) ((s >> 8) & 0xff));
-			os.write((byte) (s & 0xff));
+            os.write((byte) ((s >> 24) & 0xff));
+            os.write((byte) ((s >> 16) & 0xff));
+            os.write((byte) ((s >> 8) & 0xff));
+            os.write((byte) (s & 0xff));
 
-		}
+        }
 
-	}
+    }
 
 }

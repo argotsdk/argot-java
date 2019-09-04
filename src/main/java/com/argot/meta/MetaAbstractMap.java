@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -41,202 +41,164 @@ import com.argot.TypeWriter;
 import com.argot.auto.TypeReaderAuto;
 import com.argot.common.UVInt28;
 
-
 /**
- * MetaAbstractMap defines mappings between an abstract type and a real type.
- * It maps the name of the type, not the definition.
+ * MetaAbstractMap defines mappings between an abstract type and a real type. It maps the name of the type, not the
+ * definition.
  * 
  * 
  * @author davidryan
  */
-public class MetaAbstractMap
-extends MetaExpression
-implements MetaDefinition
-{
+public class MetaAbstractMap extends MetaExpression implements MetaDefinition {
     public static final String TYPENAME = "meta.abstract_map";
     public static final String VERSION = "1.3";
-    
-	private TypeLibrary _library;
-	
-	private boolean _isBound;
-	
-	private int _abstractType;
-	private int _concreteType;
-	
-	private MetaAbstract _metaAbstract;
-	
-	public MetaAbstractMap( int concreteType ) throws TypeException
-	{
-		_isBound = false;
-		
-		if (concreteType < 0 )
-		{
-			throw new TypeException("Invalid Type identifier for concrete type");
-		}
-		
-		_concreteType = concreteType;
-	}
 
-    public String getTypeName()
-    {
+    private TypeLibrary _library;
+
+    private boolean _isBound;
+
+    private int _abstractType;
+    private int _concreteType;
+
+    private MetaAbstract _metaAbstract;
+
+    public MetaAbstractMap(int concreteType) throws TypeException {
+        _isBound = false;
+
+        if (concreteType < 0) {
+            throw new TypeException("Invalid Type identifier for concrete type");
+        }
+
+        _concreteType = concreteType;
+    }
+
+    @Override
+    public String getTypeName() {
         return TYPENAME;
     }
-    
-	public int getExpressionType( TypeLibrary library ) throws TypeException
-	{
-	    return library.getDefinitionId( TYPENAME, VERSION );
-	}
 
-	public void check( TypeLibrary library ) throws TypeException
-	{
-		_library = library;
-		
-		if ( _library.getTypeState(  _concreteType ) == TypeLibrary.TYPE_NOT_DEFINED )
-		{
-			throw new TypeException( "concrete type not valid");
-		}
-		
-		MetaExpression abstractElement = (MetaExpression) _library.getStructure( _abstractType );		
-		if ( !(abstractElement instanceof MetaAbstract ))
-		{
-			throw new TypeException( "abstract map to non-abstract type");			
-		}
-		
-		_metaAbstract = (MetaAbstract) abstractElement;
-	}
+    public int getExpressionType(TypeLibrary library) throws TypeException {
+        return library.getDefinitionId(TYPENAME, VERSION);
+    }
 
-    public void bind(TypeLibrary library, int definitionId, TypeLocation location, TypeElement definition) 
-    throws TypeException
-    {
-        super.bind(library, definitionId, location, definition);
-        
-        _isBound = true;
-        
-        if (!(location instanceof TypeLocationRelation))
-        {
-        	throw new TypeException("Expected TypeLocationRelation");
+    public void check(TypeLibrary library) throws TypeException {
+        _library = library;
+
+        if (_library.getTypeState(_concreteType) == TypeLibrary.TYPE_NOT_DEFINED) {
+            throw new TypeException("concrete type not valid");
         }
-        
+
+        MetaExpression abstractElement = (MetaExpression) _library.getStructure(_abstractType);
+        if (!(abstractElement instanceof MetaAbstract)) {
+            throw new TypeException("abstract map to non-abstract type");
+        }
+
+        _metaAbstract = (MetaAbstract) abstractElement;
+    }
+
+    @Override
+    public void bind(TypeLibrary library, int definitionId, TypeLocation location, TypeElement definition) throws TypeException {
+        super.bind(library, definitionId, location, definition);
+
+        _isBound = true;
+
+        if (!(location instanceof TypeLocationRelation)) {
+            throw new TypeException("Expected TypeLocationRelation");
+        }
+
         TypeLocationRelation relation = (TypeLocationRelation) location;
         _abstractType = relation.getId();
-        
-        check( library );
-        
-        TypeElement concreteElement = _library.getStructure( _concreteType ); 
-        if (concreteElement instanceof MetaAbstract)
-        {
-        	((MetaAbstract)concreteElement).addAbstractMap(_metaAbstract);
-        }
-        else if (!(concreteElement instanceof MetaIdentity))
-        {
-        	throw new TypeException("Can only map abstract types to identity or abstract definitions");
-        }
-        _metaAbstract.addMap( _concreteType, definitionId, false );
-    }
-	
-    public int getAbstractType()
-    {
-    	return _abstractType;
-    }
-    
-	public int getConcreteType()
-	{
-		return _concreteType;
-	}
-	
 
-	public void setConcreteType(int i) 
-	throws TypeException
-	{
-		if (_isBound) throw new TypeException("map already bound");
-		
-		_concreteType = i;        
-	}
-	
-	public static class MetaMapTypeReader
-	implements TypeReader,TypeBound
-	{
-		TypeReaderAuto _reader = new TypeReaderAuto( MetaAbstractMap.class );
-		
-		public void bind(TypeLibrary library, int definitionId, TypeElement definition) 
-		throws TypeException 
-		{
-			_reader.bind(library, definitionId, definition);
-		}
-		
-	    public Object read(TypeInputStream in) throws TypeException, IOException
-	    {
-	    	TypeReader reader = _reader.getReader(in.getTypeMap());
-			MetaAbstractMap map = (MetaAbstractMap) reader.read( in );
-			// before we return this we need to change the
-			// values from the mapped to the internal values.
-			
-			TypeMap refMap = (TypeMap) in.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
-			
-			if (  refMap.isValid( map.getConcreteType() ) )
-			{
-				map.setConcreteType( refMap.getNameId( map.getConcreteType () ));
-			}
-			else
-			{
-				throw new TypeException( "TypeReference: invalid id " );
-			}
-			return map;				
-	    }
-	}
-	
-	public static class MetaMapTypeWriter
-	implements TypeWriter
-	{
-	    public void write(TypeOutputStream out, Object o) throws TypeException, IOException
-	    {
-			MetaAbstractMap tr = (MetaAbstractMap) o;
-			TypeMap refMap = (TypeMap) out.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
-			int concreteId = refMap.getStreamId( tr._concreteType );
-			out.writeObject( UVInt28.TYPENAME, new Integer( concreteId ) );
-	    }   
-	}
+        check(library);
 
-	private class MetaMapReader
-	implements TypeReader
-	{
-		public Object read(TypeInputStream in)
-		throws TypeException, IOException 
-		{
-	        // This probably shouldn't happen.
-	        // Someone reads an abstract type.  Which checks its local
-	        // list and reads directly.  
-	        
-	        //  But just in case. Just read the concrete type.
-	        return in.readObject( in.getTypeMap().getStreamId(_concreteType) );
-		}
-		
-	}
-	
-    public TypeReader getReader(TypeMap map) 
-    throws TypeException
-    {
-    	return new MetaMapReader();
+        TypeElement concreteElement = _library.getStructure(_concreteType);
+        if (concreteElement instanceof MetaAbstract) {
+            ((MetaAbstract) concreteElement).addAbstractMap(_metaAbstract);
+        } else if (!(concreteElement instanceof MetaIdentity)) {
+            throw new TypeException("Can only map abstract types to identity or abstract definitions");
+        }
+        _metaAbstract.addMap(_concreteType, definitionId, false);
     }
-	
-	
-	private class MetaMapWriter
-	implements TypeWriter
-	{
-		public void write(TypeOutputStream out, Object o)
-		throws TypeException, IOException 
-		{
-	    	out.writeObject(UVInt28.TYPENAME, new Integer(out.getTypeMap().getStreamId(getMemberTypeId()) ));
-			
-			// This will force the mapId to be mapped in dynamic type maps.
-			out.getTypeMap().getStreamId(getMemberTypeId() );
-			out.writeObject( out.getTypeMap().getStreamId( _concreteType ), o );    	
-		}
-	}
-	
-    public TypeWriter getWriter(TypeMap map) 
-    throws TypeException
-    {
-    	return new MetaMapWriter();
+
+    public int getAbstractType() {
+        return _abstractType;
+    }
+
+    public int getConcreteType() {
+        return _concreteType;
+    }
+
+    public void setConcreteType(int i) throws TypeException {
+        if (_isBound)
+            throw new TypeException("map already bound");
+
+        _concreteType = i;
+    }
+
+    public static class MetaMapTypeReader implements TypeReader, TypeBound {
+        TypeReaderAuto _reader = new TypeReaderAuto(MetaAbstractMap.class);
+
+        @Override
+        public void bind(TypeLibrary library, int definitionId, TypeElement definition) throws TypeException {
+            _reader.bind(library, definitionId, definition);
+        }
+
+        @Override
+        public Object read(TypeInputStream in) throws TypeException, IOException {
+            TypeReader reader = _reader.getReader(in.getTypeMap());
+            MetaAbstractMap map = (MetaAbstractMap) reader.read(in);
+            // before we return this we need to change the
+            // values from the mapped to the internal values.
+
+            TypeMap refMap = (TypeMap) in.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
+
+            if (refMap.isValid(map.getConcreteType())) {
+                map.setConcreteType(refMap.getNameId(map.getConcreteType()));
+            } else {
+                throw new TypeException("TypeReference: invalid id ");
+            }
+            return map;
+        }
+    }
+
+    public static class MetaMapTypeWriter implements TypeWriter {
+        @Override
+        public void write(TypeOutputStream out, Object o) throws TypeException, IOException {
+            MetaAbstractMap tr = (MetaAbstractMap) o;
+            TypeMap refMap = (TypeMap) out.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
+            int concreteId = refMap.getStreamId(tr._concreteType);
+            out.writeObject(UVInt28.TYPENAME, Integer.valueOf(concreteId));
+        }
+    }
+
+    private class MetaMapReader implements TypeReader {
+        @Override
+        public Object read(TypeInputStream in) throws TypeException, IOException {
+            // This probably shouldn't happen.
+            // Someone reads an abstract type.  Which checks its local
+            // list and reads directly.  
+
+            //  But just in case. Just read the concrete type.
+            return in.readObject(in.getTypeMap().getStreamId(_concreteType));
+        }
+
+    }
+
+    public TypeReader getReader(TypeMap map) throws TypeException {
+        return new MetaMapReader();
+    }
+
+    private class MetaMapWriter implements TypeWriter {
+        @Override
+        public void write(TypeOutputStream out, Object o) throws TypeException, IOException {
+            out.writeObject(UVInt28.TYPENAME, Integer.valueOf(out.getTypeMap().getStreamId(getMemberTypeId())));
+
+            // This will force the mapId to be mapped in dynamic type maps.
+            out.getTypeMap().getStreamId(getMemberTypeId());
+            out.writeObject(out.getTypeMap().getStreamId(_concreteType), o);
+        }
+    }
+
+    public TypeWriter getWriter(TypeMap map) throws TypeException {
+        return new MetaMapWriter();
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -28,15 +28,11 @@ package com.argot.meta;
 import com.argot.TypeLocation;
 import com.argot.TypeLocationBase;
 
-public class DictionaryBase 
-extends DictionaryLocation
-implements TypeLocationBase
-{
-	public static final String TYPENAME = "dictionary.base";
-	
-	public DictionaryBase()
-	{
-		super(TypeLocation.BASE);
-	}
+public class DictionaryBase extends DictionaryLocation implements TypeLocationBase {
+    public static final String TYPENAME = "dictionary.base";
+
+    public DictionaryBase() {
+        super(TypeLocation.BASE);
+    }
 
 }

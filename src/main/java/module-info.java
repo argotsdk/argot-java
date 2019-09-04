@@ -23,11 +23,16 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+module org.argotsdk {
 
-package com.argot;
+    exports com.argot;
+    exports com.argot.auto;
+    exports com.argot.common;
+    exports com.argot.dictionary;
+    exports com.argot.message;
+    exports com.argot.meta;
+    exports com.argot.util;
 
-public interface TypeLibraryLoader {
-    public void load(TypeLibrary library) throws TypeException;
+    requires java.management;
 
-    public String getName();
 }

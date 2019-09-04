@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -30,44 +30,35 @@ import com.argot.TypeLibrary;
 import com.argot.TypeLocation;
 import com.argot.TypeLocationName;
 
-public class DictionaryName 
-extends DictionaryLocation
-implements TypeLocationName
-{
-	public static final String TYPENAME = "dictionary.name";
-	
-	private MetaName _name;
-	
-	public DictionaryName()
-	{
-		super(TypeLocation.NAME);
-	}
+public class DictionaryName extends DictionaryLocation implements TypeLocationName {
+    public static final String TYPENAME = "dictionary.name";
 
-	public DictionaryName( MetaName name ) 
-	throws TypeException
-	{
-		super( TypeLocation.NAME );
-		
-		if ( name == null) throw new IllegalArgumentException("DictionaryName: name is null");
-		
-		_name = name;
-	}
+    private MetaName _name;
 
+    public DictionaryName() {
+        super(TypeLocation.NAME);
+    }
 
-	public DictionaryName( TypeLibrary library, String name ) 
-	throws TypeException
-	{		
-		this( MetaName.parseName(library, name) );
-	}
-	
-	public MetaName getName()
-	{
-		return _name;
-	}
-	
-	public void setName(MetaName name)
-	{
-		_name = name;
-	}
+    public DictionaryName(MetaName name) throws TypeException {
+        super(TypeLocation.NAME);
+
+        if (name == null)
+            throw new IllegalArgumentException("DictionaryName: name is null");
+
+        _name = name;
+    }
+
+    public DictionaryName(TypeLibrary library, String name) throws TypeException {
+        this(MetaName.parseName(library, name));
+    }
+
+    @Override
+    public MetaName getName() {
+        return _name;
+    }
+
+    public void setName(MetaName name) {
+        _name = name;
+    }
 
 }

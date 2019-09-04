@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -28,12 +28,10 @@ package com.argot;
 import com.argot.meta.MetaName;
 import com.argot.meta.MetaVersion;
 
-public interface TypeLocationDefinition 
-extends TypeLocation
-{
-	public int getId();
-	
-	public MetaName getName();
-	
-	public MetaVersion getVersion();
+public interface TypeLocationDefinition extends TypeLocation {
+    public int getId();
+
+    public MetaName getName();
+
+    public MetaVersion getVersion();
 }

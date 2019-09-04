@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -26,16 +26,16 @@
 package com.argot;
 
 /**
- * A type element is any element which is used in the definition of a 
- * type itself.
+ * A type element is any element which is used in the definition of a type itself.
  */
-public interface TypeElement
-{
-    public void bind( TypeLibrary library, int definitionId, TypeLocation location, TypeElement definition ) 
-    throws TypeException;
-    
-	public TypeLibrary getLibrary();
-	public TypeElement getTypeDefinition();
-	public String getTypeName();
-	public int getTypeId();    
+public interface TypeElement {
+    public void bind(TypeLibrary library, int definitionId, TypeLocation location, TypeElement definition) throws TypeException;
+
+    public TypeLibrary getLibrary();
+
+    public TypeElement getTypeDefinition();
+
+    public String getTypeName();
+
+    public int getTypeId();
 }

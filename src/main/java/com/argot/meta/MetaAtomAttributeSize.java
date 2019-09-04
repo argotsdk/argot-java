@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -25,26 +25,21 @@
  */
 package com.argot.meta;
 
-public class MetaAtomAttributeSize 
-extends MetaAtomAttribute
-{
-	public static final String TYPENAME = "meta.attribute.size";
+public class MetaAtomAttributeSize extends MetaAtomAttribute {
+    public static final String TYPENAME = "meta.attribute.size";
     public static final String VERSION = "1.3";
-	
-	private int _size; // uint16
-	
-	public MetaAtomAttributeSize( int size )
-	{
-		_size = size;
-	}
-	
-	public int getSize()
-	{
-		return _size;
-	}
-	
-	public void setSize( int size )
-	{
-		_size = size;
-	}
+
+    private int _size; // uint16
+
+    public MetaAtomAttributeSize(int size) {
+        _size = size;
+    }
+
+    public int getSize() {
+        return _size;
+    }
+
+    public void setSize(int size) {
+        _size = size;
+    }
 }

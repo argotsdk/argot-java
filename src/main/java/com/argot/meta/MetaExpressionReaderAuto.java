@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -34,25 +34,20 @@ import com.argot.TypeMap;
 import com.argot.TypeReader;
 import com.argot.auto.TypeReaderAuto;
 
-public class MetaExpressionReaderAuto 
-implements TypeLibraryReader, TypeBound
-{
-	TypeReaderAuto _auto;
-	
-	public MetaExpressionReaderAuto(Class<?> clss)
-	{
-		_auto = new TypeReaderAuto(clss);
-	}
+public class MetaExpressionReaderAuto implements TypeLibraryReader, TypeBound {
+    TypeReaderAuto _auto;
 
-	public void bind(TypeLibrary library, int definitionId, TypeElement definition) 
-	throws TypeException 
-	{
-		_auto.bind(library, definitionId, definition);
-	}
-	
-	public TypeReader getReader(TypeMap map) 
-	throws TypeException 
-	{
-		return _auto.getReader(map);
-	}	
+    public MetaExpressionReaderAuto(Class<?> clss) {
+        _auto = new TypeReaderAuto(clss);
+    }
+
+    @Override
+    public void bind(TypeLibrary library, int definitionId, TypeElement definition) throws TypeException {
+        _auto.bind(library, definitionId, definition);
+    }
+
+    @Override
+    public TypeReader getReader(TypeMap map) throws TypeException {
+        return _auto.getReader(map);
+    }
 }

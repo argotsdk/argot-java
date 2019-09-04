@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -25,35 +25,27 @@
  */
 package com.argot;
 
-public class ReferenceTypeMap
-extends TypeMap
-{
-	private TypeMap _refMap;
-	
-    public ReferenceTypeMap(TypeLibrary library, TypeMapper mapper, TypeMap map) 
-    throws TypeException
-    {
+public class ReferenceTypeMap extends TypeMap {
+    private TypeMap _refMap;
+
+    public ReferenceTypeMap(TypeLibrary library, TypeMapper mapper, TypeMap map) throws TypeException {
         super(library, mapper);
         _refMap = map;
     }
 
-    public ReferenceTypeMap(TypeLibrary library, TypeMapper mapper) 
-    throws TypeException
-    {
+    public ReferenceTypeMap(TypeLibrary library, TypeMapper mapper) throws TypeException {
         super(library, mapper);
         _refMap = this;
-    }    
-    
-    public TypeMap referenceMap() throws TypeException
-	{
-        if ( _refMap == null )
+    }
+
+    public TypeMap referenceMap() throws TypeException {
+        if (_refMap == null)
             throw new TypeException("Reference Type Map not set");
-        
-		return _refMap;
-	}
-	
-	public void setReferenceMap( TypeMap map )
-	{
-		_refMap = map;
-	}
+
+        return _refMap;
+    }
+
+    public void setReferenceMap(TypeMap map) {
+        _refMap = map;
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -38,66 +38,52 @@ import com.argot.TypeMap;
 import com.argot.TypeOutputStream;
 import com.argot.TypeWriter;
 
-public class MetaIdentity 
-extends MetaExpression
-implements MetaDefinition
-{
-	public static final String TYPENAME = "meta.identity";
-	
-	private Map<MetaVersion,Integer> _versions;
-	
-	public MetaIdentity()
-	{
-		_versions = new HashMap<MetaVersion,Integer>();
+public class MetaIdentity extends MetaExpression implements MetaDefinition {
+    public static final String TYPENAME = "meta.identity";
 
-	}
-	
-	public void bind(TypeLibrary library, int memberTypeId, TypeLocation location, TypeElement definition) 
-	throws TypeException 
-	{
-		//super.bind(library, memberTypeId, location, definition);
-	}
+    private Map<MetaVersion, Integer> _versions;
 
-	public String getTypeName() 
-	{
-		return TYPENAME;
-	}
+    public MetaIdentity() {
+        _versions = new HashMap<MetaVersion, Integer>();
 
-	public void addVersion( MetaVersion version, int id )
-	throws TypeException
-	{
-		_versions.put(version, new Integer(id));
-	}
-	
-	public int getVersion( MetaVersion version )
-	{
-		Integer value = (Integer) _versions.get(version);
-		if (value == null ) return TypeLibrary.NOTYPE;
-		return value.intValue();
-	}
-	
-	public Integer[] getVersionIdentifiers()
-	{
-		return (Integer[]) _versions.values().toArray(new Integer[_versions.size()]);
-	}
-	
-	// NOTE may not be needed.
-	public static class MetaNameTypeWriter
-	implements TypeLibraryWriter,TypeWriter
-	{
-		public void write(TypeOutputStream out, Object o ) 
-		throws TypeException, IOException
-		{
-			//MetaIdentity mn = (MetaIdentity) o;
-		}
-		
-		public TypeWriter getWriter(TypeMap map) 
-		throws TypeException 
-		{
-			return this;
-		}
     }
 
+    @Override
+    public void bind(TypeLibrary library, int memberTypeId, TypeLocation location, TypeElement definition) throws TypeException {
+        //super.bind(library, memberTypeId, location, definition);
+    }
 
+    @Override
+    public String getTypeName() {
+        return TYPENAME;
+    }
+
+    public void addVersion(MetaVersion version, int id) throws TypeException {
+        _versions.put(version, Integer.valueOf(id));
+    }
+
+    public int getVersion(MetaVersion version) {
+        Integer value = _versions.get(version);
+        if (value == null)
+            return TypeLibrary.NOTYPE;
+        return value.intValue();
+    }
+
+    public Integer[] getVersionIdentifiers() {
+        return _versions.values().toArray(new Integer[_versions.size()]);
+    }
+
+    // NOTE may not be needed.
+    public static class MetaNameTypeWriter implements TypeLibraryWriter, TypeWriter {
+        @Override
+        public void write(TypeOutputStream out, Object o) throws TypeException, IOException {
+            //MetaIdentity mn = (MetaIdentity) o;
+        }
+
+        @Override
+        public TypeWriter getWriter(TypeMap map) throws TypeException {
+            return this;
+        }
+    }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -42,125 +42,105 @@ import com.argot.TypeReader;
 import com.argot.TypeWriter;
 import com.argot.auto.TypeBeanMarshaller;
 
-public class DictionaryDefinition 
-extends DictionaryLocation
-implements TypeLocationDefinition
-{
-	public static final String TYPENAME = "dictionary.definition";
-	
-	private int _id;
-	private MetaName _name;
-	private MetaVersion _version;
+public class DictionaryDefinition extends DictionaryLocation implements TypeLocationDefinition {
+    public static final String TYPENAME = "dictionary.definition";
 
-	public DictionaryDefinition()
-	{
-		super(TypeLocation.DEFINITION);
-		_id = -1;
-	}
+    private int _id;
+    private MetaName _name;
+    private MetaVersion _version;
 
-	public DictionaryDefinition(int nameId, MetaName name, MetaVersion version) 
-	throws TypeException
-	{
-		super(TypeLocation.DEFINITION);
-		_id = nameId;
-		_name = name;
-		_version = version;
-	}
+    public DictionaryDefinition() {
+        super(TypeLocation.DEFINITION);
+        _id = -1;
+    }
 
-	public DictionaryDefinition(TypeLibrary library, int id, String name, String version)
-	throws TypeException
-	{
-		this( id, MetaName.parseName(library, name), MetaVersion.parseVersion(version) );
-	}
+    public DictionaryDefinition(int nameId, MetaName name, MetaVersion version) throws TypeException {
+        super(TypeLocation.DEFINITION);
+        _id = nameId;
+        _name = name;
+        _version = version;
+    }
 
+    public DictionaryDefinition(TypeLibrary library, int id, String name, String version) throws TypeException {
+        this(id, MetaName.parseName(library, name), MetaVersion.parseVersion(version));
+    }
 
-	public MetaName getName() 
-	{
-		return _name;
-	}
-	
-	public void setName(MetaName name)
-	{
-		_name = name;
-	}
+    @Override
+    public MetaName getName() {
+        return _name;
+    }
 
-	public MetaVersion getVersion() 
-	{
-		return _version;
-	}
-	
-	public void setVersion(MetaVersion version)
-	{
-		_version = version;
-	}
-	
-	public void setId(int id)
-	{
-		_id = id;
-	}
-	
-	public int getId()
-	{
-		return _id;
-	}
-	
-	public static class DictionaryDefinitionTypeReader
-	implements TypeReader,TypeBound,TypeLibraryReader
-	{
-		TypeBeanMarshaller _reader = new TypeBeanMarshaller();
-		
-		public void bind(TypeLibrary library, int definitionId, TypeElement definition) 
-		throws TypeException 
-		{
-			_reader.bind(library, definitionId, definition);
-		}
-		
-		public TypeReader getReader(TypeMap map) 
-		throws TypeException 
-		{
-			return this;
-		}
-		
-	    public Object read(TypeInputStream in) throws TypeException, IOException
-	    {
-	    	
-			// Use the Automatic reader to read and create this object.
-			TypeReader reader = _reader.getReader(in.getTypeMap());
-			DictionaryDefinition def = (DictionaryDefinition) reader.read( in );
-			
-			// Check that what its referencing exists and convert from
-			// external mapping to internal mapping.
-			TypeMap mapCore = in.getTypeMap();
-			
-			def._id = mapCore.getLibrary().getTypeId(def.getName());
+    public void setName(MetaName name) {
+        _name = name;
+    }
 
-			return def;
-	    }
-	}
-	
-	public static class DictionaryDefinitionTypeWriter
-	implements TypeWriter, TypeBound, TypeLibraryWriter
-	{
-		TypeBeanMarshaller _writer = new TypeBeanMarshaller();
-		
-	    public void write(TypeOutputStream out, Object o) throws TypeException, IOException
-	    {
-			DictionaryDefinition dd = (DictionaryDefinition) o;
-			_writer.getWriter(out.getTypeMap()).write(out, dd);
-	    }
+    @Override
+    public MetaVersion getVersion() {
+        return _version;
+    }
 
-		public TypeWriter getWriter(TypeMap map) 
-		throws TypeException 
-		{
-			return this;
-		} 
+    public void setVersion(MetaVersion version) {
+        _version = version;
+    }
 
-		public void bind(TypeLibrary library, int definitionId, TypeElement definition) 
-		throws TypeException 
-		{
-			_writer.bind(library, definitionId, definition);	
-		} 
+    public void setId(int id) {
+        _id = id;
+    }
 
-	}
-	
+    @Override
+    public int getId() {
+        return _id;
+    }
+
+    public static class DictionaryDefinitionTypeReader implements TypeReader, TypeBound, TypeLibraryReader {
+        TypeBeanMarshaller _reader = new TypeBeanMarshaller();
+
+        @Override
+        public void bind(TypeLibrary library, int definitionId, TypeElement definition) throws TypeException {
+            _reader.bind(library, definitionId, definition);
+        }
+
+        @Override
+        public TypeReader getReader(TypeMap map) throws TypeException {
+            return this;
+        }
+
+        @Override
+        public Object read(TypeInputStream in) throws TypeException, IOException {
+
+            // Use the Automatic reader to read and create this object.
+            TypeReader reader = _reader.getReader(in.getTypeMap());
+            DictionaryDefinition def = (DictionaryDefinition) reader.read(in);
+
+            // Check that what its referencing exists and convert from
+            // external mapping to internal mapping.
+            TypeMap mapCore = in.getTypeMap();
+
+            def._id = mapCore.getLibrary().getTypeId(def.getName());
+
+            return def;
+        }
+    }
+
+    public static class DictionaryDefinitionTypeWriter implements TypeWriter, TypeBound, TypeLibraryWriter {
+        TypeBeanMarshaller _writer = new TypeBeanMarshaller();
+
+        @Override
+        public void write(TypeOutputStream out, Object o) throws TypeException, IOException {
+            DictionaryDefinition dd = (DictionaryDefinition) o;
+            _writer.getWriter(out.getTypeMap()).write(out, dd);
+        }
+
+        @Override
+        public TypeWriter getWriter(TypeMap map) throws TypeException {
+            return this;
+        }
+
+        @Override
+        public void bind(TypeLibrary library, int definitionId, TypeElement definition) throws TypeException {
+            _writer.bind(library, definitionId, definition);
+        }
+
+    }
+
 }

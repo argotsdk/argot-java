@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -33,52 +33,41 @@ import com.argot.TypeException;
 import com.argot.TypeLibrary;
 import com.argot.TypeLocation;
 
-public class MetaCluster 
-extends MetaExpression
-implements MetaDefinition
-{
-	public static final String TYPENAME = "meta.cluster";
-	
-	private Map<String,Object> _cluster;
-	private Object _entry;
-	
-	public MetaCluster()
-	{
-		_cluster = new HashMap<String,Object>();
+public class MetaCluster extends MetaExpression implements MetaDefinition {
+    public static final String TYPENAME = "meta.cluster";
 
-	}
-	
-	public void bind(TypeLibrary library, int memberTypeId, TypeLocation location, TypeElement definition) 
-	throws TypeException 
-	{
-		//super.bind(library, memberTypeId, location, definition);
-	}
+    private Map<String, Object> _cluster;
+    private Object _entry;
 
-	public String getTypeName() 
-	{
-		return TYPENAME;
-	}
+    public MetaCluster() {
+        _cluster = new HashMap<String, Object>();
 
+    }
 
-	public void put( String name, Object object )
-	{
-		_cluster.put(name, object);
-	}
-	
-	public Object get( String name )
-	{
-		return _cluster.get( name );
-	}
+    @Override
+    public void bind(TypeLibrary library, int memberTypeId, TypeLocation location, TypeElement definition) throws TypeException {
+        //super.bind(library, memberTypeId, location, definition);
+    }
 
-	public Object entry()
-	{
-		return _entry;
-	}
+    @Override
+    public String getTypeName() {
+        return TYPENAME;
+    }
 
-	public void setEntry(Object entry)
-	{
-		_entry = entry;
-	}
+    public void put(String name, Object object) {
+        _cluster.put(name, object);
+    }
 
+    public Object get(String name) {
+        return _cluster.get(name);
+    }
+
+    public Object entry() {
+        return _entry;
+    }
+
+    public void setEntry(Object entry) {
+        _entry = entry;
+    }
 
 }

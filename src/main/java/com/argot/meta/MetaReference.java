@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -41,106 +41,91 @@ import com.argot.TypeWriter;
 import com.argot.auto.TypeReaderAuto;
 import com.argot.common.UVInt28;
 
-public class MetaReference
-extends MetaExpression
-implements MetaDefinition
-{
-	public static final String TYPENAME  = "meta.reference";
-	public static final String VERSION = "1.3";
-	
-	private int _type;
+public class MetaReference extends MetaExpression implements MetaDefinition {
+    public static final String TYPENAME = "meta.reference";
+    public static final String VERSION = "1.3";
 
-	public MetaReference( int type )
-	{
-		_type = type;
-	}
+    private int _type;
 
-    public String getTypeName()
-    {
+    public MetaReference(int type) {
+        _type = type;
+    }
+
+    @Override
+    public String getTypeName() {
         return TYPENAME;
     }
-    
-	public int getType()
-	{
-		return _type;
-	}
-	
-	private void setType( int type )
-	{
-		_type = type;
-	}
 
-	public static class MetaReferenceTypeReader
-	implements TypeReader,TypeBound,TypeLibraryReader, MetaExpressionReader
-	{
-		TypeReaderAuto _reader = new TypeReaderAuto( MetaReference.class );
-		
-		public void bind(TypeLibrary library, int definitionId, TypeElement definition) 
-		throws TypeException 
-		{
-			_reader.bind(library, definitionId, definition);
-		}
-		
-		public TypeReader getReader(TypeMap map) 
-		throws TypeException 
-		{
-			return this;
-		}
-		
-	    public Object read(TypeInputStream in) throws TypeException, IOException
-	    {
-	    	
-			// Use the Automatic reader to read and create this object.
-			TypeReader reader = _reader.getReader(in.getTypeMap());
-			MetaReference ref = (MetaReference) reader.read( in );
-			
-			// Check that what its referencing exists and convert from
-			// external mapping to internal mapping.
-			TypeMap refMap = (TypeMap) in.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
-						
-			if (  refMap.isValid( ref.getType() ) )
-				ref.setType( refMap.getNameId( ref.getType() ));
-			else
-				throw new TypeException( "TypeReference: invalid id " + ref.getType() );
+    public int getType() {
+        return _type;
+    }
 
-			return ref;
-	    }
+    private void setType(int type) {
+        _type = type;
+    }
 
-		public TypeReader getExpressionReader(TypeMap map, MetaExpressionResolver resolver, TypeElement element)
-		throws TypeException 
-		{
-			MetaReference metaReference = (MetaReference) element;
-			int refNameId = map.getStreamId(metaReference._type);
-			return map.getReader( refNameId );
-		}
-	}
-	
-	public static class MetaReferenceTypeWriter
-	implements TypeWriter, TypeLibraryWriter, MetaExpressionWriter
-	{
-	    public void write(TypeOutputStream out, Object o) throws TypeException, IOException
-	    {
-			MetaReference tr = (MetaReference) o;
-			TypeMap refMap = (TypeMap) out.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
-			int id = refMap.getStreamId( tr._type );
-			out.writeObject( UVInt28.TYPENAME, new Integer( id ));
-	    }
+    public static class MetaReferenceTypeReader implements TypeReader, TypeBound, TypeLibraryReader, MetaExpressionReader {
+        TypeReaderAuto _reader = new TypeReaderAuto(MetaReference.class);
 
-		public TypeWriter getExpressionWriter(TypeMap map, MetaExpressionResolver resolver, TypeElement element)
-		throws TypeException 
-		{
-			MetaReference metaReference = (MetaReference) element;
-			// First map the name type.
-			int refNameId = map.getStreamId(metaReference._type);
-			
-			// Next map the defaultId.
-			return map.getWriter( refNameId );
-		}
+        @Override
+        public void bind(TypeLibrary library, int definitionId, TypeElement definition) throws TypeException {
+            _reader.bind(library, definitionId, definition);
+        }
 
-		public TypeWriter getWriter(TypeMap map) 
-		throws TypeException 
-		{
-			return this;
-		} 
-	}
+        @Override
+        public TypeReader getReader(TypeMap map) throws TypeException {
+            return this;
+        }
+
+        @Override
+        public Object read(TypeInputStream in) throws TypeException, IOException {
+
+            // Use the Automatic reader to read and create this object.
+            TypeReader reader = _reader.getReader(in.getTypeMap());
+            MetaReference ref = (MetaReference) reader.read(in);
+
+            // Check that what its referencing exists and convert from
+            // external mapping to internal mapping.
+            TypeMap refMap = (TypeMap) in.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
+
+            if (refMap.isValid(ref.getType()))
+                ref.setType(refMap.getNameId(ref.getType()));
+            else
+                throw new TypeException("TypeReference: invalid id " + ref.getType());
+
+            return ref;
+        }
+
+        @Override
+        public TypeReader getExpressionReader(TypeMap map, MetaExpressionResolver resolver, TypeElement element) throws TypeException {
+            MetaReference metaReference = (MetaReference) element;
+            int refNameId = map.getStreamId(metaReference._type);
+            return map.getReader(refNameId);
+        }
+    }
+
+    public static class MetaReferenceTypeWriter implements TypeWriter, TypeLibraryWriter, MetaExpressionWriter {
+        @Override
+        public void write(TypeOutputStream out, Object o) throws TypeException, IOException {
+            MetaReference tr = (MetaReference) o;
+            TypeMap refMap = (TypeMap) out.getTypeMap().getReference(TypeMap.REFERENCE_MAP);
+            int id = refMap.getStreamId(tr._type);
+            out.writeObject(UVInt28.TYPENAME, Integer.valueOf(id));
+        }
+
+        @Override
+        public TypeWriter getExpressionWriter(TypeMap map, MetaExpressionResolver resolver, TypeElement element) throws TypeException {
+            MetaReference metaReference = (MetaReference) element;
+            // First map the name type.
+            int refNameId = map.getStreamId(metaReference._type);
+
+            // Next map the defaultId.
+            return map.getWriter(refNameId);
+        }
+
+        @Override
+        public TypeWriter getWriter(TypeMap map) throws TypeException {
+            return this;
+        }
+    }
 }

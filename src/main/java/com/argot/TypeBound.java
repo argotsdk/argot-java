@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -25,8 +25,6 @@
  */
 package com.argot;
 
-public interface TypeBound 
-{
-	public void bind( TypeLibrary library, int definitionId, TypeElement definition ) 
-	throws TypeException;
+public interface TypeBound {
+    public void bind(TypeLibrary library, int definitionId, TypeElement definition) throws TypeException;
 }

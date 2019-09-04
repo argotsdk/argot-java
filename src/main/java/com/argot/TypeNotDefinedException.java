@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -25,14 +25,11 @@
  */
 package com.argot;
 
-public class TypeNotDefinedException 
-extends TypeException
-{
+public class TypeNotDefinedException extends TypeException {
 
-	private static final long serialVersionUID = -7455443870077090796L;
+    private static final long serialVersionUID = -7455443870077090796L;
 
-	public TypeNotDefinedException(String reason)
-    {
+    public TypeNotDefinedException(String reason) {
         super(reason);
     }
 

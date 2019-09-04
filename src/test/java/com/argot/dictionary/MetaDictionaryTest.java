@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -25,61 +25,56 @@
  */
 package com.argot.dictionary;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Iterator;
 
-import junit.framework.TestCase;
-
-import com.argot.TypeLibraryLoader;
-import com.argot.TypeMap;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.argot.TypeLibrary;
+import com.argot.TypeLibraryLoader;
+import com.argot.TypeMap;
 import com.argot.TypeMapperCore;
 import com.argot.TypeMapperError;
-import com.argot.dictionary.Dictionary;
 import com.argot.meta.MetaLoader;
 
-public class MetaDictionaryTest
-extends TestCase
-{
-	private TypeLibrary _library;
+public class MetaDictionaryTest {
+    private TypeLibrary _library;
 
-	TypeLibraryLoader libraryLoaders[] = {
-		new MetaLoader()
-	};
-	
-    protected void setUp() throws Exception
-    {
-        super.setUp();
-        _library = new TypeLibrary( libraryLoaders );
+    TypeLibraryLoader libraryLoaders[] = { new MetaLoader() };
+
+    @BeforeEach
+    protected void setUp() throws Exception {
+        _library = new TypeLibrary(libraryLoaders);
     }
-    
-    public void testTypeMapCore() throws Exception
-    {
+
+    @Test
+    public void testTypeMapCore() throws Exception {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        
-		TypeMap map = new TypeMap( _library, new TypeMapperCore(new TypeMapperError()));
 
-		Dictionary.writeDictionary( baos, map );
-		
-		byte[] coreMapBytes = baos.toByteArray();
-		
-		ByteArrayInputStream bais = new ByteArrayInputStream( coreMapBytes );
-		TypeMap mapRead = Dictionary.readDictionary( _library, bais );
-		
-		Iterator<Integer> iter1 = mapRead.getIdList().iterator();
+        TypeMap map = new TypeMap(_library, new TypeMapperCore(new TypeMapperError()));
 
-		while( iter1.hasNext() )
-		{			
-		    Integer id = (Integer) iter1.next();
-		    
-		    int o1 = mapRead.getDefinitionId( id.intValue() );
-		    int o2 = map.getDefinitionId( id.intValue() );
-		    
-		    assertEquals( o1, o2 );
-		    
-		    System.out.println( "o1: " + o1 + " == o2:" + o2 );
-		}
+        Dictionary.writeDictionary(baos, map);
+
+        byte[] coreMapBytes = baos.toByteArray();
+
+        ByteArrayInputStream bais = new ByteArrayInputStream(coreMapBytes);
+        TypeMap mapRead = Dictionary.readDictionary(_library, bais);
+
+        Iterator<Integer> iter1 = mapRead.getIdList().iterator();
+
+        while (iter1.hasNext()) {
+            Integer id = iter1.next();
+
+            int o1 = mapRead.getDefinitionId(id.intValue());
+            int o2 = map.getDefinitionId(id.intValue());
+
+            assertEquals(o1, o2);
+
+            System.out.println("o1: " + o1 + " == o2:" + o2);
+        }
     }
 }

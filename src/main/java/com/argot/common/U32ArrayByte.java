@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -34,38 +34,31 @@ import com.argot.TypeReader;
 import com.argot.TypeWriter;
 
 /**
- * This is a byte array.  Basically for any binary data or storing
- * other types of data as part of another mapped set.  It uses a
- * single unsigned 32bit integer to specificy the size of the array.
- * It returns and writes byte[].
+ * This is a byte array. Basically for any binary data or storing other types of data as part of another mapped set. It
+ * uses a single unsigned 32bit integer to specificy the size of the array. It returns and writes byte[].
  */
-public class U32ArrayByte
-implements TypeReader, TypeWriter
-{
-	public static final String TYPENAME = "u32binary";
-	public static final String VERSION = "1.3";
-	
-	public Object read(TypeInputStream in)
-	throws TypeException, IOException
-	{
-		Long id = (Long) in.readObject( UInt32.TYPENAME );
+public class U32ArrayByte implements TypeReader, TypeWriter {
+    public static final String TYPENAME = "u32binary";
+    public static final String VERSION = "1.3";
 
-		byte[] bytes = new byte[ id.intValue() ];
-		in.read(bytes,0,bytes.length);
-		
-		return bytes;
-	}
+    @Override
+    public Object read(TypeInputStream in) throws TypeException, IOException {
+        Long id = (Long) in.readObject(UInt32.TYPENAME);
 
-	public void write(TypeOutputStream out, Object o )
-	throws TypeException, IOException
-	{
-		if ( !(o instanceof byte[]) )
-			throw new TypeException( "StringType: can only write objects of type String");
-		
-		
-		byte[] bytes = (byte[]) o;
+        byte[] bytes = new byte[id.intValue()];
+        in.read(bytes, 0, bytes.length);
 
-		out.writeObject( UInt32.TYPENAME, new Long( bytes.length) );
-		out.getStream().write( bytes );
-	}
+        return bytes;
+    }
+
+    @Override
+    public void write(TypeOutputStream out, Object o) throws TypeException, IOException {
+        if (!(o instanceof byte[]))
+            throw new TypeException("StringType: can only write objects of type String");
+
+        byte[] bytes = (byte[]) o;
+
+        out.writeObject(UInt32.TYPENAME, Long.valueOf(bytes.length));
+        out.getStream().write(bytes);
+    }
 }

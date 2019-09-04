@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -25,9 +25,6 @@
  */
 package com.argot;
 
-
-public interface TypeConstructor
-{
-	Object construct( TypeElement sequence, Object[] parameters ) 
-	throws TypeException;
+public interface TypeConstructor {
+    Object construct(TypeElement sequence, Object[] parameters) throws TypeException;
 }

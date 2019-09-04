@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -45,7 +45,7 @@ public class Int16 implements TypeReader, TypeWriter {
         final byte[] buffer = new byte[2];
 
         in.read(buffer, 0, 2);
-        final Short value = new Short((short) (((buffer[0] & 0xff) << 8) | (buffer[1] & 0xff)));
+        final Short value = Short.valueOf((short) (((buffer[0] & 0xff) << 8) | (buffer[1] & 0xff)));
 
         return value;
     }

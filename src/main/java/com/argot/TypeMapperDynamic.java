@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -29,103 +29,87 @@ import com.argot.meta.MetaCluster;
 import com.argot.meta.MetaIdentity;
 import com.argot.meta.MetaName;
 
-public class TypeMapperDynamic 
-implements TypeMapper 
-{
-	private int _lastMapId;
-	private TypeMap _map;
-	private TypeMapper _chain;
-	private TypeLibrary _library;
-	
-	public TypeMapperDynamic(TypeMapper chain)
-	{
-		_lastMapId = 0;
-		_chain = chain;
-	}
+public class TypeMapperDynamic implements TypeMapper {
+    private int _lastMapId;
+    private TypeMap _map;
+    private TypeMapper _chain;
+    private TypeLibrary _library;
 
-	private int getNextId() 
-	{
-		int id;
+    public TypeMapperDynamic(TypeMapper chain) {
+        _lastMapId = 0;
+        _chain = chain;
+    }
 
-		while (true) 
-		{
-			id = _lastMapId;
-			_lastMapId++;
+    private int getNextId() {
+        int id;
 
-			if (!_map.isValid(id))
-			{
-				// type wasn't found to be mapped. This one is ok.
-				break;
-			}
-		}
-		return id;
-	}
+        while (true) {
+            id = _lastMapId;
+            _lastMapId++;
 
-	public void initialise(TypeMap map) 
-	throws TypeException 
-	{
-		_map = map;
-		_library = _map.getLibrary();
-		_chain.initialise(map);
-	}
+            if (!_map.isValid(id)) {
+                // type wasn't found to be mapped. This one is ok.
+                break;
+            }
+        }
+        return id;
+    }
 
-	public int map(int definitionId) 
-	throws TypeException 
-	{
-		TypeLocation location = _library.getLocation( definitionId );
-		if (location instanceof TypeLocationName)
-		{
-			return this.mapDefault(definitionId);
-		}
-		else if (location instanceof TypeLocationDefinition)
-		{
-			// Need to ensure the parent group is also mapped.  Getting stream should force it.
-			TypeLocationDefinition tld = (TypeLocationDefinition) location;
-			_map.getStreamId(tld.getName().getGroup());
-		}
-		
-		int mapId = getNextId();
-		_map.map(mapId, definitionId);
-		return mapId;
-	}
+    @Override
+    public void initialise(TypeMap map) throws TypeException {
+        _map = map;
+        _library = _map.getLibrary();
+        _chain.initialise(map);
+    }
 
-	public int mapReverse(int streamId) 
-	throws TypeException 
-	{
-		return _chain.mapReverse(streamId);
-	}
+    @Override
+    public int map(int definitionId) throws TypeException {
+        TypeLocation location = _library.getLocation(definitionId);
+        if (location instanceof TypeLocationName) {
+            return this.mapDefault(definitionId);
+        } else if (location instanceof TypeLocationDefinition) {
+            // Need to ensure the parent group is also mapped.  Getting stream should force it.
+            TypeLocationDefinition tld = (TypeLocationDefinition) location;
+            _map.getStreamId(tld.getName().getGroup());
+        }
 
-	public int mapDefault(int systemNameId) 
-	throws TypeException 
-	{		
-		TypeElement elemStructure = _library.getStructure(systemNameId);
-		if (!(elemStructure instanceof MetaIdentity))
-		{	
-			if (elemStructure instanceof MetaCluster)
-			{
-				TypeLocationName location =  (TypeLocationName) _library.getLocation(systemNameId);
-				_map.getStreamId(location.getName().getGroup());
-				int mapId = getNextId();
-				_map.map(mapId, systemNameId);
-				return mapId;				
-			}
-			throw new TypeException("MapDefault requires name definition: " + elemStructure.getClass().getName() );
-		}
-		MetaName name = _library.getName(systemNameId);
-		
-		// Need to ensure the parent group is also mapped.  Getting stream should force it.
-		_map.getStreamId(name.getGroup());
-		
-		MetaIdentity metaName = (MetaIdentity) elemStructure;
-		Integer[] versions = metaName.getVersionIdentifiers();
-		if (versions.length != 1)
-		{
-			throw new TypeException("Type has multiple versions " + name.getFullName()  );
-		}
-		
-		int mapId = getNextId();
-		_map.map(mapId, versions[0]);
-		return mapId;
-	}
+        int mapId = getNextId();
+        _map.map(mapId, definitionId);
+        return mapId;
+    }
+
+    @Override
+    public int mapReverse(int streamId) throws TypeException {
+        return _chain.mapReverse(streamId);
+    }
+
+    @Override
+    public int mapDefault(int systemNameId) throws TypeException {
+        TypeElement elemStructure = _library.getStructure(systemNameId);
+        if (!(elemStructure instanceof MetaIdentity)) {
+            if (elemStructure instanceof MetaCluster) {
+                TypeLocationName location = (TypeLocationName) _library.getLocation(systemNameId);
+                _map.getStreamId(location.getName().getGroup());
+                int mapId = getNextId();
+                _map.map(mapId, systemNameId);
+                return mapId;
+            }
+            throw new TypeException("MapDefault requires name definition: " + elemStructure.getClass().getName());
+        }
+        MetaName name = _library.getName(systemNameId);
+
+        // Need to ensure the parent group is also mapped.  Getting stream should force it.
+        _map.getStreamId(name.getGroup());
+
+        MetaIdentity metaName = (MetaIdentity) elemStructure;
+        Integer[] versions = metaName.getVersionIdentifiers();
+        if (versions.length != 1) {
+            throw new TypeException("Type has multiple versions " + name.getFullName());
+        }
+
+        int mapId = getNextId();
+        _map.map(mapId, versions[0]);
+        return mapId;
+    }
 
 }

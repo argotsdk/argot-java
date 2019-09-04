@@ -1,5 +1,5 @@
-Argot Java 1.3.0
-Copyright (c) 2003-2013, Live Media Pty. Ltd.
+Argot Java 1.4.0
+Copyright (c) 2003-2019, Live Media Pty. Ltd.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -61,7 +61,32 @@ Please view the example .argot files to see how argot is specified.
 Version History
 ---------------
 
-1.3.b6 - 
+1.4.0 - 4 Sep 2019
+
+- Upgraded to Java 11 with modules.
+- Reformatted all files while updating.
+
+1.3.b17-1.3.b19 - 26 Feb 2019
+
+- Fix bug in the String interner code.
+
+1.3.b12-1.3.b16 - 21 Jul 2017
+
+- Removed temporary buffers for float and double to improve performance and reduce GC.
+- Use MethodHandles in BeanMarshaller to improve performance
+- Use MethodHandles in TypeIdentifiedBeanMarshaller to improve performance
+- Added StringStrongInterner and StringWeakInterner and ArgotIntern tag
+- Added float and double methodHandle readers to improve performance
+- Use MethodHandles for common types instead of object allocation.
+- Replace Boolean result with Boolean.TRUE and Boolean.FALSE to reduce allocations.
+
+1.3.b11 - 22 Apr 2017
+
+- Added uvint28utf8 and uvint28binary types. 
+- Modified int64 to use individual buffers reads instead of instantiating an array. 
+- Added TypeIdentifiedBeanMarshaller to allow null values. 
+
+1.3.b6 - 30 Jan 2014
 
 - Added Argot Message Format.
 - Various changes to improve error reporting.

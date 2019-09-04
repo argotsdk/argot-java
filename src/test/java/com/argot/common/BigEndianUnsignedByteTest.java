@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -25,22 +25,25 @@
  */
 package com.argot.common;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
+
 import com.argot.TypeInputStream;
 
-public class BigEndianUnsignedByteTest
-extends CommonTest
-{
-    public void testWriteBigEndianSignedByte() throws Exception
-    {
-		byte b = -114;
-        
-		Int8 besb = new Int8();
-		besb.write( out, new Byte(b));
+public class BigEndianUnsignedByteTest extends CommonTest {
 
-		TypeInputStream tmis = getInputStream();
-		
-		Byte sb = (Byte) besb.read( tmis );
-		assertEquals( b, sb.intValue() );
+    @Test
+    public void testWriteBigEndianSignedByte() throws Exception {
+        byte b = -114;
+
+        Int8 besb = new Int8();
+        besb.write(out, Byte.valueOf(b));
+
+        TypeInputStream tmis = getInputStream();
+
+        Byte sb = (Byte) besb.read(tmis);
+        assertEquals(b, sb.intValue());
     }
 
 }

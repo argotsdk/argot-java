@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -34,39 +34,31 @@ import com.argot.TypeLibraryWriter;
 import com.argot.TypeMap;
 import com.argot.TypeWriter;
 
-public class TypeSimpleWriter 
-implements TypeLibraryWriter,TypeBound
-{
-	private TypeWriter _writer;
-	
-	public TypeSimpleWriter(TypeWriter writer)
-	{
-		_writer = writer;
-	}
-	
-	protected TypeSimpleWriter()
-	{
-		_writer = null;
-	}
-	
-	public void bind(TypeLibrary library, int definitionId, TypeElement definition) 
-	throws TypeException 
-	{
-		if (_writer instanceof TypeBound && _writer != this)
-		{
-			((TypeBound)_writer).bind(library, definitionId, definition);
-		}		
-	}
-	
-	public TypeWriter getWriter(TypeMap map) 
-	throws TypeException 
-	{
-		return _writer;
-	}
-	
-	protected void setWriter(TypeWriter writer)
-	{
-		_writer = writer;
-	}
+public class TypeSimpleWriter implements TypeLibraryWriter, TypeBound {
+    private TypeWriter _writer;
+
+    public TypeSimpleWriter(TypeWriter writer) {
+        _writer = writer;
+    }
+
+    protected TypeSimpleWriter() {
+        _writer = null;
+    }
+
+    @Override
+    public void bind(TypeLibrary library, int definitionId, TypeElement definition) throws TypeException {
+        if (_writer instanceof TypeBound && _writer != this) {
+            ((TypeBound) _writer).bind(library, definitionId, definition);
+        }
+    }
+
+    @Override
+    public TypeWriter getWriter(TypeMap map) throws TypeException {
+        return _writer;
+    }
+
+    protected void setWriter(TypeWriter writer) {
+        _writer = writer;
+    }
 
 }

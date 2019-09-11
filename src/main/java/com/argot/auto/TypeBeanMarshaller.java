@@ -28,6 +28,7 @@ package com.argot.auto;
 import java.io.IOException;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -113,10 +114,10 @@ public class TypeBeanMarshaller implements TypeLibraryReaderWriter, TypeBound {
             firstChar = firstChar.toUpperCase();
             String method = "get" + firstChar + description.substring(1);
 
+            Method getMethod = null;
             try {
-                final Class<?>[] empty = new Class[0];
-                final Method getMethod = _typeClass.getMethod(method, empty);
-                _getMethods[x] = MethodHandles.lookup().unreflect(getMethod);
+                getMethod = _typeClass.getMethod(method);
+                _getMethods[x] = MethodHandles.publicLookup().findVirtual(_typeClass, method, MethodType.methodType(getMethod.getReturnType()));
                 _methodHandleWriters[x] = MethodHandleWriter.getWriter(getMethod, referenceType, false);
             } catch (final SecurityException e) {
                 throw new TypeException("TypeBeanMarshaller: No getter method found:" + _typeClass.getName() + "." + method, e);
@@ -129,7 +130,7 @@ public class TypeBeanMarshaller implements TypeLibraryReaderWriter, TypeBound {
             method = "set" + firstChar + description.substring(1);
             final Method setMethod = resolveSetMethod(_typeClass, method);
             try {
-                _setMethods[x] = MethodHandles.lookup().unreflect(setMethod);
+                _setMethods[x] = MethodHandles.publicLookup().unreflect(setMethod);
                 _methodHandleReaders[x] = MethodHandleReader.getReader(setMethod, referenceType);
             } catch (final IllegalAccessException e) {
                 throw new TypeException("TypeBeanMarshaller: No getter method found:" + _typeClass.getName() + "." + method, e);

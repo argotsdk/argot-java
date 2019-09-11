@@ -46,29 +46,29 @@ public interface MethodHandleReader {
 
         final Class<?> returnType = method.getParameters()[0].getType();
         if (returnType == boolean.class && "boolean".equals(argotType)) {
-            reader = new BooleanMethodHandleReader(MethodHandles.lookup().unreflect(method));
+            reader = new BooleanMethodHandleReader(MethodHandles.publicLookup().unreflect(method));
         } else if ((returnType == short.class || returnType == int.class) && "uint8".equals(argotType)) {
-            reader = new UInt8MethodHandleReader(MethodHandles.lookup().unreflect(method));
+            reader = new UInt8MethodHandleReader(MethodHandles.publicLookup().unreflect(method));
         } else if (returnType == short.class && "int16".equals(argotType)) {
-            reader = new Int16MethodHandleReader(MethodHandles.lookup().unreflect(method));
+            reader = new Int16MethodHandleReader(MethodHandles.publicLookup().unreflect(method));
         } else if (returnType == int.class && "int32".equals(argotType)) {
-            reader = new Int32MethodHandleReader(MethodHandles.lookup().unreflect(method));
+            reader = new Int32MethodHandleReader(MethodHandles.publicLookup().unreflect(method));
         } else if (returnType == float.class && "float".equals(argotType)) {
-            reader = new IEEEFloatMethodHandleReader(MethodHandles.lookup().unreflect(method));
+            reader = new IEEEFloatMethodHandleReader(MethodHandles.publicLookup().unreflect(method));
         } else if (returnType == long.class && "int64".equals(argotType)) {
-            reader = new Int64MethodHandleReader(MethodHandles.lookup().unreflect(method));
+            reader = new Int64MethodHandleReader(MethodHandles.publicLookup().unreflect(method));
         } else if (returnType == double.class && "double".equals(argotType)) {
-            reader = new IEEEDoubleMethodHandleReader(MethodHandles.lookup().unreflect(method));
+            reader = new IEEEDoubleMethodHandleReader(MethodHandles.publicLookup().unreflect(method));
         } else if (returnType == String.class && "u8utf8".equals(argotType)) {
             final ArgotIntern intern = method.getAnnotation(ArgotIntern.class);
             if (intern != null) {
                 if ("weak".equalsIgnoreCase(intern.value())) {
-                    reader = new U8Utf8WeakInternMethodHandleReader(MethodHandles.lookup().unreflect(method));
+                    reader = new U8Utf8WeakInternMethodHandleReader(MethodHandles.publicLookup().unreflect(method));
                 } else {
-                    reader = new U8Utf8StrongInternMethodHandleReader(MethodHandles.lookup().unreflect(method), intern.value());
+                    reader = new U8Utf8StrongInternMethodHandleReader(MethodHandles.publicLookup().unreflect(method), intern.value());
                 }
             } else {
-                reader = new U8Utf8MethodHandleReader(MethodHandles.lookup().unreflect(method));
+                reader = new U8Utf8MethodHandleReader(MethodHandles.publicLookup().unreflect(method));
             }
         }
 

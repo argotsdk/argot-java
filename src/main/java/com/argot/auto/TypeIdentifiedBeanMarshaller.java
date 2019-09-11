@@ -120,7 +120,7 @@ public class TypeIdentifiedBeanMarshaller implements TypeLibraryReaderWriter, Ty
             try {
                 final Class<?>[] empty = new Class[0];
                 final Method getMethod = _typeClass.getMethod(method, empty);
-                _getMethods[x] = MethodHandles.lookup().unreflect(getMethod);
+                _getMethods[x] = MethodHandles.publicLookup().unreflect(getMethod);
                 _methodHandleWriters[x] = MethodHandleWriter.getWriter(getMethod, referenceType, true);
             } catch (final SecurityException e) {
                 throw new TypeException("TypeBeanMarshaller: No getter method found:" + _typeClass.getName() + "." + method, e);
@@ -134,10 +134,10 @@ public class TypeIdentifiedBeanMarshaller implements TypeLibraryReaderWriter, Ty
             final Method setMethod = resolveSetMethod(_typeClass, method);
 
             try {
-                _setMethods[x] = MethodHandles.lookup().unreflect(setMethod);
+                _setMethods[x] = MethodHandles.publicLookup().unreflect(setMethod);
                 _methodHandleReaders[x] = MethodHandleReader.getReader(setMethod, referenceType);
             } catch (final IllegalAccessException e) {
-                throw new TypeException("TypeBeanMarshaller: No getter method found:" + _typeClass.getName() + "." + method, e);
+                throw new TypeException("TypeBeanMarshaller: No setter method found:" + _typeClass.getName() + "." + method, e);
             }
         }
     }

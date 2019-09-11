@@ -45,21 +45,21 @@ public interface MethodHandleWriter {
 
         final Class<?> returnType = method.getReturnType();
         if (returnType == boolean.class && "boolean".equals(argotType)) {
-            writer = new BooleanMethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
+            writer = new BooleanMethodHandleWriter(MethodHandles.publicLookup().unreflect(method), writeNotNull);
         } else if ((returnType == byte.class || returnType == short.class || returnType == int.class) && "uint8".equals(argotType)) {
-            writer = new UInt8MethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
+            writer = new UInt8MethodHandleWriter(MethodHandles.publicLookup().unreflect(method), writeNotNull);
         } else if (returnType == short.class && "int16".equals(argotType)) {
-            writer = new Int16MethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
+            writer = new Int16MethodHandleWriter(MethodHandles.publicLookup().unreflect(method), writeNotNull);
         } else if (returnType == int.class && "int32".equals(argotType)) {
-            writer = new Int32MethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
+            writer = new Int32MethodHandleWriter(MethodHandles.publicLookup().unreflect(method), writeNotNull);
         } else if (returnType == float.class && "float".equals(argotType)) {
-            writer = new IEEEFloatMethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
+            writer = new IEEEFloatMethodHandleWriter(MethodHandles.publicLookup().unreflect(method), writeNotNull);
         } else if (returnType == long.class && "int64".equals(argotType)) {
-            writer = new Int64MethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
+            writer = new Int64MethodHandleWriter(MethodHandles.publicLookup().unreflect(method), writeNotNull);
         } else if (returnType == double.class && "double".equals(argotType)) {
-            writer = new IEEEDoubleMethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
+            writer = new IEEEDoubleMethodHandleWriter(MethodHandles.publicLookup().unreflect(method), writeNotNull);
         } else if (returnType == String.class && "u8utf8".equals(argotType)) {
-            writer = new U8Utf8MethodHandleWriter(MethodHandles.lookup().unreflect(method), writeNotNull);
+            writer = new U8Utf8MethodHandleWriter(MethodHandles.publicLookup().unreflect(method), writeNotNull);
         }
 
         return writer;

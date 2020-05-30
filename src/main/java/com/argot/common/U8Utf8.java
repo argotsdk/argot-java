@@ -26,6 +26,7 @@
 package com.argot.common;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import com.argot.TypeException;
 import com.argot.TypeInputStream;
@@ -38,11 +39,11 @@ public class U8Utf8 implements TypeReader, TypeWriter {
     public static final String VERSION = "1.3";
 
     @Override
-    public Object read(TypeInputStream in) throws TypeException, IOException {
-        int id = in.read();
+    public Object read(final TypeInputStream in) throws TypeException, IOException {
+        final int id = in.read();
 
         if (id > 0) {
-            byte[] bytes = new byte[id];
+            final byte[] bytes = new byte[id];
             in.read(bytes, 0, bytes.length);
             return new String(bytes, "UTF-8");
         }
@@ -51,7 +52,7 @@ public class U8Utf8 implements TypeReader, TypeWriter {
     }
 
     @Override
-    public void write(TypeOutputStream out, Object o) throws TypeException, IOException {
+    public void write(final TypeOutputStream out, final Object o) throws TypeException, IOException {
         if (!(o instanceof String)) {
             if (o == null) {
                 out.getStream().write(0);
@@ -64,8 +65,10 @@ public class U8Utf8 implements TypeReader, TypeWriter {
         byte[] bytes = ((String) o).getBytes();
         int size = bytes.length;
 
-        if (size > 255)
-            throw new TypeException("u8ascii: String length exceeded max length of 255.  len =" + size);
+        if (size > 255) {
+            bytes = Arrays.copyOf(bytes, 255);
+            size = 255;
+        }
 
         out.getStream().write(size);
         out.getStream().write(bytes, 0, size);
